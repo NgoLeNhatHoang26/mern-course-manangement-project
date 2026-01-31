@@ -5,6 +5,10 @@ const lessonSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
     },
+    moduleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "LessonModule",
+    },
     title: {
         type: String,
         required: true,

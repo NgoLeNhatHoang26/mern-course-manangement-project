@@ -13,10 +13,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
 a {
   font-weight: 500;
   color: #646cff;
@@ -27,8 +23,7 @@ a:hover {
 }
 
 body {
-  margin: 0;
-
+  font-family: Arial, sans-serif;
   min-width: 320px;
   min-height: 100vh;
 }

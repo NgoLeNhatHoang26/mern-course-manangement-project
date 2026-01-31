@@ -8,19 +8,25 @@ import MyProfilePage from './pages/MyProfilePage.jsx'
 import SettingPage from './pages/SettingPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import SigninPage from './pages/SigninPage.jsx'
+import MainLayout from './component/layout/MainLayout.jsx';
 import './App.css'
 function App() {
 
   return (
-        <Container sx={{ mt: 5 }}>
-            <Typography variant="h4" gutterBottom>
-                Course Management
-            </Typography>
-
-            <Button variant="contained">
-                Test MUI OK
-            </Button>
-        </Container>
+    <Router>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/courses" element={<CoursePage />} />
+          <Route path="/lessons/:id" element={<LessonPage />} />
+          <Route path="/my-courses" element={<MyCoursesPage />} />
+          <Route path="/my-profile" element={<MyProfilePage />} />
+          <Route path="/settings" element={<SettingPage />} />
+        </Route>
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/signin" element={<SigninPage />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -1,14 +1,9 @@
-// routes/admin.route.js
-
 import express from 'express'
 import adminController from '../controllers/admin.controller.js'
-import authMiddleware from '../middlewares/auth.middleware.js'
-import { isAdmin } from '../middlewares/role.middleware.js'
+
 
 const router = express.Router()
 
-router.use(authMiddleware)
-router.use(isAdmin)
 
 // USER
 router.get('/users', adminController.getAllUsers)

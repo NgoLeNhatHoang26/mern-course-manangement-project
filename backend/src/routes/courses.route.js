@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/', getAllCourses)
 router.get('/:id', getCourseById)
+router.post('/', createCourse) 
 router.use('/:courseId/lessons', lessonRoute)
 router.use('/:courseId/review', reviewRoute)
 export default router;
