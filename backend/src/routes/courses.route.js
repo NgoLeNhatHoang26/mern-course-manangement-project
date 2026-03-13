@@ -1,12 +1,19 @@
 import { Router } from "express";
-import {getAllCourses, getCourseById} from '../controller/courses.controller.js'
-import lessonRoute from './lesson.route.js'
+import {getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse, enrollCourse} from '../controller/courses.controller.js'
 import reviewRoute from './review.route.js'
+import moduleRoute from './lessonModule.route.js'
 const router = Router();
 
 router.get('/', getAllCourses)
-router.get('/:id', getCourseById)
-router.post('/', createCourse) 
-router.use('/:courseId/lessons', lessonRoute)
-router.use('/:courseId/review', reviewRoute)
+router.get('/:courseId', getCourseById)
+
+router.post('/', createCourse)
+router.patch('/:courseId', updateCourse)
+router.delete('/:courseId', deleteCourse)
+
+router.post('/:courseId/enroll', enrollCourse)
+
+router.use('/:courseId/modules', moduleRoute)
+router.use('/:courseId/reviews', reviewRoute)
+
 export default router;

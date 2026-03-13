@@ -1,3 +1,4 @@
+import e from "express";
 import mongoose from "mongoose"
 
 const lessonSchema = new mongoose.Schema({
@@ -25,7 +26,7 @@ const lessonSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    courseOrder: {
+    order: {
         type: Number,
         required: true,
     },

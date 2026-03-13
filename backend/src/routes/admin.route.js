@@ -1,24 +1,18 @@
-import express from 'express'
-import adminController from '../controllers/admin.controller.js'
+import { Router } from 'express'
+import {  getAllUsers, getUserById,updateUserRole,createCourse,deleteCourse,} from '../controller/admin.controller.js'
 
-
-const router = express.Router()
+const router = Router()
 
 
 // USER
-router.get('/users', adminController.getAllUsers)
-router.get('/users/:id', adminController.getUserById)
-router.put('/users/:id/role', adminController.updateUserRole)
-router.put('/users/:id/block', adminController.blockUser)
-router.delete('/users/:id', adminController.deleteUser)
+router.get('/users', getAllUsers)
+router.get('/users/:id', getUserById)
+router.put('/users/:id/role', updateUserRole)
 
 // COURSE
-router.post('/courses', adminController.createCourse)
-router.put('/courses/:id', adminController.updateCourse)
-router.delete('/courses/:id', adminController.deleteCourse)
-router.put('/courses/:id/publish', adminController.publishCourse)
+router.post('/courses', createCourse)
+router.delete('/courses/:id', deleteCourse)
 
-// DASHBOARD
-router.get('/dashboard', adminController.getDashboard)
+
 
 export default router

@@ -4,12 +4,12 @@ const reviewSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: false,
+        required: true,
     },
     courseId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
-        required: false,
+        required: true,
     },
     rating: {
         type: Number,
@@ -27,4 +27,9 @@ const reviewSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
+// Mỗi user chỉ review 1 lần
+reviewSchema.index(
+    { userId: 1, courseId: 1 },
+    { unique: true }
+)
 export const Review = mongoose.model("Review", reviewSchema);

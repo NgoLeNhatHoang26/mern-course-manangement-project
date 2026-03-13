@@ -1,7 +1,7 @@
 import { Router } from "express";
-
+import {getUserEnrollments } from "../controller/enrollment.controller.js";
 const router = Router();
 
-router.get('/', getAllEnrollment)
+router.get("/:userId", getUserEnrollments);
 
 export default router;

@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        select: false, // ⚠️ Không tự động trả về khi query (bảo mật)
+        select: false,
     },
     avatarUrl: {
         type: String,

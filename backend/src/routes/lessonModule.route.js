@@ -1,9 +1,12 @@
 import { Router } from "express";
-import {getCourseById} from "../controller/courses.controller.js";
+import {getLessonModulesByCourse, createLessonModule, updateLessonModule, deleteLessonModule} from "../controller/lessonModule.controller.js";
+import lessonRoute from "./lesson.route.js";
 
-const router = Router();
+const router = Router({mergeParams: true});
 
-router.get('/', getAllModule)
-router.get('/:id', getModuleByCourseId)
-
+router.get('/', getLessonModulesByCourse)
+router.post('/', createLessonModule)
+router.patch('/:moduleId', updateLessonModule)
+router.delete('/:moduleId', deleteLessonModule)
+router.use('/:moduleId/lessons', lessonRoute)
 export default router;

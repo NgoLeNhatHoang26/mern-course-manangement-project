@@ -1,50 +1,44 @@
 // controllers/admin.controller.js
 
-import User from '../models/user.js'
-import Course from '../models/courses.js'
 
-const getAllUsers = async (req, res) => {
-  const users = await User.find().select('-password')
-  res.json(users)
-}
-const blockUser = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, {
-    isBlocked: true
-  })
-  res.json({ message: 'User blocked' })
+import {User} from '../models/user.js'
+
+export const getAllUsers = async (req, res) => {
+    const users = await User.find().select('-password')
+    res.json(users)
 }
 
-const updateUserRole = async (req, res) => {
-  const { role } = req.body
-  await User.findByIdAndUpdate(req.params.id, { role })
-  res.json({ message: 'Role updated' })
+export const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password')
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        res.json(user)
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid user ID' })
+    }
+}
+export const updateUserRole = async (req, res) => {
+    try {
+        const { role } = req.body;
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { role },
+            { new: true }
+        ).select("-password");
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
 }
 
-const createCourse = async (req, res) => {
-  const course = await Course.create(req.body)
-  res.status(201).json(course)
-}
-
-const deleteCourse = async (req, res) => {
-  await Course.findByIdAndDelete(req.params.id)
-  res.json({ message: 'Course deleted' })
-}
-
-const getDashboard = async (req, res) => {
-  const totalUsers = await User.countDocuments()
-  const totalCourses = await Course.countDocuments()
-
-  res.json({
-    totalUsers,
-    totalCourses
-  })
-}
-
-export default {
-  getAllUsers,
-  blockUser,
-  updateUserRole,
-  createCourse,
-  deleteCourse,
-  getDashboard
-}

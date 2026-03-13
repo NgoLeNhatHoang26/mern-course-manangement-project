@@ -4,21 +4,31 @@ const enrollmentSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: false,
+        required: true,
     },
     courseId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course',
-        required: false,
+        required: true,
     },
     progress: {
-        type: Float64Array,
+        type: Number,
         default: 0
     },
     completedLessons: {
         type: Number,
         default: 0
     },
+    enrollmentAt: {
+        type: Date,
+        default: Date.now,
+    }
 }, { timestamps: true } );
+
+// Đảm bảo mỗi user không enroll 1 course nhiều lần
+enrollmentSchema.index(
+    {userId: 1, courseId: 1},
+    {unique: true},
+)
 
 export const Enrollment = mongoose.model('Enrollment', enrollmentSchema);

@@ -13,6 +13,10 @@ const lessonModuleSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    order: {
+        type: Number,
+        required: true,
+    }
 }, { timestamps: true });
 
 export const LessonModule = mongoose.model("LessonModule", lessonModuleSchema);
