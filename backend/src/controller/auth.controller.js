@@ -1,13 +1,22 @@
 // controllers/auth.controller.js
 
-import User from '../models/user.model.js'
+import { User } from '../models/user.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 const register = async (req, res) => {
-  try {
-    const { email, password, name } = req.body
-
+    try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({
+                message: 'Request body must be JSON. Set Content-Type: application/json and send raw JSON body.',
+            })
+        }
+        const { userName, email, password } = req.body
+        if (!email || !password || !userName) {
+        return res.status(400).send({
+            message: "Missing required fields",
+        })
+    }
     const exist = await User.findOne({ email })
     if (exist) {
       return res.status(400).json({
@@ -17,8 +26,8 @@ const register = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10)
 
-    const user = await User.create({
-      name,
+    await User.create({
+      userName,
       email,
       password: hashPassword,
       role: 'user'
@@ -34,34 +43,48 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body || {}
+    if(!email || !password) {
+        return res.status(400).json({
+            message: "Email and password required",
+        })
+    }
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).select('+password')
     if (!user) {
       return res.status(401).json({
         message: 'Invalid email or password'
       })
     }
-
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) {
+    const isPasswordValid= await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
       return res.status(401).json({
         message: 'Invalid email or password'
       })
     }
-
+    const secret = process.env.JWT_SECRET
+    if (!secret) {
+      return res.status(500).json({
+        message: 'Server error: JWT_SECRET is not set in .env',
+      })
+    }
+    const payload = {
+        sub: user.id,
+        role: user.role
+    }
     const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    )
+          payload,
+          secret,
+          { expiresIn: process.env.JWT_EXPIRES || '7d' }
+      )
 
     res.status(200).json({
       token,
       user: {
-        id: user._id,
-        email: user.email,
-        role: user.role
+          id: user._id,
+          name: user.userName,
+          email: user.email,
+          role: user.role
       }
     })
   } catch (error) {
@@ -70,7 +93,8 @@ const login = async (req, res) => {
 }
 
 const getMe = async (req, res) => {
-  res.status(200).json(req.user)
+    const { password, ...userData } = req.user._doc
+    res.status(200).json(userData)
 }
 
 export default {

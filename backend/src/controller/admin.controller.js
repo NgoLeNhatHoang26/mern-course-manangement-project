@@ -2,7 +2,9 @@
 
 
 import {User} from '../models/user.js'
-
+import {Course} from '../models/course.js'
+import {Enrollment} from '../models/enrollment.js'
+import { Review } from '../models/review.js'
 export const getAllUsers = async (req, res) => {
     const users = await User.find().select('-password')
     res.json(users)
@@ -19,26 +21,57 @@ export const getUserById = async (req, res) => {
         res.status(400).json({ message: 'Invalid user ID' })
     }
 }
-export const updateUserRole = async (req, res) => {
+export const updateUserProfile = async (req, res) => {
     try {
-        const { role } = req.body;
-        const user = await User.findByIdAndUpdate(
+        const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            { role },
+            req.body,
             { new: true }
         ).select("-password");
-        if (!user) {
+        if (!updatedUser) {
             return res.status(404).json({
                 message: "User not found"
             });
         }
-        res.json(user);
+        res.json(updatedUser);
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
 
     }
-
+}
+export const deleteUser = async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.id)
+        if (!deletedUser) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        res.json(deletedUser);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
 }
 
+export const getDashboard = async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments()
+        const totalCourses = await Course.countDocuments()
+        const totalEnrollments = await Enrollment.countDocuments()
+        const totalReviews = await Review.countDocuments()
+        res.json({
+            totalUsers,
+            totalCourses,
+            totalEnrollments,
+            totalReviews
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}

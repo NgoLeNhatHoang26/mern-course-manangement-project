@@ -1,9 +1,11 @@
 import { Router } from "express";
 import enrollmentRoute from "./enrollment.route.js";
 import { getUserProfile, updateUserProfile } from "../controller/user.controller.js";
+import authMiddleware from "../middleware/auth.middleware.js";
+
 const router = Router();
 
-router.get('/', getUserProfile)
-router.get('/enrollments', enrollmentRoute)
-router.patch('/', updateUserProfile)
+router.get('/', authMiddleware, getUserProfile);
+router.get('/enrollments', authMiddleware, enrollmentRoute);
+router.patch('/', authMiddleware, updateUserProfile);
 export default router;

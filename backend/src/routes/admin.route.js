@@ -1,18 +1,38 @@
 import { Router } from 'express'
-import {  getAllUsers, getUserById,updateUserRole,createCourse,deleteCourse,} from '../controller/admin.controller.js'
+import {  getAllUsers, getUserById,updateUserProfile, deleteUser, getDashboard} from '../controller/admin.controller.js'
+import authMiddleware from '../middleware/auth.middleware.js'
+import roleMiddleware from '../middleware/role.middleware.js'
 
 const router = Router()
 
 
 // USER
-router.get('/users', getAllUsers)
-router.get('/users/:id', getUserById)
-router.put('/users/:id/role', updateUserRole)
+router.get(
+    '/users', 
+    authMiddleware, 
+    roleMiddleware('admin'), 
+    getAllUsers)
 
-// COURSE
-router.post('/courses', createCourse)
-router.delete('/courses/:id', deleteCourse)
+router.get(
+    '/users/:id',
+    authMiddleware,
+    roleMiddleware('admin'),
+    getUserById)
 
+router.patch('/users/:id',
+    authMiddleware,
+    roleMiddleware('admin'),
+    updateUserProfile)
 
+router.delete('/users/:id',
+    authMiddleware,
+    roleMiddleware('admin'),
+    deleteUser)
+
+router.get(
+    '/dashboard',
+    authMiddleware,
+    roleMiddleware('admin'),
+    getDashboard)
 
 export default router

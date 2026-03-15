@@ -8,7 +8,7 @@ import MyProfilePage from './pages/MyProfilePage.jsx'
 import SettingPage from './pages/SettingPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import SigninPage from './pages/SigninPage.jsx'
-import MainLayout from './component/layout/MainLayout.jsx';
+import MainLayout from './components/layout/MainLayout.jsx';
 import './App.css'
 function App() {
 

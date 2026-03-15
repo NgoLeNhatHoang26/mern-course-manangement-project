@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { CourseService } from "../service/courseService";
-import {CourseList} from "../component/courses/CourseList"
-import { Typography } from "@mui/material";
+import {CourseList} from "../components/courses/CourseList"
+import {Box, Typography } from "@mui/material";
 function HomePage() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);

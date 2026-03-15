@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
 const courseSchema = new mongoose.Schema({
-    courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-    },
     title: {
         type: String,
         required: true,
@@ -15,15 +11,15 @@ const courseSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-
+        required: false,
     },
     level: {
         type: String,
+        enum: ["beginner", "intermediate", "advanced"],
         required: true,
     },
     instructor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        type: String,
         required: true,
     },
     studentCount: {

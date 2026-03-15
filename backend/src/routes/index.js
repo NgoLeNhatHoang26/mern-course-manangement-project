@@ -5,7 +5,7 @@ import lessonRoute from './lesson.route.js';
 import enrollmentRoute from './enrollment.route.js';
 import reviewRoute from './review.route.js';
 import moduleRoute from './lessonModule.route.js';
-
+import authRoute from './auth.route.js';
 export default function router(app) {
 
     app.use('/courses', courseRoute)
@@ -15,5 +15,5 @@ export default function router(app) {
     app.use('/admin', adminRoute)
     app.use('/enrollments', enrollmentRoute)
     app.use('/reviews', reviewRoute)
-
+    app.use('/auth', authRoute)
 }

@@ -1,6 +1,6 @@
 
 import { CourseService } from "../service/courseService";
-import {CourseList} from "../component/courses/CourseList"
+import CourseList from "../components/courses/CourseList"
 const CoursePage = () => {
 
 

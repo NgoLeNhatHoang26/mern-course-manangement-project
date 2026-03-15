@@ -3,7 +3,7 @@ import { User } from "../models/user.js";
 export const getUserProfile = async (req, res) => {
     try {
         const user = await User
-            .findById(req.user.id)
+            .findById(req.user._id)
             .select("-password");
 
         if (!user) {
@@ -21,7 +21,7 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(
-            req.user.id,
+            req.user._id,
             req.body,
             {
                 new: true,

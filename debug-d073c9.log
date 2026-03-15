@@ -1,0 +1,1 @@
+{"location":"auth.middleware.js:verify","message":"jwt verify error","data":{"errorName":"JsonWebTokenError","errorMessage":"jwt malformed"},"timestamp":1773564357984,"sessionId":"d073c9"}
