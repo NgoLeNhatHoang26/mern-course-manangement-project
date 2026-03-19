@@ -17,13 +17,13 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/courses" element={<CoursePage />} />
+          <Route path="/courses/:id" element={<CoursePage />} />
           <Route path="/lessons/:id" element={<LessonPage />} />
           <Route path="/my-courses" element={<MyCoursesPage />} />
           <Route path="/my-profile" element={<MyProfilePage />} />
           <Route path="/settings" element={<SettingPage />} />
         </Route>
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/register" element={<SignupPage />} />
         <Route path="/signin" element={<SigninPage />} />
       </Routes>
     </Router>

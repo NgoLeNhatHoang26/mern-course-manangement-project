@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 const courseSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -15,7 +14,7 @@ const courseSchema = new mongoose.Schema({
     },
     level: {
         type: String,
-        enum: ["beginner", "intermediate", "advanced"],
+        enum: ["Cơ bản", "Trung bình", "Nâng cao"],
         required: true,
     },
     instructor: {
@@ -33,8 +32,11 @@ const courseSchema = new mongoose.Schema({
     ratingCount: {
         type: Number,
         default: 0,
+    },
+    thumbnail: {
+        type: String,
+        default: "/images/default_thumbnail.png"
     }
-
 }, { timestamps: true });
 
 export const Course = mongoose.model("Course", courseSchema);

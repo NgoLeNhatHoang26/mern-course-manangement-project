@@ -5,8 +5,12 @@ export const LessonService = {
         const response = await axiosClient.get(`/lessons/course/${courseId}`);
         return response.data;
     },
-    getLessonById: async (courseId,lessonId) => {
-        const response = await axiosClient.get(`/lessons/${courseId}/${lessonId}`);
+    getAllLessonByModule: async (moduleId) => {
+        const response = await axiosClient.get(`/modules/${moduleId}/lessons`);
+        return response.data
+    },
+    getLessonById: async (lessonId) => {
+        const response = await axiosClient.get(`/lessons/${lessonId}`);
         return response.data
     }
 }

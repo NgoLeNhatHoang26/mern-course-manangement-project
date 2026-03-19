@@ -43,6 +43,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
+      console.log(req.body)
     const { email, password } = req.body || {}
     if(!email || !password) {
         return res.status(400).json({
@@ -59,7 +60,7 @@ const login = async (req, res) => {
     const isPasswordValid= await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
       return res.status(401).json({
-        message: 'Invalid email or password'
+        message: 'Invalid password'
       })
     }
     const secret = process.env.JWT_SECRET
@@ -88,15 +89,21 @@ const login = async (req, res) => {
       }
     })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+      console.log("FULL ERROR:", error);
+      console.log("RESPONSE:", error.response);
+      console.log("DATA:", error.response?.data);
   }
 }
 
 const getMe = async (req, res) => {
-    const { password, ...userData } = req.user._doc
-    res.status(200).json(userData)
-}
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    const user = await User.findById(req.user._id).select("-password");
+
+    res.status(200).json(user);
+};
 export default {
   register,
   login,

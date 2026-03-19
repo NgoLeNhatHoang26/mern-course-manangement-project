@@ -8,12 +8,12 @@ import moduleRoute from './lessonModule.route.js';
 import authRoute from './auth.route.js';
 export default function router(app) {
 
-    app.use('/courses', courseRoute)
-    app.use('/users', userRoute)
-    app.use('/lessons', lessonRoute)
-    app.use('/modules', moduleRoute)
-    app.use('/admin', adminRoute)
-    app.use('/enrollments', enrollmentRoute)
-    app.use('/reviews', reviewRoute)
-    app.use('/auth', authRoute)
+    app.use('/api/courses', courseRoute)
+    app.use('/api/users', userRoute)
+    app.use('/api/lessons', lessonRoute)
+    app.use('/api/modules', moduleRoute)
+    app.use('/api/admin', adminRoute)
+    app.use('/api/enrollments', enrollmentRoute)
+    app.use('/api/reviews', reviewRoute)
+    app.use('/api/auth', authRoute)
 }

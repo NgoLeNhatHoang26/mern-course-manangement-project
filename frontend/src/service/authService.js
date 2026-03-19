@@ -1,7 +1,18 @@
-import axiosClient from "./axiosClient";
+import axiosClient from "./api";
 
-export const login = (data) =>
-  axiosClient.post("/auth/login", data);
+export const authService = {
+    login : async ({email, password}) =>{
+        const response = await axiosClient.post("/auth/login", {email, password});
+        return response.data;
+    },
 
-export const register = (data) =>
-  axiosClient.post("/auth/register", data);
+    register : async ({userName, email, password}) =>{
+        const response = await axiosClient.post("/auth/register", {userName, email, password});
+        return response.data;
+    },
+    getMe : async (data) => {
+        const response = await axiosClient.get("/auth/me")
+        return response.data;
+    }
+
+}

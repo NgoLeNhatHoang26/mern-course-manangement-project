@@ -10,17 +10,23 @@ import Chip from "@mui/material/Chip";
 import Rating from "@mui/material/Rating";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-
+import { useNavigate } from "react-router-dom";
 export default function CourseCard({ course }) {
   const {
+    _id,
     title,
     instructor,
     level,
-    rating,
-    students,
+    ratingAverage,
+    studentCount,
     thumbnail,
   } = course;
-
+  const navigate = useNavigate();
+  const handlClick = (e) => {
+    if (!_id)
+      return;
+    navigate(`/courses/${_id}`)
+  }
   return (
     <Card
       sx={{
@@ -32,7 +38,10 @@ export default function CourseCard({ course }) {
         flexDirection: "column",
       }}
     >
-      <CardActionArea sx={{ alignItems: "stretch" }}>
+      <CardActionArea 
+        sx={{ alignItems: "stretch" }}
+        onClick={handlClick}
+      >
         <CardMedia
           component="img"
           height="160"
@@ -62,13 +71,13 @@ export default function CourseCard({ course }) {
           <Stack direction="row" spacing={1} alignItems="center">
             <Rating
               name="course-rating"
-              value={rating}
+              value={ratingAverage}
               precision={0.5}
               readOnly
               size="small"
             />
             <Typography variant="body2" color="text.secondary">
-              {rating.toFixed(1)} ({students.toLocaleString()} students)
+              {ratingAverage?.toFixed(1) || "0.0"} ({studentCount?.toLocaleString() || 0} studentCount)
             </Typography>
           </Stack>
         </CardContent>
