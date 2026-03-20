@@ -3,7 +3,7 @@ import { getAllReviews, createReview, updateReview, deleteReview } from '../cont
 const router = Router();
 
 router.get('/', getAllReviews)
-router.put('/', createReview)
+router.post('/', createReview)
 router.patch('/', updateReview)
 router.delete('/', deleteReview)
 

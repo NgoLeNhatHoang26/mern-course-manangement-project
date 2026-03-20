@@ -23,11 +23,28 @@ export const getCourseById = async (req, res, next) => {
 
 export const createCourse = async (req, res, next) => {
     try {
-        const newCourse = new Course(req.body);
+        const { title, description, level, instructor } = req.body;
+        const thumbnail = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+        const newCourse = new Course({
+            title,
+            description,
+            level,
+            instructor,
+            ...(thumbnail && { thumbnail }),
+        });
+
         const savedCourse = await newCourse.save();
         res.status(201).json(savedCourse);
+
     } catch (error) {
-        res.status(500).json({error: error.message})
+        if (error.name === "ValidationError") {
+            return res.status(400).json({
+                message: "Dữ liệu không hợp lệ",
+                errors: Object.values(error.errors).map(e => e.message),
+            });
+        }
+        next(error);
     }
 };
 

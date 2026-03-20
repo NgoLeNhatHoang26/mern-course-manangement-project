@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -58,7 +59,8 @@ export default function SignIn() {
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [open, setOpen] = React.useState(false);
-
+    const [alertOpen, setAlertOpen] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -115,6 +117,13 @@ export default function SignIn() {
 
         } catch (error) {
             console.error(error)
+            setAlertMessage('Email hoặc mật khẩu không đúng')
+            setAlertOpen(true);
+
+            event.currentTarget.reset();
+
+            setPasswordError(true);
+            setPasswordErrorMessage('Wrong password.');
         }
     };
 
@@ -133,6 +142,12 @@ export default function SignIn() {
                     >
                         Sign in
                     </Typography>
+
+                    {alertOpen && (
+                        <Alert severity="error" onClose={() => setAlertOpen(false)}>
+                            {alertMessage}
+                        </Alert>
+                    )}
 
                     <Box
                         component="form"

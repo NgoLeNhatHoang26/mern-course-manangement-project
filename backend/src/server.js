@@ -11,6 +11,7 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 app.use(cors({
     origin: 'http://localhost:5173', // Cho phép React gọi
     credentials: true,

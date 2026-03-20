@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { CourseService } from "../service/courseService";
 import CourseList from "../components/courses/CourseList"
 import {Box, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import Button  from "@mui/material/Button";
+import FormDialog from "../components/courses/CreateCourseDialog.jsx";
 function HomePage() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,11 +28,20 @@ function HomePage() {
     if (loading) return <p>Loading...</p>;
 
     return (
-        
-        <Box>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+            }}
+        >
             <Typography variant="h4">Danh sách khóa học</Typography>
+
+            <FormDialog name={"Tạo khóa học"} />
             <CourseList courses={courses} />
+
         </Box>
+
     );
 }
 

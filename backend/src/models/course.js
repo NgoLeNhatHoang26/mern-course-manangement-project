@@ -8,10 +8,6 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    image: {
-        type: String,
-        required: false,
-    },
     level: {
         type: String,
         enum: ["Cơ bản", "Trung bình", "Nâng cao"],

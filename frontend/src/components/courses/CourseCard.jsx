@@ -11,6 +11,8 @@ import Rating from "@mui/material/Rating";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
+import {getImageUrl} from "../../utils/ImageURL.js";
+
 export default function CourseCard({ course }) {
   const {
     _id,
@@ -45,7 +47,7 @@ export default function CourseCard({ course }) {
         <CardMedia
           component="img"
           height="160"
-          image={thumbnail}
+          image={getImageUrl(thumbnail)}
           alt={title}
         />
         <CardContent sx={{ flexGrow: 1 }}>

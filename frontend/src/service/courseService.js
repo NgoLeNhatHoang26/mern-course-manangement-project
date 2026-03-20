@@ -6,7 +6,11 @@ export const CourseService = {
         return response.data;
     },
     getCourseById: async (id) => {
-        const response = await axiosClient.get(`/course/${id}`);
+        const response = await axiosClient.get(`/courses/${id}`);
         return response.data
+    },
+    createCourse: async (course) => {
+        const response = await axiosClient.post(`/courses`, course);
+        return response.data;
     }
 }

@@ -112,7 +112,7 @@ export default function SignUp() {
             const res = await authService.register(payload);
             console.log(res);
 
-            login(res.user);
+            navigate('/')
 
         } catch (error) {
             console.error(error)

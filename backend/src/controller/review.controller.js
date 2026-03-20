@@ -2,12 +2,13 @@ import { Review } from "../models/review.js";
 
 export const getAllReviews = async (req, res) => {
     try {
-        const {courseId} = req.params.courseId;
+        const courseId = req.params.courseId;
         const reviews = await Review
-            .findById({courseId})
+            .find({courseId : courseId })
             .sort({ createdAt: -1 });
-        if (!reviews) {
-            res.json({message: "No reviews found"});
+
+        if (!reviews.length) {
+            return res.status(200).json([]);
         }
         res.status(200).json(reviews);
     } catch (error) {

@@ -25,23 +25,25 @@ export const useCourseDetail = (courseId) => {
                     LessonModuleService.getAllModulesByCourse(courseId),
                     ReviewService.getAllReviewsByCourse(courseId),
                 ]);
-                const modules = moduleRes.data || [];
+
+
+                const modules = moduleRes || [];
 
                 const modulesWithLessons = await Promise.all(
                     modules.map(async (module) => {
-                        const lessonRes = await LessonService.getAllLessonByModule(module.id)
+                        const lessons = await LessonService.getAllLessonByModule(module.id);
                         return {
                             ...module,
-                            lessons: lessonRes.data || [],
-                        }
+                            lessons: lessons || [],
+                        };
                     })
-                )
+                );
 
                 setCourse({
-                    ...courseRes.data,
+                    ...courseRes,
                     modules: modulesWithLessons,
-                    reviews: reviewRes.data,
-                })
+                    reviews: reviewRes,
+                });
 
             } catch(err) {
                 console.error(err)
@@ -56,6 +58,6 @@ export const useCourseDetail = (courseId) => {
             isMounted = false;
         }
     }, [courseId])
-
+    console.log(course);
     return {course, loading}
 }

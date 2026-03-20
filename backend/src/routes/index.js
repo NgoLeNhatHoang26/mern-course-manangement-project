@@ -14,6 +14,5 @@ export default function router(app) {
     app.use('/api/modules', moduleRoute)
     app.use('/api/admin', adminRoute)
     app.use('/api/enrollments', enrollmentRoute)
-    app.use('/api/reviews', reviewRoute)
     app.use('/api/auth', authRoute)
 }
