@@ -1,40 +1,28 @@
 import { useState } from "react";
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
-import CreateLessonModuleForm from "./CreateLessonModuleForm.jsx";
 
-export default function CreateLessonModuleDialog({ courseId }) {
+export default function FormDialog({ title, buttonLabel = "Thêm mới", children }) {
     const [open, setOpen] = useState(false);
 
     return (
         <>
-            <Button
-                variant="outlined"
-                startIcon={<Add />}
-                onClick={() => setOpen(true)}
-                size="small"
-            >
-                Thêm chương
+            <Button variant="outlined" startIcon={<Add />} onClick={() => setOpen(true)} size="small">
+                {buttonLabel}
             </Button>
 
             <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    Tạo chương học mới
+                    {title}
                     <IconButton onClick={() => setOpen(false)} size="small">
                         <Close fontSize="small" />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent>
-                    <CreateLessonModuleForm
-                        courseId={courseId}
-                        onSuccess={() => setOpen(false)}
-                    />
+                    {typeof children === "function"
+                        ? children({ onClose: () => setOpen(false) }) // ← truyền onClose vào form
+                        : children
+                    }
                 </DialogContent>
             </Dialog>
         </>

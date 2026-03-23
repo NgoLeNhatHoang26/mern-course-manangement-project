@@ -10,11 +10,12 @@ import {
     Typography,
 } from "@mui/material";
 import { ExpandMore, PlayCircleOutline, MenuBook } from "@mui/icons-material";
-
-export default function LessonModule({ Module }) {
+import CreateLessonDialog from "../lessons/CreateLessonDialog.jsx";
+import {useNavigate} from "react-router-dom";
+export default function LessonModule({ Module, onSuccess  }) {
     const [expanded, setExpanded] = useState(false);
     const lessons = Module?.lessons ?? [];
-
+    const navigate = useNavigate();
     return (
         <Accordion
             expanded={expanded}
@@ -106,7 +107,7 @@ export default function LessonModule({ Module }) {
 
             <AccordionDetails sx={{ px: 0, py: 0 }}>
                 <Divider sx={{ borderColor: "#e0e7ff" }} />
-
+                <CreateLessonDialog courseId={Module.courseId} moduleId={Module._id} onSuccess={onSuccess} />
                 {lessons.length === 0 ? (
                     <Typography
                         variant="body2"
@@ -130,6 +131,7 @@ export default function LessonModule({ Module }) {
                                     "&:hover": { bgcolor: "#f8fafc" },
                                     transition: "background 0.15s",
                                 }}
+                                onClick={() => navigate(`/courses/${Module.courseId}/lessons/${lesson._id}`)}
                             >
                                 <PlayCircleOutline sx={{ fontSize: 18, color: "#6366f1", flexShrink: 0 }} />
                                 <Typography variant="body2" sx={{ color: "#334155", flex: 1 }}>

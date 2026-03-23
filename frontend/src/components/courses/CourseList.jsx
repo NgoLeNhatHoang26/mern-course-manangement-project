@@ -10,7 +10,9 @@ export default function CourseList({ courses }) {
       <Grid container spacing={3}>
         {data.map((course) => (
           <Grid item xs={12} sm={6} md={4} key={course._id}>
-            <CourseCard course={course} />
+              <Box sx={{ height: "100%" }}>
+                  <CourseCard course={course} />
+              </Box>
           </Grid>
         ))}
       </Grid>

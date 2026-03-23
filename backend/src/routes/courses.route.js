@@ -3,6 +3,7 @@ import {getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse, 
 import reviewRoute from './review.route.js'
 import moduleRoute from './lessonModule.route.js'
 import {upload}from '../middleware/upload.js'
+import enrollmentRoute from "./enrollment.route.js";
 const router = Router();
 
 router.get('/', getAllCourses)
@@ -12,7 +13,7 @@ router.post("/", upload.single("thumbnail"), createCourse);
 router.patch('/:courseId', updateCourse)
 router.delete('/:courseId', deleteCourse)
 
-router.post('/:courseId/enroll', enrollCourse)
+router.post('/:courseId/enrollments', enrollmentRoute)
 
 router.use('/:courseId/modules', moduleRoute)
 router.use('/:courseId/reviews', reviewRoute)

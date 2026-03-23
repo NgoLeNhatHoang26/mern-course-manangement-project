@@ -5,6 +5,7 @@ export const getAllReviews = async (req, res) => {
         const courseId = req.params.courseId;
         const reviews = await Review
             .find({courseId : courseId })
+            .populate("userId", "userName")
             .sort({ createdAt: -1 });
 
         if (!reviews.length) {
@@ -18,8 +19,11 @@ export const getAllReviews = async (req, res) => {
 
 export const createReview = async (req, res) => {
     try {
+        console.log("params:", req.params);
+        console.log("body:", req.body);
+        console.log("user:", req.user);
         const { courseId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user._id;
         const newReview = new Review({
             ...req.body,
             userId,
@@ -28,6 +32,9 @@ export const createReview = async (req, res) => {
         const savedReview = await newReview.save();
         res.status(201).json(savedReview);
     } catch (error) {
+        if (error.code === 11000) {
+            return res.status(409).json({ message: "Bạn đã đánh giá khoá học này rồi" });
+        }
         res.status(500).json({
             message: error.message
         });

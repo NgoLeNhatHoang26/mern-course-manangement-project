@@ -2,8 +2,8 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Review from './ReviewCourse';
 
-export default function ReviewList({courseReviews}) {
-    const reviews = courseReviews || []
+export default function ReviewList({Reviews}) {
+    const reviews = Reviews || []
   return (
     <Box sx={{ width: '100%' }}>
       <Stack spacing={2}>

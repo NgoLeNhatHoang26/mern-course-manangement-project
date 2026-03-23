@@ -8,5 +8,9 @@ export const LessonModuleService = {
     getModuleById: async (courseId,moduleId) => {
         const response = await axiosClient.get(`/modules/${moduleId}`);
         return response.data
+    },
+    createModule: async (courseId, module) => {
+        const response = await axiosClient.post(`/courses/${courseId}/modules`, module);
+        return response.data;
     }
 }

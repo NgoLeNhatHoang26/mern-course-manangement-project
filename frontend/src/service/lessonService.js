@@ -12,5 +12,9 @@ export const LessonService = {
     getLessonById: async (lessonId) => {
         const response = await axiosClient.get(`/lessons/${lessonId}`);
         return response.data
+    },
+    createLesson: async (moduleId, lesson) => {
+        const response = await axiosClient.post(`/modules/${moduleId}/lessons`, lesson);
+        return response.data;
     }
 }

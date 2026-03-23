@@ -1,13 +1,8 @@
 import { useState } from "react";
-import {
-    Box,
-    Button,
-    MenuItem,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material";
+import {Box, Button, MenuItem, TextField, Typography } from "@mui/material";
 import {CourseService} from "../../service/courseService.js";
+import BaseForm from "../common/BaseForm.jsx";
+
 const LEVELS = ["Cơ bản", "Trung bình", "Nâng cao"];
 
 const INITIAL_FORM = {
@@ -55,16 +50,10 @@ export default function CreateCourseForm({onSuccess}) {
     };
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ maxWidth: 480, mx: "auto", mt: 4, p: 3 }}
+        <BaseForm
+        onSubmit={handleSubmit}
+        submitLabel="Tạo khóa học mới"
         >
-            <Typography variant="h6" fontWeight={700} mb={3}>
-                Tạo khoá học mới
-            </Typography>
-
-            <Stack spacing={2.5}>
                 <TextField
                     label="Tên khoá học"
                     name="title"
@@ -133,11 +122,6 @@ export default function CreateCourseForm({onSuccess}) {
                         />
                     )}
                 </Box>
-
-                <Button type="submit" variant="contained" size="large" fullWidth>
-                    Tạo khoá học
-                </Button>
-            </Stack>
-        </Box>
+        </BaseForm>
     );
 }

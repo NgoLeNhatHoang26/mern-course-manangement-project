@@ -5,10 +5,10 @@ import { useState } from 'react';
 const CoursePage = ({courseId}) => {
     const {id} = useParams()
 
-    const {course} = useCourseDetail(id)
+    const {course, refetch} = useCourseDetail(id)
     return (
         <div>
-            <CourseLayout course={course} />
+            <CourseLayout course={course} refetch = {refetch} />
         </div>
     )
 }

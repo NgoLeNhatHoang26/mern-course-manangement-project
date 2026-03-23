@@ -16,9 +16,11 @@ import {
     PlayLesson,
 } from "@mui/icons-material";
 import ReviewList from "../reviews/ReviewList";
-import LessonModule from "../lessons/LessonModule";
+import LessonModule from "../LessonModules/LessonModule.jsx";
 import {getImageUrl} from "../../utils/ImageURL.js";
-import CreateLessonModuleDialog from "../lessons/CreateLesssonModuleDialog.jsx";
+import CreateLessonModuleDialog from "../LessonModules/CreateLesssonModuleDialog.jsx";
+import CreateReviewDialog from "../reviews/CreateReviewDialog.jsx";
+import EnrollButton from "./EnrollButton";
 const LEVEL_COLOR = {
     "Cơ bản":    { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
     "Trung bình": { bg: "#fff8e1", color: "#f57f17", border: "#ffe082" },
@@ -90,11 +92,11 @@ function ModuleProgressBar({ modules = [] }) {
     );
 }
 
-export default function CourseLayout({ course, lessonModules, reviews }) {
+export default function CourseLayout({course, refetch}) {
     if (!course) return null;
 
-    const resolvedLessonModules = lessonModules ?? course?.modules ?? [];
-    const resolvedReviews = reviews ?? course?.reviews ?? [];
+    const resolvedLessonModules = course?.modules ?? [];
+    const resolvedReviews = course?.reviews ?? [];
     const levelStyle = LEVEL_COLOR[course.level] ?? LEVEL_COLOR["Cơ bản"];
 
     return (
@@ -182,6 +184,10 @@ export default function CourseLayout({ course, lessonModules, reviews }) {
                         </Stack>
 
                         <StarRating value={course.ratingAverage} count={course.ratingCount} />
+                        <EnrollButton
+                            courseId={course._id}
+                            modules={resolvedLessonModules}
+                        />
                     </Stack>
                 </Box>
             </Box>
@@ -224,10 +230,7 @@ export default function CourseLayout({ course, lessonModules, reviews }) {
                                     Nội dung khoá học
                                 </Typography>
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#1e293b" }}>
-                                        Nội dung khoá học
-                                    </Typography>
-                                    <CreateLessonModuleDialog courseId={course._id} />
+                                    <CreateLessonModuleDialog courseId={course._id} onSuccess={refetch}/>
                                 </Stack>
 
 
@@ -239,7 +242,7 @@ export default function CourseLayout({ course, lessonModules, reviews }) {
 
                             <Stack spacing={1}>
                                 {resolvedLessonModules.map((module) => (
-                                    <LessonModule Module={module} key={module.id ?? module._id} />
+                                    <LessonModule Module={module} key={module.id ?? module._id} onSuccess={refetch} />
                                 ))}
                             </Stack>
                         </Stack>
@@ -259,10 +262,11 @@ export default function CourseLayout({ course, lessonModules, reviews }) {
                             <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#1e293b" }}>
                                 Đánh giá
                             </Typography>
+                            <CreateReviewDialog courseId={course._id} onSuccess={refetch} />
                             <StarRating value={course.ratingAverage} count={course.ratingCount} />
                         </Stack>
                         <Divider sx={{ mb: 2 }} />
-                        <ReviewList reviews={resolvedReviews} />
+                        <ReviewList Reviews={resolvedReviews} />
                     </Paper>
 
                 </Stack>

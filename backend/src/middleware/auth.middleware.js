@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
     // Header sẽ có dạng:
     // Authorization: Bearer <token>
 
-    const authHeader = req.headers.authorization
+    const authHeader = req.headers.authorization;
     // TODO 2
     // Kiểm tra header có tồn tại không
     // Nếu không có → return 401 Unauthorized
@@ -36,6 +36,7 @@ const authMiddleware = async (req, res, next) => {
         decoded = jwt.verify(token, secret)
 
     } catch (error) {
+        console.log("verify error:", error.message);
         const reason = error.name === 'TokenExpiredError' ? 'Token expired' : 'Token invalid or malformed'
         return res.status(401).json(
             { message: `Unauthorized: ${reason}` }

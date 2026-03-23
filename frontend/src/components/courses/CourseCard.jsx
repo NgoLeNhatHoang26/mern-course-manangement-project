@@ -44,12 +44,21 @@ export default function CourseCard({ course }) {
         sx={{ alignItems: "stretch" }}
         onClick={handlClick}
       >
-        <CardMedia
-          component="img"
-          height="160"
-          image={getImageUrl(thumbnail)}
-          alt={title}
-        />
+          <Box sx={{ position: "relative", paddingTop: "56.25%", overflow: "hidden" }}> {/* 16:9 */}
+              <Box
+                  component="img"
+                  src={getImageUrl(thumbnail)}
+                  alt={title}
+                  sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover", // ← cắt ảnh giữ tỉ lệ, không stretch
+                  }}
+              />
+          </Box>
         <CardContent sx={{ flexGrow: 1 }}>
           <Chip
             label={level}

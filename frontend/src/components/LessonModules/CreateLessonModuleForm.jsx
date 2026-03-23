@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Stack, TextField } from "@mui/material";
+import {LessonModuleService} from "../../service/lessonModuleService.js";
+import BaseForm from "../common/BaseForm.jsx";
 
 const INITIAL_FORM = { title: "", description: "", order: "" };
 
@@ -15,13 +17,12 @@ export default function CreateLessonModuleForm({ courseId, onSuccess }) {
         e.preventDefault();
         try {
             const payload = {
-                courseId,
                 title: form.title,
                 description: form.description,
-                order: Number(form.order),
             };
-            // TODO: thay bằng LessonModuleService.createModule(payload)
-            console.log("Submit:", payload);
+
+            const res = await LessonModuleService.createModule(courseId, payload)
+            console.log(res)
             onSuccess?.();
         } catch (error) {
             console.error(error);
@@ -29,8 +30,9 @@ export default function CreateLessonModuleForm({ courseId, onSuccess }) {
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2.5} sx={{ pt: 1 }}>
+        <BaseForm
+        onSubmit={handleSubmit}
+        submitLabel="Tạo chương">
                 <TextField
                     label="Tên chương"
                     name="title"
@@ -49,20 +51,6 @@ export default function CreateLessonModuleForm({ courseId, onSuccess }) {
                     multiline
                     rows={3}
                 />
-                <TextField
-                    label="Thứ tự"
-                    name="order"
-                    value={form.order}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    type="number"
-                    inputProps={{ min: 1 }}
-                />
-                <Button type="submit" variant="contained" size="large" fullWidth>
-                    Tạo chương
-                </Button>
-            </Stack>
-        </Box>
+        </BaseForm>
     );
 }

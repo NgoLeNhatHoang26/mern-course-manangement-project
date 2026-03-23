@@ -14,7 +14,8 @@ export const AuthProvider = ({ children }) => {
         const res = await authService.getMe(); // gọi API /auth/me
         setUser(res.data);
       } catch (err) {
-        setUser(null);
+          localStorage.removeItem("token");
+          setUser(null);
       } finally {
         setLoading(false);
       }
