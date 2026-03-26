@@ -1,74 +1,76 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { User } from '../models/user.js'
+import mongoose from "mongoose";
 
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    // TODO 1
     // Lấy Authorization header từ request
-    // Header sẽ có dạng:
-    // Authorization: Bearer <token>
+    // Header sẽ có dạng: Authorization: Bearer <token>
 
     const authHeader = req.headers.authorization;
-    // TODO 2
+
     // Kiểm tra header có tồn tại không
     // Nếu không có → return 401 Unauthorized
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json(
+        res.status(401).json(
             {message: "Unauthorized: No token provided"}
         )
+        return
     }
 
-    // TODO 3
     // Tách token ra khỏi chuỗi "Bearer token"
 
     const token = authHeader.split(" ")[1]
 
-    // TODO 4
     // Verify token bằng jwt.verify()
     // Nếu token invalid → return 401
-
-    let decoded
+    const secret = process.env.JWT_SECRET
+    if (!secret) {
+        res.status(500).json({ message: 'JWT_SECRET not configured' })
+        return
+    }
+    let decoded: JwtPayload
 
     try {
-        const secret = process.env.JWT_SECRET
-        if (!secret) throw new Error('JWT_SECRET not configured')
-        decoded = jwt.verify(token, secret)
+        decoded = jwt.verify(token, secret) as JwtPayload
 
     } catch (error) {
-        console.log("verify error:", error.message);
-        const reason = error.name === 'TokenExpiredError' ? 'Token expired' : 'Token invalid or malformed'
-        return res.status(401).json(
+        const reason = (error as any).name === 'TokenExpiredError' ? 'Token expired' : 'Token invalid or malformed'
+        res.status(401).json(
             { message: `Unauthorized: ${reason}` }
         )
+        return
     }
-    // TODO 5
     // Decode payload từ token
     // Payload thường chứa:
     // userId
     // role
 
 
-    // TODO 6
     // Tìm user trong database bằng userId
     // User.findById()
 
     const user = await User.findById(decoded.sub)
 
 
-    // TODO 7
     // Nếu user không tồn tại → return 401
     if (!user) {
-        return res.status(401).json(
+        res.status(401).json(
             {message: "Unauthorized: User not found"}
+
         )
+        return
     }
-    // TODO 8
     // Attach user vào request
     // req.user = user
 
-    req.user = user
+    req.user = {
+        _id: user._id as mongoose.Types.ObjectId,
+        id: user.id,
+        role: user.role,
+    }
 
     // TODO 9
     // gọi next() để đi tới controller

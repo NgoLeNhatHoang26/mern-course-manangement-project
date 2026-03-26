@@ -1,30 +1,31 @@
-import { Course } from "../models/course.ts";
-import { Enrollment } from "../models/enrollment.ts";
-
-export const getAllCourses = async (req, res, next) => {
+import {Request, Response, NextFunction} from 'express';
+import { Course } from "../models/course.js";
+import { LessonModule } from '../models/lessonModule.js'
+import { Lesson } from '../models/lesson.js'
+export const getAllCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const courses = await Course.find();
         res.status(200).json(courses)
     } catch (error) {
-        res.status(500).json({error: error.message})
+        next(error)
     }
 }
-export const getCourseById = async (req, res, next) => {
+export const getCourseById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const course = await Course.findById(req.params.courseId);
         if (!course) {
-            return res.status(404).json({ message: "Course not found" });
+            res.status(404).json({ message: "Course not found" });
         }
         res.json(course);
     } catch (error) {
-        res.status(500).json({error: error.message})
+        next(error)
     }
 }
 
-export const createCourse = async (req, res, next) => {
+export const createCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { title, description, level, instructor } = req.body;
-        const thumbnail = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const { title, description, level, instructor } = req.body
+        const thumbnail = (req as any).file ? `/uploads/${(req as any).file.filename}` : undefined
 
         const newCourse = new Course({
             title,
@@ -32,94 +33,61 @@ export const createCourse = async (req, res, next) => {
             level,
             instructor,
             ...(thumbnail && { thumbnail }),
-        });
+        })
 
-        const savedCourse = await newCourse.save();
-        res.status(201).json(savedCourse);
-
+        const savedCourse = await newCourse.save()
+        res.status(201).json(savedCourse)
     } catch (error) {
-        if (error.name === "ValidationError") {
-            return res.status(400).json({
-                message: "Dữ liệu không hợp lệ",
-                errors: Object.values(error.errors).map(e => e.message),
-            });
+        if ((error as any).name === 'ValidationError') {
+            res.status(400).json({
+                message: 'Dữ liệu không hợp lệ',
+                errors: Object.values((error as any).errors).map((e: any) => e.message),
+            })
+            return
         }
-        next(error);
+        next(error)
     }
-};
+}
 
-export const updateCourse = async (req, res) => {
+export const updateCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { courseId } = req.params;
-
-        const updatedCourse = await Course.findByIdAndUpdate(
-            courseId,
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        console.log('req.body:', req.body)
+        const {courseId} = req.params
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, req.body, {
+            new: true,
+            runValidators: true,
+        })
         if (!updatedCourse) {
-            return res.status(404).json({
-                message: "Course not found"
-            });
+            res.status(404).json({message: 'Course not found'})
+            return
         }
-        res.json(updatedCourse);
+        res.json(updatedCourse)
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error)
     }
 }
-
-export const deleteCourse = async (req, res) => {
+export const deleteCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { courseId } = req.params;
-        const deletedCourse = await Course.findByIdAndDelete(courseId);
+        const { courseId } = req.params
+
+        const deletedCourse = await Course.findByIdAndDelete(courseId)
         if (!deletedCourse) {
-            return res.status(404).json({
-                message: "Course not found"
-            });
+            res.status(404).json({ message: 'Course not found' })
+            return
         }
-        res.json({
-            message: "Course deleted successfully"
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
 
-export const enrollCourse = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { courseId } = req.params;
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({
-                message: "Course not found"
-            });
-        }
-        const existingEnrollment = await Enrollment.findOne({
-            userId,
-            courseId
-        });
-        if (existingEnrollment) {
-            return res.status(400).json({
-                message: "Already enrolled"
-            });
-        }
-        const enrollment = new Enrollment({
-            userId,
-            courseId
-        });
-        const savedEnrollment = await enrollment.save();
-        res.status(201).json(savedEnrollment);
+        // Lấy tất cả modules của course
+        const modules = await LessonModule.find({ courseId })
+        const moduleIds = modules.map((m) => m._id)
+
+        // Xóa tất cả lessons thuộc các modules đó
+        await Lesson.deleteMany({ moduleId: { $in: moduleIds } })
+
+        // Xóa tất cả modules
+        await LessonModule.deleteMany({ courseId })
+
+        res.json({ message: 'Course deleted successfully' })
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error)
     }
 }

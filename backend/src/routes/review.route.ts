@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getAllReviews, createReview, updateReview, deleteReview } from '../controller/review.controller.ts';
-import authMiddleware from "../middleware/auth.middleware.ts";
+import { getAllReviews, createReview, updateReview, deleteReview } from '../controller/review.controller.js';
+import authMiddleware from "../middleware/auth.middleware.js";
 const router = Router({ mergeParams: true });
 
 router.get('/', getAllReviews)

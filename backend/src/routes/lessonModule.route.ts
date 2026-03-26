@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {getLessonModulesByCourse, createLessonModule, updateLessonModule, deleteLessonModule} from "../controller/lessonModule.controller.ts";
+import {getLessonModulesByCourse, createLessonModule, updateLessonModule, deleteLessonModule} from "../controller/lessonModule.controller.js";
 import lessonRoute from "./lesson.route.js";
 
 const router = Router({mergeParams: true});

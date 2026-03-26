@@ -1,22 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, {Document, Schema} from "mongoose";
 
-const lessonModuleSchema = new mongoose.Schema({
-    courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-    },
-    title: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-        required: true,
-    },
-    order: {
-        type: Number,
-        required: true,
-    }
+export interface ILessonModule extends Document {
+    courseId:    mongoose.Types.ObjectId;
+    title:       string;
+    description: string;
+    order:       number;
+}
+
+const lessonModuleSchema = new Schema({
+    courseId: { type: Schema.Types.ObjectId, ref: "Course",},
+    title: {type: String, required: true },
+    description: { type: String, required: true },
+    order: { type: Number, required: true }
 }, { timestamps: true });
 
-export const LessonModule = mongoose.model("LessonModule", lessonModuleSchema);
+export const LessonModule = mongoose.model<ILessonModule>("LessonModule", lessonModuleSchema);

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { User } from '../models/user'
+import jwt, {SignOptions} from 'jsonwebtoken'
+import { User } from '../models/user.js'
 
 const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -59,13 +59,12 @@ const login = async (req: Request, res: Response): Promise<void> => {
             res.status(500).json({ message: 'Server error: JWT_SECRET is not set in .env' })
             return
         }
-
+        const expiresIn = (process.env.JWT_EXPIRES || '7d') as SignOptions['expiresIn']
         const token = jwt.sign(
             { sub: user.id, role: user.role },
             secret,
-            { expiresIn: process.env.JWT_EXPIRES || '7d' }
+            { expiresIn }
         )
-
         res.status(200).json({
             token,
             user: {

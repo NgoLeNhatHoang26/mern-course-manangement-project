@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import {  getAllUsers, getUserById,updateUserProfile, deleteUser, getDashboard} from '../controller/admin.controller.js'
-import authMiddleware from '../middleware/auth.middleware.ts'
-import roleMiddleware from '../middleware/role.middleware.ts'
+import authMiddleware from '../middleware/auth.middleware.js'
+import roleMiddleware from '../middleware/role.middleware.js'
 
 const router = Router()
 

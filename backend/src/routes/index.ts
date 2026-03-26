@@ -3,10 +3,9 @@ import userRoute from './user.route.js';
 import adminRoute from './admin.route.js';
 import lessonRoute from './lesson.route.js';
 import enrollmentRoute from './enrollment.route.js';
-import reviewRoute from './review.route.js';
 import moduleRoute from './lessonModule.route.js';
 import authRoute from './auth.route.js';
-export default function router(app) {
+export default function router(app: any) {
 
     app.use('/api/courses', courseRoute)
     app.use('/api/users', userRoute)

@@ -4,14 +4,15 @@ dotenv.config()
 import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
-import { connectDB } from './lib/db.ts'
+import { connectDB } from './lib/db.js'
 import router from './routes/index.js'
-
+import {errorMiddleware} from "./middleware/error.middleware.js";
 const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));
+app.use(errorMiddleware)
 app.use(cors({
     origin: 'http://localhost:5173', // Cho phép React gọi
     credentials: true,

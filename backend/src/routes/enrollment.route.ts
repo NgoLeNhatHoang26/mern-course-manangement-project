@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {getMyEnrollments, enrollCourse, checkEnrollment} from "../controller/enrollment.controller.ts";
-import authMiddleware from "../middleware/auth.middleware.ts";
+import {getMyEnrollments, enrollCourse, checkEnrollment} from "../controller/enrollment.controller.js";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const router = Router();
 

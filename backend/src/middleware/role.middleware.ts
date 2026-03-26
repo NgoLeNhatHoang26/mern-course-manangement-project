@@ -1,8 +1,9 @@
-const roleMiddleware = (...allowedRoles) => {
+import {Request, Response, NextFunction} from "express";
 
-    return (req, res, next) => {
+const roleMiddleware = (...allowedRoles: string[]) => {
 
-        // TODO 1
+    return (req:Request, res: Response, next: NextFunction) => {
+
         // Kiểm tra req.user có tồn tại không
         // Nếu không có → có thể authMiddleware chưa chạy
         // return 401 Unauthorized
@@ -13,19 +14,16 @@ const roleMiddleware = (...allowedRoles) => {
             })
         }
 
-        // TODO 2
         // Lấy role của user từ req.user
         // const userRole = req.user.role
 
         const userRole = req.user.role
 
-        // TODO 3
         // Kiểm tra role của user có nằm trong allowedRoles không
         // allowedRoles là mảng các role được phép
 
         const isAllowed = allowedRoles.includes(userRole)
 
-        // TODO 4
         // Nếu role không hợp lệ → return 403 Forbidden
 
         if (!isAllowed) {
@@ -34,7 +32,6 @@ const roleMiddleware = (...allowedRoles) => {
             })
         }
 
-        // TODO 5
         // Nếu role hợp lệ → gọi next()
         next()
     }
