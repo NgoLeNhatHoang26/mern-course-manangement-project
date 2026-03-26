@@ -15,12 +15,17 @@ import {
     MenuBook,
     PlayLesson,
 } from "@mui/icons-material";
+
+import { useNavigate } from 'react-router-dom'
+import { CourseService } from '../../service/courseService'
+import CourseForm from './CourseForm.jsx'
 import ReviewList from "../reviews/ReviewList";
 import LessonModule from "../LessonModules/LessonModule.jsx";
 import {getImageUrl} from "../../utils/ImageURL.js";
 import CreateLessonModuleDialog from "../LessonModules/CreateLesssonModuleDialog.jsx";
 import CreateReviewDialog from "../reviews/CreateReviewDialog.jsx";
 import EnrollButton from "./EnrollButton";
+import EditMenu from "../common/EditMenu";
 const LEVEL_COLOR = {
     "Cơ bản":    { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
     "Trung bình": { bg: "#fff8e1", color: "#f57f17", border: "#ffe082" },
@@ -99,6 +104,7 @@ export default function CourseLayout({course, refetch}) {
     const resolvedReviews = course?.reviews ?? [];
     const levelStyle = LEVEL_COLOR[course.level] ?? LEVEL_COLOR["Cơ bản"];
 
+    const navigate = useNavigate()
     return (
         <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", pb: 6 }}>
 
@@ -190,6 +196,28 @@ export default function CourseLayout({course, refetch}) {
                         />
                     </Stack>
                 </Box>
+                <EditMenu
+                        itemName={course.title}
+                        onDelete={async () => {
+                            await CourseService.deleteCourse(course._id)
+                            navigate('/')
+                        }}
+                        renderEditForm={({ onClose }) => (
+                            <CourseForm
+                                onSubmit={async (formData) => {
+                                    await CourseService.updateCourse(course._id, formData)
+                                    onClose()
+                                    refetch?.()
+                                }}
+                                initialValues={{ title: course.title, description: course.description, level: course.level, instructor: course.instructor, thumbnail: null }}
+                                submitLabel="Cập nhật"
+                            />
+                        )}
+                        containerSx={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}
+                        buttonSx={{ bgcolor: 'rgba(0,0,0,0.4)', color: '#fff', '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' } }}
+                    />
+
+
             </Box>
 
             {/* Body */}

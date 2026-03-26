@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { EnrollmentService } from "../service/EnrollmentService.ts";
+import { useEffect, useState, useRef} from "react";
+import { EnrollmentService, IEnrollment } from "../service/EnrollmentService.ts";
 
 export const useMyEnrollments = () => {
-    const [enrollments, setEnrollments] = useState([]);
+    const [enrollments, setEnrollments] = useState<IEnrollment[]>([]);
     const [loading, setLoading] = useState(true);
-
+    let isMounted = useRef(true);
     useEffect(() => {
-        let isMounted = true;
+
         const fetch = async () => {
             try {
                 const res = await EnrollmentService.getMyEnrollments();
@@ -18,7 +18,7 @@ export const useMyEnrollments = () => {
             }
         };
         fetch();
-        return () => { isMounted = false; };
+        return () => { isMounted.current = false; };
     }, []);
 
     return { enrollments, loading };

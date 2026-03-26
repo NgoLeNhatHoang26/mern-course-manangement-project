@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 
 const axiosClient = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -15,7 +15,7 @@ axiosClient.interceptors.request.use((config) => {
 // api.js — thêm response interceptor
 axiosClient.interceptors.response.use(
     (response) => response,
-    (error) => {
+    (error: AxiosError) => {
         const isAuthMe = error.config?.url?.includes("/auth/me");
 
         if (error.response?.status === 401 && !isAuthMe) {

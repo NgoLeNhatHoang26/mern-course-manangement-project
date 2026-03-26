@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Grid, Typography, Stack } from "@mui/material";
 import { School } from "@mui/icons-material";
 import CourseCard from "../components/courses/CourseCard.jsx";
-import { useMyEnrollments } from "../hooks/useMyCourse.js";
+import { useMyEnrollments } from "../hooks/useMyCourse.ts";
 
 function EmptyState() {
     return (

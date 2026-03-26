@@ -5,7 +5,7 @@ import LessonVideo from "../components/lessons/LessonVideo.jsx";
 import LessonContent from "../components/lessons/LessonContent.jsx";
 import LessonSidebar from "../components/lessons/LessonSidebar.jsx";
 import LessonNavFooter from "../components/lessons/LessonNavFooter.jsx";
-import { useLessonDetail } from "../hooks/useLessonDetail.js";
+import { useLessonDetail } from "../hooks/useLessonDetail.ts";
 
 export default function LessonPage() {
     const { courseId, lessonId } = useParams();

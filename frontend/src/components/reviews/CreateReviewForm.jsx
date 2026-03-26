@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Rating, Stack, TextField, Typography } from "@mui/material";
 import { Star } from "@mui/icons-material";
-import { ReviewService } from "../../service/reviewService.js";
+import { ReviewService } from "../../service/reviewService.ts";
 import BaseForm from "../common/BaseForm.jsx";
 
 const INITIAL_FORM = { rating: 0, comment: "" };

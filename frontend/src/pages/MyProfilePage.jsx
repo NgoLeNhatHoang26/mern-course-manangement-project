@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import { Email, CalendarToday, School, MenuBook } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useMyEnrollments } from "../hooks/useMyCourse.js";
+import { useMyEnrollments } from "../hooks/useMyCourse.ts";
 import { getImageUrl } from "../utils/ImageURL.js";
 
 function StatCard({ icon, label, value }) {

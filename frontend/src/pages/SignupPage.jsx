@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../theme/CustomIcon.jsx';
-import {authService} from "../service/authService.js";
+import {authService} from "../service/authService.ts";
 import { useNavigate } from 'react-router-dom';
 import {useAuth} from '../context/AuthContext.jsx';
 const Card = styled(MuiCard)(({ theme }) => ({

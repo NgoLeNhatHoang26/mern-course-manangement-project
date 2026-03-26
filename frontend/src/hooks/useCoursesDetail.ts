@@ -1,15 +1,26 @@
-import { useEffect, useState } from "react";
-import { CourseService } from "../service/courseService.js";
-import { LessonModuleService } from "../service/lessonModuleService.js";
-import { LessonService} from "../service/lessonService.ts";
-import { ReviewService } from "../service/reviewService.ts";
-export const useCourseDetail = (courseId) => {
+import {useEffect, useRef, useState} from "react";
+import { CourseService, ICourse } from "../service/courseService.js";
+import { LessonModuleService, ILessonModule } from "../service/lessonModuleService.js";
+import { LessonService, ILesson} from "../service/lessonService.ts";
+import { ReviewService,IReview} from "../service/reviewService.ts";
 
-    const [course, setCourse] = useState(null);
+interface ILessonModuleWithLessons extends ILessonModule {
+    lessons: ILesson[]
+}
+
+interface ICourseDetail extends ICourse {
+    modules: ILessonModuleWithLessons[]
+    reviews: IReview[]
+}
+
+
+export const useCourseDetail = (courseId: string) => {
+
+    const [course, setCourse] = useState<ICourseDetail | null>(null);
 
     const [loading, setLoading] = useState(true);
 
-    let isMounted = true;
+    let isMounted = useRef(true);
 
     const fetchCourse = async () => {
         try {
@@ -21,44 +32,41 @@ export const useCourseDetail = (courseId) => {
 
 
             const modules = moduleRes || [];
-            console.log(modules);
-            const modulesWithLessons = await Promise.all(
-                modules.map(async (module) => {
-                    const lessons = await LessonService.getAllLessonByModule(module._id);
+            const modulesWithLessons: ILessonModuleWithLessons[] = await Promise.all(
+                modules.map(async (module: ILessonModule): Promise<ILessonModuleWithLessons> => {
+                    const lessons = await LessonService.getLessonsByModule(module._id);
                     return {
                         ...module,
                         lessons: lessons || [],
                     };
                 })
             );
+            if ( isMounted.current ) {
+                setCourse({
+                    ...courseRes,
+                    modules: modulesWithLessons,
+                    reviews: reviewRes,
+                });
+            }
 
-            setCourse({
-                ...courseRes,
-                modules: modulesWithLessons,
-                reviews: reviewRes,
-            });
 
         } catch(err) {
             console.error(err)
         } finally {
-            if (isMounted) setLoading(false);
+            if (isMounted.current) setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (!courseId) return;
-
-        // Dùng để kiểm tra component này còn sống không
-        // Nếu chuyển component khi fetchCourse còn đang chạy
-        // -> Màn hình vẫn hiện Loading và thực hiện Fetch component mới
-        setLoading(true);
-
-        fetchCourse();
+        if (!courseId) return
+        isMounted.current = true
+        setLoading(true)
+        fetchCourse()
 
         return () => {
-            isMounted = false;
+            isMounted.current = false
         }
     }, [courseId])
-    console.log(course);
+
     return {course, loading, refetch: fetchCourse};
 }

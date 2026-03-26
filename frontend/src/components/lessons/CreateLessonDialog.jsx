@@ -1,13 +1,20 @@
-import CreateLessonForm from "./CreateLessonForm.jsx";
-import FormDialog from "../common/FormDialog.jsx";
-export default function CreateLessonDialog({ courseId, moduleId, onSuccess }) {
+import FormDialog from '../common/FormDialog.jsx'
+import LessonForm from './LessonForm.jsx'
+import { LessonService } from '../../service/lessonService.ts'
+
+export default function CreateLessonDialog({ moduleId, onSuccess }) {
     return (
-        <>
-            <FormDialog>
-                {({onClose}) => (
-                    <CreateLessonForm courseId={courseId} moduleId={moduleId} onSuccess={() => {onClose() ; onSuccess()}} />
-                )}
-            </FormDialog>
-        </>
-    );
+        <FormDialog title="Tạo bài học mới" buttonLabel="Thêm bài học">
+            {({ onClose }) => (
+                <LessonForm
+                    onSubmit={async (formData) => {
+                        await LessonService.createLesson(moduleId, formData)
+                        onClose()
+                        onSuccess?.()
+                    }}
+                    submitLabel="Tạo bài học"
+                />
+            )}
+        </FormDialog>
+    )
 }

@@ -1,50 +1,58 @@
-import { useEffect, useState } from "react";
-import { LessonService } from "../service/lessonService.ts";
-import { LessonModuleService } from "../service/lessonModuleService.ts";
+import { useEffect, useRef, useState } from 'react'
+import { LessonService, ILesson } from '../service/lessonService'
+import { LessonModuleService, ILessonModule } from '../service/lessonModuleService'
 
-export const useLessonDetail = (courseId, lessonId) => {
-    const [lesson, setLesson] = useState(null);
-    const [modules, setModules] = useState([]);
-    const [loading, setLoading] = useState(true);
+interface ILessonModuleWithLessons extends ILessonModule {
+    lessons: ILesson[]
+}
+
+export const useLessonDetail = (courseId: string, lessonId: string) => {
+    const [lesson, setLesson] = useState<ILesson | null>(null)
+    const [modules, setModules] = useState<ILessonModuleWithLessons[]>([])
+    const [loading, setLoading] = useState(true)
+    const isMounted = useRef(true)
 
     useEffect(() => {
-        if (!lessonId || !courseId) return;
-        let isMounted = true;
+        if (!lessonId || !courseId) return
+        isMounted.current = true
+        setLoading(true)
 
-        const fetch = async () => {
-            setLoading(true);
+        const fetchData = async () => {
             try {
                 const [lessonRes, moduleRes] = await Promise.all([
                     LessonService.getLessonById(lessonId),
                     LessonModuleService.getAllModulesByCourse(courseId),
-                ]);
+                ])
 
-                const modulesWithLessons = await Promise.all(
-                    (moduleRes || []).map(async (mod) => {
-                        const lessons = await LessonService.getAllLessonByModule(mod._id ?? mod.id);
-                        return { ...mod, lessons: lessons || [] };
+                const modulesWithLessons: ILessonModuleWithLessons[] = await Promise.all(
+                    (moduleRes || []).map(async (mod: ILessonModule): Promise<ILessonModuleWithLessons> => {
+                        const lessons = await LessonService.getLessonsByModule(mod._id)
+                        return { ...mod, lessons: lessons || [] }
                     })
-                );
+                )
 
-                if (isMounted) {
-                    setLesson(lessonRes);
-                    setModules(modulesWithLessons);
+                if (isMounted.current) {
+                    setLesson(lessonRes)
+                    setModules(modulesWithLessons)
                 }
             } catch (err) {
-                console.error(err);
+                console.error(err)
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted.current) setLoading(false)
             }
-        };
+        }
 
-        fetch();
-        return () => { isMounted = false; };
-    }, [lessonId, courseId]);
+        fetchData()
 
-    const allLessons = modules.flatMap((mod) => mod.lessons ?? []);
-    const currentIndex = allLessons.findIndex((l) => (l._id ?? l.id) === lessonId);
-    const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-    const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+        return () => {
+            isMounted.current = false
+        }
+    }, [lessonId, courseId])
 
-    return { lesson, modules, loading, prevLesson, nextLesson };
-};
+    const allLessons = modules.flatMap((mod) => mod.lessons ?? [])
+    const currentIndex = allLessons.findIndex((l) => l._id === lessonId)
+    const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null
+    const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null
+
+    return { lesson, modules, loading, prevLesson, nextLesson }
+}
