@@ -1,12 +1,16 @@
-import { Router } from "express";
-import enrollmentRoute from "./enrollment.route.js";
-import { getUserProfile, updateUserProfile, createNewAccount} from "../controller/user.controller.js";
-import authMiddleware from "../middleware/auth.middleware.js";
+import { Router } from 'express'
+import { getUserProfile, updateUserProfile, createNewAccount } from '../controller/user.controller.js'
+import enrollmentRoute from './enrollment.route.js'
+import authMiddleware from '../middleware/auth.middleware.js'
 
-const router = Router();
+const router = Router()
 
-router.get('/', authMiddleware, getUserProfile);
+// Public
 router.post('/', createNewAccount)
-router.get('/enrollments', authMiddleware, enrollmentRoute);
-router.patch('/', authMiddleware, updateUserProfile);
-export default router;
+
+// User đã đăng nhập
+router.get('/', authMiddleware, getUserProfile)
+router.patch('/', authMiddleware, updateUserProfile)
+router.use('/enrollments', authMiddleware, enrollmentRoute)
+
+export default router

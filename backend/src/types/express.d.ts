@@ -1,5 +1,4 @@
-// express.d.ts
-import mongoose from 'mongoose'
+ import mongoose from 'mongoose'
 
 export interface IUserPayload {
     _id: mongoose.Types.ObjectId
