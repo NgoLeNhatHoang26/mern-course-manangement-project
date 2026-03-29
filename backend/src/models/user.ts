@@ -7,6 +7,7 @@ export interface IUser extends Document {
     avatarUrl?: string
     role: string
     bio?: string
+    refreshToken?: string
     createdAt: Date
     updatedAt: Date
 }
@@ -19,6 +20,10 @@ const userSchema = new Schema<IUser>(
         role: { type: String},
         avatarUrl: { type: String, required: false },
         bio: { type: String, required: false },
+        refreshToken: {
+            type: String,
+            select: false,  // không trả về mặc định
+        },
     },
     { timestamps: true }
 )

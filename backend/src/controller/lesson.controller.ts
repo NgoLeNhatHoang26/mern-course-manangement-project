@@ -27,12 +27,14 @@ export const getLessonsByModule = async (req: Request, res: Response, next: Next
 export const createLesson = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { moduleId } = req.params
+        const videoUrl = req.file?.path
         const lastLesson = await Lesson.findOne({ moduleId }).sort({ order: -1 })
         const newOrder = lastLesson ? lastLesson.order + 1 : 1
         const newLesson = new Lesson({
             ...req.body,
             moduleId,
             order: newOrder,
+            ...(videoUrl && { videoUrl })
         })
         const savedLesson = await newLesson.save()
         res.status(201).json(savedLesson)

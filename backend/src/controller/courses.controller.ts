@@ -2,6 +2,9 @@ import {Request, Response, NextFunction} from 'express';
 import { Course } from "../models/course.js";
 import { LessonModule } from '../models/lessonModule.js'
 import { Lesson } from '../models/lesson.js'
+import { CreateCourseInput, UpdateCourseInput } from '../schemas/course.schema.js'
+import { deleteFile} from "../config/cloudinary.config.js";
+
 export const getAllCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const courses = await Course.find();
@@ -24,8 +27,8 @@ export const getCourseById = async (req: Request, res: Response, next: NextFunct
 
 export const createCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { title, description, level, instructor } = req.body
-        const thumbnail = (req as any).file ? `/uploads/${(req as any).file.filename}` : undefined
+        const { title, description, level, instructor } = req.body as CreateCourseInput;
+        const thumbnail = req.file?.path
 
         const newCourse = new Course({
             title,
@@ -51,9 +54,17 @@ export const createCourse = async (req: Request, res: Response, next: NextFuncti
 
 export const updateCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        console.log('req.body:', req.body)
         const {courseId} = req.params
-        const updatedCourse = await Course.findByIdAndUpdate(courseId, req.body, {
+        const body = req.body as UpdateCourseInput
+        if (req.file) {
+            const oldCourse = await Course.findById(courseId)
+            if (oldCourse?.thumbnail) {
+                await deleteFile(oldCourse.thumbnail)
+            }
+            body.thumbnail = req.file.path
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, body, {
             new: true,
             runValidators: true,
         })
@@ -76,14 +87,12 @@ export const deleteCourse = async (req: Request, res: Response, next: NextFuncti
             return
         }
 
-        // Lấy tất cả modules của course
         const modules = await LessonModule.find({ courseId })
         const moduleIds = modules.map((m) => m._id)
 
-        // Xóa tất cả lessons thuộc các modules đó
         await Lesson.deleteMany({ moduleId: { $in: moduleIds } })
 
-        // Xóa tất cả modules
+
         await LessonModule.deleteMany({ courseId })
 
         res.json({ message: 'Course deleted successfully' })
