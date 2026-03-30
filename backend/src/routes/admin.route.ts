@@ -1,5 +1,12 @@
 import { Router } from 'express'
-import {  getAllUsers, getUserById,updateUserProfile, deleteUser, getDashboard} from '../controller/admin.controller.js'
+import {
+    getAllUsers,
+    getUserById,
+    updateUserRole,
+    deleteUser,
+    getDashboard,
+    toggleUserStatus
+} from '../controller/admin.controller.js'
 import authMiddleware from '../middleware/auth.middleware.js'
 import roleMiddleware from '../middleware/role.middleware.js'
 
@@ -19,10 +26,15 @@ router.get(
     roleMiddleware('admin'),
     getUserById)
 
-router.patch('/users/:id',
+router.patch('/users/:id/role',
     authMiddleware,
     roleMiddleware('admin'),
-    updateUserProfile)
+    updateUserRole)
+
+router.patch('/users/:id/toggle-status',
+    authMiddleware,
+    roleMiddleware('admin'),
+    toggleUserStatus)
 
 router.delete('/users/:id',
     authMiddleware,

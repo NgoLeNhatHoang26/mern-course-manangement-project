@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 export interface IUser extends Document {
+    _id: string
     userName: string
     email: string
     password: string
@@ -10,6 +11,7 @@ export interface IUser extends Document {
     refreshToken?: string
     createdAt: Date
     updatedAt: Date
+    isActive: Boolean
 }
 
 const userSchema = new Schema<IUser>(
@@ -24,6 +26,7 @@ const userSchema = new Schema<IUser>(
             type: String,
             select: false,  // không trả về mặc định
         },
+        isActive: { type: Boolean, default: true },
     },
     { timestamps: true }
 )

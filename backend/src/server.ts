@@ -3,9 +3,9 @@ import 'dotenv/config';
 import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
-import { connectDB } from './src/lib/db.js'
-import router from './src/routes'
-import {errorMiddleware} from "./src/middleware/error.middleware.js";
+import { connectDB } from './lib/db.js'
+import router from './routes/index.js'
+import {errorMiddleware} from "./middleware/error.middleware.js";
 import cookieParser from 'cookie-parser'
 const app = express();
 app.use(morgan('dev'));

@@ -1,4 +1,5 @@
 import mongoose, {Document, Schema} from 'mongoose'
+import {NextFunction} from "express";
 
 export interface IEnrollment extends Document {
     userId: mongoose.Types.ObjectId;
@@ -20,5 +21,22 @@ const enrollmentSchema = new Schema<IEnrollment>({
 
 // Đảm bảo mỗi user không enroll 1 course nhiều lần
 enrollmentSchema.index({userId: 1, courseId: 1}, {unique: true} )
+
+enrollmentSchema.post('save', async function () {
+    await mongoose.model('Course').findByIdAndUpdate(
+        this.courseId,
+        { $inc: {studentCount: 1} }
+    )
+})
+
+enrollmentSchema.post('findOneAndDelete', async function (doc) {
+    if (doc){
+        await mongoose.model('Course').findByIdAndUpdate(
+            doc.courseId,
+            { $inc: {studentCount: -1} }
+        )
+    }
+
+})
 
 export const Enrollment = mongoose.model<IEnrollment>('Enrollment', enrollmentSchema);
