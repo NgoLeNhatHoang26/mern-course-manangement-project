@@ -294,7 +294,7 @@ export default function CourseLayout({course, refetch}) {
                             <StarRating value={course.ratingAverage} count={course.ratingCount} />
                         </Stack>
                         <Divider sx={{ mb: 2 }} />
-                        <ReviewList Reviews={resolvedReviews} />
+                        <ReviewList Reviews={resolvedReviews} onSuccess = {refetch} />
                     </Paper>
 
                 </Stack>

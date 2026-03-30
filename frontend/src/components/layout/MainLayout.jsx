@@ -10,7 +10,6 @@ export default function MainLayout() {
         <Box
         sx={{
             minHeight: "100vh",
-
             display: "flex",
             flexDirection: "column",
         }}
@@ -32,7 +31,8 @@ export default function MainLayout() {
                 <Box
                 sx={{
                     flex: 1,
-                    p: 3,
+                    minWidth: 0,
+                    overflow: 'auto',
                     backgroundColor: "#f5f5f5",
                 }}
                 >

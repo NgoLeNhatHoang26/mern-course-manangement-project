@@ -9,9 +9,14 @@ export default function CreateCourseDialog({ onSuccess }) {
             {({ onClose }) => (
                 <CourseForm
                     onSubmit={async (formData) => {
-                        await CourseService.createCourse(formData)
-                        onClose()
-                        onSuccess?.()
+                        try {
+                            await CourseService.createCourse(formData)
+                            onClose()
+                            onSuccess?.()
+                        } catch (error) {
+                            console.log('Status:', error.response?.status)
+                            console.log('Data:', error.response?.data)
+                        }
                     }}
                     submitLabel="Tạo khóa học"
                 />

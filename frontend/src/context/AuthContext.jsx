@@ -11,8 +11,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await authService.getMe(); // gọi API /auth/me
-        setUser(res.data);
+        const user= await authService.getMe();
+          setUser(user);
       } catch (err) {
           localStorage.removeItem("token");
           setUser(null);
@@ -47,5 +47,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// custom hook cho gọn
 export const useAuth = () => useContext(AuthContext);

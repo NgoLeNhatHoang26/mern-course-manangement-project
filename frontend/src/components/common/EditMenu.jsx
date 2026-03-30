@@ -6,18 +6,7 @@ import {
 } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 
-export default function EditMenu({
-                                      // Tên item để hiện trong confirm dialog
-                                      itemName,
-                                      // Callback xóa — do parent truyền vào
-                                      onDelete,
-                                      // Form chỉnh sửa — truyền vào dưới dạng render prop
-                                      renderEditForm,
-                                      // Style cho IconButton — course dùng nền tối, module/lesson dùng style khác
-                                      buttonSx,
-                                      // Style cho Box bọc ngoài
-                                      containerSx,
-                                  }) {
+export default function EditMenu({itemName, onDelete, renderEditForm, buttonSx, containerSx}) {
     const [anchorEl, setAnchorEl] = useState(null)
     const [openConfirm, setOpenConfirm] = useState(false)
     const [openEdit, setOpenEdit] = useState(false)

@@ -1,16 +1,19 @@
 import { Box, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const Sidebar = () => {
   const location = useLocation();
-
+  const { user } = useAuth();
   const navItems = [
-    { label: "Dashboard", to: "/" },
-    { label: "Courses", to: "/courses" },
-    { label: "Users", to: "/users" },
-  ];
+      { label: 'Homepage', to: '/' },
+      { label: 'Courses', to: '/courses' },
+      ...(user?.role === 'admin' ? [{ label: 'Users', to: '/users' }] : []),
+      ...(user?.role === 'admin' ? [{ label: 'Dashboard', to: '/dashboard' }] : []),
+  ]
 
-  return (
+
+    return (
     <Box
       sx={{
         width: 260,
@@ -18,7 +21,7 @@ const Sidebar = () => {
         borderRight: "1px solid #e0e0e0",
         minHeight: "100%",
         position: "sticky",
-        top: 64,
+        top: 0,
         alignSelf: "flex-start",
       }}
     >

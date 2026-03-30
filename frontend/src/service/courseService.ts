@@ -12,8 +12,8 @@ export interface ICourse {
 }
 
 export const CourseService = {
-    getAllCourses: async (): Promise<ICourse[]> => {
-        const response = await axiosClient.get<ICourse[]>('/courses')
+    getAllCourses: async (params?: {search?: string; level?: string}): Promise<ICourse[]> => {
+        const response = await axiosClient.get<ICourse[]>('/courses', { params: params })
         return response.data
     },
 

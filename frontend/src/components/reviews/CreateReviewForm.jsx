@@ -6,19 +6,20 @@ import BaseForm from "../common/BaseForm.jsx";
 
 const INITIAL_FORM = { rating: 0, comment: "" };
 
-export default function CreateReviewForm({ courseId, onSuccess }) {
+export default function CreateReviewForm({ courseId, onSuccess,onSubmit,initialValues = INITIAL_FORM }) {
     const [form, setForm] = useState(INITIAL_FORM);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const payload = {
-                rating: form.rating,
-                comment: form.comment,
-            };
-            const res = await ReviewService.createReview(courseId, payload);
-            console.log(res);
-            onSuccess?.();
+            if (onSubmit) {
+                // Dùng khi update
+                await onSubmit({ rating: form.rating, comment: form.comment })
+            } else {
+                // Dùng khi create
+                await ReviewService.createReview(courseId, { rating: form.rating, comment: form.comment })
+                onSuccess?.()
+            }
         } catch (error) {
             console.error(error);
         }

@@ -34,6 +34,6 @@ export const authService = {
 
     getMe: async () => {
         const response = await axiosClient.get('/auth/me')
-        return response
+        return response.data
     },
 }
