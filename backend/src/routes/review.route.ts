@@ -5,7 +5,7 @@ const router = Router({ mergeParams: true });
 
 router.get('/', getAllReviews)
 router.post("/", authMiddleware, createReview);
-router.patch('/',authMiddleware, updateReview)
-router.delete('/',authMiddleware, deleteReview)
+router.patch('/:reviewId',authMiddleware, updateReview)
+router.delete('/:reviewId',authMiddleware, deleteReview)
 
 export default router;
