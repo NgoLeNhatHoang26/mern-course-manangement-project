@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { LessonService, ILesson } from '../services/lessonService'
-import { LessonModuleService, ILessonModule } from '../../courses/services/lessonModuleService'
+import { LessonService } from '../services/lessonService'
+import { ILesson } from '../types/lesson.interface'
+import { LessonModuleService} from '../../courses/services/lessonModuleService'
+import { ILessonModule } from '@/features/courses'
 
 interface ILessonModuleWithLessons extends ILessonModule {
     lessons: ILesson[]

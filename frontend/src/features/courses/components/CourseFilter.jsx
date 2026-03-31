@@ -12,7 +12,6 @@ export default function CourseFilter({ onFilterChange }) {
     const [search, setSearch] = useState('')
     const [level, setLevel] = useState('')
 
-    // Debounce 500ms — không gọi API liên tục khi đang gõ
     useDebounce(() => {
         onFilterChange({ search, level })
     }, 500, [search, level])

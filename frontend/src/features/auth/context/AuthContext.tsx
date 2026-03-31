@@ -18,7 +18,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 const AuthStateContext = createContext<AuthState | undefined>(undefined);
 const AuthDispatchContext = createContext<React.Dispatch<AuthAction> | undefined>(undefined);
 
-export const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {

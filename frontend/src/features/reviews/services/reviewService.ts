@@ -1,12 +1,6 @@
-import axiosClient from "./api.js";
+import axiosClient from "../../../lib/api";
+import { IReview } from "../types/review.interface";
 
-export interface IReview {
-    _id: string
-    userId:     string;
-    courseId:   string;
-    rating:     number;
-    comment:    string;
-}
 export const ReviewService = {
     getAllReviewsByCourse: async (courseId: string) => {
         const response = await axiosClient.get(`/courses/${courseId}/reviews`);

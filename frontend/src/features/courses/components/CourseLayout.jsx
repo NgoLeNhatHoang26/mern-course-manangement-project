@@ -26,6 +26,7 @@ import CreateLessonModuleDialog from "./CreateLesssonModuleDialog.jsx";
 import CreateReviewDialog from "../../../components/reviews/CreateReviewDialog.jsx";
 import EnrollButton from "./EnrollButton";
 import EditMenu from "../../../components/common/EditMenu.jsx";
+import { useCallback } from "react";
 const LEVEL_COLOR = {
     "Cơ bản":    { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
     "Trung bình": { bg: "#fff8e1", color: "#f57f17", border: "#ffe082" },
@@ -97,14 +98,20 @@ function ModuleProgressBar({ modules = [] }) {
     );
 }
 
+
+
 export default function CourseLayout({course, refetch}) {
-    if (!course) return null;
 
     const resolvedLessonModules = course?.modules ?? [];
     const resolvedReviews = course?.reviews ?? [];
     const levelStyle = LEVEL_COLOR[course.level] ?? LEVEL_COLOR["Cơ bản"];
-
+    const handleSuccess = useCallback(() => {
+        refetch();
+    }, [refetch]);
     const navigate = useNavigate()
+    
+    if (!course) return null;
+
     return (
         <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", pb: 6 }}>
 
@@ -270,7 +277,7 @@ export default function CourseLayout({course, refetch}) {
 
                             <Stack spacing={1}>
                                 {resolvedLessonModules.map((module) => (
-                                    <LessonModule Module={module} key={module.id ?? module._id} onSuccess={refetch} />
+                                    <LessonModule Module={module} key={module.id ?? module._id} onSuccess={handleSuccess} />
                                 ))}
                             </Stack>
                         </Stack>
@@ -294,7 +301,7 @@ export default function CourseLayout({course, refetch}) {
                             <StarRating value={course.ratingAverage} count={course.ratingCount} />
                         </Stack>
                         <Divider sx={{ mb: 2 }} />
-                        <ReviewList Reviews={resolvedReviews} onSuccess = {refetch} />
+                        <ReviewList Reviews={resolvedReviews} onSuccess = {handleSuccess} />
                     </Paper>
 
                 </Stack>

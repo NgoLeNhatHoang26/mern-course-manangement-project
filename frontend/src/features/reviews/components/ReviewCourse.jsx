@@ -3,8 +3,9 @@ import EditMenu from '../../../components/common/EditMenu.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { ReviewService } from '../../service/reviewService.ts'
 import CreateReviewForm from './CreateReviewForm.jsx'
+import { memo } from 'react';
 
-export default function Review({ review, onSuccess}) {
+const Review = memo(({ review, onSuccess }) => {
     const { user } = useAuth()
     const isOwner = user?._id === review.userId?._id || user?.id === review.userId?._id
     const isAdmin = user?.role === 'admin'
@@ -74,4 +75,6 @@ export default function Review({ review, onSuccess}) {
             <Divider sx={{ mt: 2 }} />
         </Box>
     );
-}
+})
+
+export default Review;

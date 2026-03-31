@@ -1,15 +1,5 @@
-import axiosClient from './api'
-
-export interface ICourse {
-    _id: string
-    title: string
-    description: string
-    level: string
-    instructor: string
-    thumbnail?: string
-    createdAt: string
-    updatedAt: string
-}
+import axiosClient from '../../../lib/api'
+import { ICourse } from '../types/course.interfaces'
 
 export const CourseService = {
     getAllCourses: async (params?: {search?: string; level?: string}): Promise<ICourse[]> => {

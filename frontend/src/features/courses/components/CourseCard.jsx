@@ -1,6 +1,5 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
@@ -12,8 +11,9 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 import {getImageUrl} from "../../../utils/ImageURL.js";
+import { memo } from "react";
 
-export default function CourseCard({ course }) {
+const CourseCard = memo((course) => {
   const {
     _id,
     title,
@@ -24,7 +24,7 @@ export default function CourseCard({ course }) {
     thumbnail,
   } = course;
   const navigate = useNavigate();
-  const handlClick = (e) => {
+  const handlClick = () => {
     if (!_id)
       return;
     navigate(`/courses/${_id}`)
@@ -101,4 +101,6 @@ export default function CourseCard({ course }) {
       </CardActions>
     </Card>
   );
-}
+})
+
+export default CourseCard;

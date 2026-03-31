@@ -1,11 +1,6 @@
 import axiosClient from "../../../lib/api";
-export interface ILesson {
-    _id: string
-    moduleId: string
-    title: string
-    videoUrl?: string
-    order: number
-}
+import { ILesson } from "../types/lesson.interface";
+
 export const LessonService = {
     getLessonsByModule: async (moduleId: string) => {
         const res = await axiosClient.get(`/modules/${moduleId}/lessons`);

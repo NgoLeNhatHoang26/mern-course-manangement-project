@@ -15,3 +15,5 @@ const LessonLayout = ({ children, sidebar }) => {
       </Box>
     );
   };
+
+  export default LessonLayout;

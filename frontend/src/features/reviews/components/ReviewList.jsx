@@ -1,15 +1,15 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Review from './ReviewCourse';
-
-export default function ReviewList({Reviews, onSuccess}) {
+import { memo } from 'react';
+const ReviewList = memo(({ Reviews, onSuccess }) => {
     const reviews = Reviews || []
   return (
     <Box sx={{ width: '100%' }}>
       <Stack spacing={2}>
         {
-          reviews.map((review, index) => (
-            <Box key={index}>
+          reviews.map((review) => (
+            <Box key={review._id || review.id}>
               <Review review={review} onSuccess={onSuccess}/>
             </Box>
           ))
@@ -17,4 +17,5 @@ export default function ReviewList({Reviews, onSuccess}) {
       </Stack>
     </Box>
   );
-}
+})
+export default ReviewList;

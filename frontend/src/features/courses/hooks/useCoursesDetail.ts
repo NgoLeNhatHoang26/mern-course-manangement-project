@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from "react";
-import { CourseService, ICourse } from "../services/courseService.ts";
-import { LessonModuleService, ILessonModule } from "../services/lessonModuleService.ts";
-import { LessonService, ILesson} from "../../../lib/lessonService.ts";
-import { ReviewService,IReview} from "../../../lib/reviewService.ts";
-
+import { CourseService } from "../services/courseService.ts";
+import { LessonModuleService} from "../services/lessonModuleService.ts";
+import { LessonService, ILesson} from "@features/lessons";
+import { ReviewService, IReview} from "@features/reviews";
+import { ICourse, ILessonModule } from "../types/course.interfaces.ts";
 interface ILessonModuleWithLessons extends ILessonModule {
     lessons: ILesson[]
 }

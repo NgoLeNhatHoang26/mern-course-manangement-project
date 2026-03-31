@@ -1,12 +1,5 @@
-import axiosClient from "./api.js";
-
-export interface ILessonModule{
-    _id: string
-    courseId:    string;
-    title:       string;
-    description: string;
-    order:       number;
-}
+import axiosClient from "../../../lib/api";
+import { ILessonModule } from "../types/course.interfaces";
 
 export const LessonModuleService = {
     getAllModulesByCourse: async (courseId: string) => {

@@ -1,6 +1,6 @@
 import {Container, Box, Typography} from '@mui/material'
-
-export default function LessonCard({courseOrder, lesson_name, duration}) {
+import { memo } from 'react';
+const LessonCard = memo(({courseOrder, lesson_name, duration}) => {
     return (
         <Container
             sx={{
@@ -29,4 +29,6 @@ export default function LessonCard({courseOrder, lesson_name, duration}) {
             </Box>
         </Container>
     );
-}
+})
+
+export default LessonCard;

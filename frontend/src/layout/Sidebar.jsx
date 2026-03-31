@@ -1,6 +1,6 @@
 import { Box, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Sidebar = () => {
   const location = useLocation();

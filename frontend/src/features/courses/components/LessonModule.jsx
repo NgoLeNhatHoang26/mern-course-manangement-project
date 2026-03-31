@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo} from "react";
 import {
     Accordion,
     AccordionDetails,
@@ -12,7 +12,9 @@ import {
 import { ExpandMore, PlayCircleOutline, MenuBook } from "@mui/icons-material";
 import CreateLessonDialog from "../../../components/lessons/CreateLessonDialog.jsx";
 import {useNavigate} from "react-router-dom";
-export default function LessonModule({ Module, onSuccess  }) {
+
+
+const LessonModule = memo(({ Module, onSuccess  }) => {
     const [expanded, setExpanded] = useState(false);
     const lessons = Module?.lessons ?? [];
     const navigate = useNavigate();
@@ -149,4 +151,6 @@ export default function LessonModule({ Module, onSuccess  }) {
             </AccordionDetails>
         </Accordion>
     );
-}
+})
+
+export default LessonModule;
