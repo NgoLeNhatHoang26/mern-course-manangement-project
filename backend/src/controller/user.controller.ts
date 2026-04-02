@@ -1,85 +1,59 @@
-import {NextFunction, Request, Response} from 'express'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { User } from '../models/user.js'
+import { NextFunction, Request, Response } from 'express';
+import { getUserProfile, createNewAccount, updateUserProfile } from '../services/user.service.js';
 
-export const getUserProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getUserProfileController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const user = await User.findById(req.user?._id).select('-password')
-        if (!user) {
-            res.status(404).json({ message: 'User not found' })
-            return
-        }
-        res.json(user)
+        const userId = req.user?._id?.toString();
+        const user = await getUserProfile(userId);
+        res.json(user);
     } catch (error) {
-        next(error)
+        if ((error as Error).message === 'Unauthorized') {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
+        if ((error as Error).message === 'User not found') {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        next(error);
     }
-}
+};
 
-export const createNewAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createNewAccountController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { email, password, userName } = req.body
-
-        if (!email || !password || !userName) {
-            res.status(400).json({ message: 'Missing required fields' })
-            return
-        }
-
-        if (password.length < 6) {
-            res.status(400).json({ message: 'Password must be at least 6 characters' })
-            return
-        }
-
-        const existingUser = await User.findOne({ email })
-        if (existingUser) {
-            res.status(400).json({ message: 'Email already exists' })
-            return
-        }
-
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
-
-        const newUser = await User.create({
-            email,
-            password: hashedPassword,
-            userName,
-        })
-
-        const secret = process.env.JWT_SECRET
-        if (!secret) {
-            res.status(500).json({ message: 'Server error: JWT_SECRET is not set in .env' })
-            return
-        }
-
-        const token = jwt.sign({ id: newUser._id }, secret, { expiresIn: '7d' })
-
-        // _doc không có type trong Mongoose, dùng toObject() thay thế
-        const { password: _, ...userData } = newUser.toObject()
-
-        res.status(201).json({
-            message: 'User created successfully',
-            token,
-            user: userData,
-        })
+        const result = await createNewAccount(req.body);
+        res.status(201).json(result);
     } catch (error) {
-        next(error)
+        if ((error as Error).message === 'Missing required fields') {
+            res.status(400).json({ message: 'Missing required fields' });
+            return;
+        }
+        if ((error as Error).message === 'Password must be at least 6 characters') {
+            res.status(400).json({ message: 'Password must be at least 6 characters' });
+            return;
+        }
+        if ((error as Error).message === 'Email already exists') {
+            res.status(400).json({ message: 'Email already exists' });
+            return;
+        }
+        next(error);
     }
-}
+};
 
-export const updateUserProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateUserProfileController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(
-            req.user?._id,
-            req.body,
-            { new: true, runValidators: true }
-        ).select('-password')
-
-        if (!updatedUser) {
-            res.status(404).json({ message: 'User not found' })
-            return
-        }
-        res.json(updatedUser)
+        const userId = req.user?._id?.toString();
+        const updatedUser = await updateUserProfile(userId, req.body);
+        res.json(updatedUser);
     } catch (error) {
-        next(error)
+        if ((error as Error).message === 'Unauthorized') {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
+        if ((error as Error).message === 'User not found') {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        next(error);
     }
-}
+};

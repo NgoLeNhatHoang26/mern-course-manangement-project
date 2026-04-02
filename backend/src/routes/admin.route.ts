@@ -1,50 +1,49 @@
-import { Router } from 'express'
+import { Router } from 'express';
 import {
-    getAllUsers,
-    getUserById,
-    updateUserRole,
-    deleteUser,
-    getDashboard,
-    toggleUserStatus
-} from '../controller/admin.controller.js'
-import authMiddleware from '../middleware/auth.middleware.js'
-import roleMiddleware from '../middleware/role.middleware.js'
+    getAllUsersController,
+    getUserByIdController,
+    updateUserRoleController,
+    deleteUserController,
+    getDashboardController,
+    toggleUserStatusController
+} from '../controller/admin.controller.js';
+import authMiddleware from '../middleware/auth.middleware.js';
+import roleMiddleware from '../middleware/role.middleware.js';
 
-const router = Router()
-
+const router = Router();
 
 // USER
 router.get(
-    '/users', 
-    authMiddleware, 
-    roleMiddleware('admin'), 
-    getAllUsers)
+    '/users',
+    authMiddleware,
+    roleMiddleware('admin'),
+    getAllUsersController);
 
 router.get(
     '/users/:id',
     authMiddleware,
     roleMiddleware('admin'),
-    getUserById)
+    getUserByIdController);
 
 router.patch('/users/:id/role',
     authMiddleware,
     roleMiddleware('admin'),
-    updateUserRole)
+    updateUserRoleController);
 
 router.patch('/users/:id/toggle-status',
     authMiddleware,
     roleMiddleware('admin'),
-    toggleUserStatus)
+    toggleUserStatusController);
 
 router.delete('/users/:id',
     authMiddleware,
     roleMiddleware('admin'),
-    deleteUser)
+    deleteUserController);
 
 router.get(
     '/dashboard',
     authMiddleware,
     roleMiddleware('admin'),
-    getDashboard)
+    getDashboardController);
 
-export default router
+export default router;

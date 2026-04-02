@@ -9,3 +9,4 @@ export const createLessonSchema = z.object({
 
 export type CreateLessonInput = z.infer<typeof createLessonSchema>
 export const updateLessonSchema = createLessonSchema.partial()
+export type UpdateLessonInput = z.infer<typeof updateLessonSchema>
