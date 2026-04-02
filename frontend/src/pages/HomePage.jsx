@@ -1,11 +1,8 @@
-import CourseList from "../components/courses/CourseList"
+import { CourseList, CreateCourseDialog, useCourses, CourseFilter } from "@features/courses"
 import {Box, Typography } from "@mui/material";
-import CreateCourseDialog from "../components/courses/CreateCourseDialog.jsx";
-import {useCourses} from "../hooks/useCourses.js";
-import CourseFilter from '../components/courses/CourseFilter'
+import AdminOnlyComponent from "@components/AdminOnlyComponent.jsx";
 function HomePage() {
     const {courses, refetch, setFilter} = useCourses();
-
 
     return (
         <Box
@@ -13,7 +10,9 @@ function HomePage() {
         >
             <CourseFilter onFilterChange={setFilter} />
             <Typography variant="h4">Danh sách khóa học</Typography>
-            <CreateCourseDialog onSuccess={refetch} />
+            <AdminOnlyComponent>
+                <CreateCourseDialog onSuccess={refetch} />
+            </AdminOnlyComponent>
             <CourseList courses={courses} />
 
         </Box>

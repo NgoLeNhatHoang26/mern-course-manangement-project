@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TextField } from '@mui/material'
-import BaseForm from '../../../components/common/BaseForm.jsx'
+import BaseForm from '../../../components/BaseForm.jsx'
 
 const INITIAL_FORM = { title: '', description: '' }
 

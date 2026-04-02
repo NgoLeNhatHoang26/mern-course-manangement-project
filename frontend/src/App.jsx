@@ -6,12 +6,12 @@ const LessonPage = lazy(() => import('./pages/LessonPage'));
 const MyCoursesPage = lazy(() => import('./pages/MyCoursesPage'));
 const MyProfilePage = lazy(() => import('./pages/MyProfilePage'));
 const SettingPage = lazy(() => import('./pages/SettingPage'));
-const SignupPage = lazy(() => import('./pages/SignupPage'));
-const SigninPage = lazy(() => import('./pages/SigninPage'));
+const SignUpPage = lazy(() => import('./pages/SignUpPage.jsx'));
+const SignInPage = lazy(() => import('./pages/SignInPage.jsx'));
 const UsersPage = lazy(() => import('./pages/UsersPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
-import MainLayout from './components/layout/MainLayout.jsx';
+import MainLayout from './layout/MainLayout.jsx';
 import './App.css'
 
 const PageLoading = () => (
@@ -38,8 +38,8 @@ function App() {
               </Route>
 
               <Route path="/courses/:courseId/lessons/:lessonId" element={<LessonPage />} />
-              <Route path="/register" element={<SignupPage />} />
-              <Route path="/signin" element={<SigninPage />} />
+              <Route path="/register" element={<SignUpPage />} />
+              <Route path="/signin" element={<SignInPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </Suspense>

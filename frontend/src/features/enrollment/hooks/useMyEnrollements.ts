@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef} from "react";
-import { EnrollmentService, IEnrollment } from "../../../lib/EnrollmentService.ts";
+import { EnrollmentService, IEnrollment } from "@features/enrollment";
 
 export const useMyEnrollments = () => {
     const [enrollments, setEnrollments] = useState<IEnrollment[]>([]);

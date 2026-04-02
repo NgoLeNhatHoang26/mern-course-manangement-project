@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { Alert, CircularProgress } from '@mui/material'
-import { authService } from '../../service/authService'
+import { authService } from '@features/auth'
 
 export default function ForgotPassword({ open, handleClose }) {
     const [email, setEmail] = useState('')

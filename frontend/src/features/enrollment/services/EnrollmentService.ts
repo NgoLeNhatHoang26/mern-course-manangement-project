@@ -1,4 +1,4 @@
-import axiosClient from "./api";
+import axiosClient from "../../../lib/api.ts";
 
 export interface IEnrollment{
     _id: string;

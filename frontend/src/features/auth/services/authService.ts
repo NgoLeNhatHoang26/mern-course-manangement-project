@@ -15,9 +15,12 @@ interface AuthResponse {
     token: string
     user: {
         id: string
-        name: string
+        userName: string
         email: string
         role: string
+        avatarUrl?: string
+        createdAt: string
+        isActive: boolean
     }
 }
 
@@ -32,8 +35,8 @@ export const authService = {
         return response.data
     },
 
-    getMe: async () => {
-        const response = await axiosClient.get('/auth/me')
+    getMe: async (): Promise<AuthResponse['user']> => {
+        const response = await axiosClient.get<AuthResponse['user']>('/auth/me')
         return response.data
     },
     forgotPassword: async (email: string): Promise<void> => {

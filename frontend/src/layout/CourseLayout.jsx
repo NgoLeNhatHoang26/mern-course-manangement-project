@@ -17,16 +17,16 @@ import {
 } from "@mui/icons-material";
 
 import { useNavigate } from 'react-router-dom'
-import { CourseService } from '../../service/courseService'
-import CourseForm from './CourseForm.jsx'
-import ReviewList from "../../../components/reviews/ReviewList.jsx";
-import LessonModule from "./LessonModule.jsx";
-import {getImageUrl} from "../../../utils/ImageURL.js";
-import CreateLessonModuleDialog from "./CreateLesssonModuleDialog.jsx";
-import CreateReviewDialog from "../../../components/reviews/CreateReviewDialog.jsx";
-import EnrollButton from "./EnrollButton";
-import EditMenu from "../../../components/common/EditMenu.jsx";
+import { CourseService } from '@features/courses/index.js'
+import CourseForm from '@features/courses/components/CourseForm.jsx'
+import { ReviewList, CreateReviewDialog } from "@features/reviews";
+import LessonModule from "@features/courses/components/LessonModule.jsx";
+import {getImageUrl} from "../utils/ImageURL.js";
+import {CreateLessonModuleDialog} from "@features/courses";
+import EnrollButton from "@features/courses/components/EnrollButton.jsx";
+import EditMenu from "@components/EditMenu.jsx";
 import { useCallback } from "react";
+import AdminOnlyComponent from "@components/AdminOnlyComponent.jsx";
 const LEVEL_COLOR = {
     "Cơ bản":    { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
     "Trung bình": { bg: "#fff8e1", color: "#f57f17", border: "#ffe082" },
@@ -104,7 +104,7 @@ export default function CourseLayout({course, refetch}) {
 
     const resolvedLessonModules = course?.modules ?? [];
     const resolvedReviews = course?.reviews ?? [];
-    const levelStyle = LEVEL_COLOR[course.level] ?? LEVEL_COLOR["Cơ bản"];
+    const levelStyle = LEVEL_COLOR[course?.level] ?? LEVEL_COLOR["Cơ bản"];
     const handleSuccess = useCallback(() => {
         refetch();
     }, [refetch]);
@@ -265,7 +265,9 @@ export default function CourseLayout({course, refetch}) {
                                     Nội dung khoá học
                                 </Typography>
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <CreateLessonModuleDialog courseId={course._id} onSuccess={refetch}/>
+                                    <AdminOnlyComponent>
+                                        <CreateLessonModuleDialog courseId={course._id} onSuccess={refetch}/>
+                                    </AdminOnlyComponent>
                                 </Stack>
 
 

@@ -1,13 +1,13 @@
 import { Avatar, Box, Divider, Rating, Stack, Typography } from '@mui/material';
-import EditMenu from '../../../components/common/EditMenu.jsx'
-import { useAuth } from '../../../context/AuthContext.jsx'
-import { ReviewService } from '../../service/reviewService.ts'
+import EditMenu from '../../../components/EditMenu.jsx'
+import { useAuthState } from '@features/auth'
+import { ReviewService } from '@features/reviews'
 import CreateReviewForm from './CreateReviewForm.jsx'
 import { memo } from 'react';
 
 const Review = memo(({ review, onSuccess }) => {
-    const { user } = useAuth()
-    const isOwner = user?._id === review.userId?._id || user?.id === review.userId?._id
+    const { user } = useAuthState()
+    const isOwner = user?.id === review.userId?._id || user?.id === review.userId?._id
     const isAdmin = user?.role === 'admin'
     const canEdit = isOwner || isAdmin
 

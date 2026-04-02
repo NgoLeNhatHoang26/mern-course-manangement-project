@@ -1,5 +1,5 @@
-import CourseLayout from '../components/courses/CourseLayout'
-import { useCourseDetail } from '../hooks/useCoursesDetail.js';
+import CourseLayout from '../layout/CourseLayout.jsx';
+import { useCourseDetail } from '@features/courses';
 import { useParams } from 'react-router-dom';
 const CoursePage = () => {
     const {id} = useParams()

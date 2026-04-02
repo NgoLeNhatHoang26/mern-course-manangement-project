@@ -1,10 +1,10 @@
 import { Box, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useAuthState } from "@features/auth";
 
 const Sidebar = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user } = useAuthState();
   const navItems = [
       { label: 'Homepage', to: '/' },
       { label: 'Courses', to: '/courses' },

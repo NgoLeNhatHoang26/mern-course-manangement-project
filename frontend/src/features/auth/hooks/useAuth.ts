@@ -1,5 +1,5 @@
-import { useAuthDispatch } from '../context/AuthContext';
-import { authService } from '../services/authService';
+import { useAuthDispatch } from '@features/auth';
+import { authService} from '@features/auth';
 import { setAuthToken, clearAuthToken } from '../constants';
 
 interface LoginCredentials {

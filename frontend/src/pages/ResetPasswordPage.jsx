@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Box, Button, TextField, Typography, Alert, Paper } from '@mui/material'
-import { authService } from '../service/authService'
+import { authService } from '@features/auth'
 
 export default function ResetPasswordPage() {
     const [searchParams] = useSearchParams()

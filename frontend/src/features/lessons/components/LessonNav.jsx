@@ -2,7 +2,7 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-export default function LessonNavFooter({ prevLesson, nextLesson, courseId }) {
+export default function LessonNav({ prevLesson, nextLesson, courseId }) {
     const navigate = useNavigate();
 
     const go = (lesson) => {

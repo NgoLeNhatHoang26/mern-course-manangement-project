@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, CircularProgress } from "@mui/material";
 import { PlayArrow, School } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { EnrollmentService } from "../../../service/EnrollmentService.ts";
+import { EnrollmentService } from "@features/enrollment";
 
 export default function EnrollButton({ courseId, modules = [] }) {
     const navigate = useNavigate();

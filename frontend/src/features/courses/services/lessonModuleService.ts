@@ -1,5 +1,5 @@
 import axiosClient from "../../../lib/api";
-import { ILessonModule } from "../types/course.interfaces";
+import { ILessonModule } from "@features/courses";
 
 export const LessonModuleService = {
     getAllModulesByCourse: async (courseId: string) => {

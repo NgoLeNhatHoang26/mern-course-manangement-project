@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
 import { VideoFile } from '@mui/icons-material'
-import BaseForm from '../../../components/common/BaseForm.jsx'
+import BaseForm from '../../../components/BaseForm.jsx'
 
 const INITIAL_FORM = {
     title: '',

@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
     "paths": {
       "@/*": ["src/*"],
       "@features/*": ["src/features/*"],

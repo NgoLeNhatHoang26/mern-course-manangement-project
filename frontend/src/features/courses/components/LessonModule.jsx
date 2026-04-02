@@ -10,9 +10,9 @@ import {
     Typography,
 } from "@mui/material";
 import { ExpandMore, PlayCircleOutline, MenuBook } from "@mui/icons-material";
-import CreateLessonDialog from "../../../components/lessons/CreateLessonDialog.jsx";
+import CreateLessonDialog from "@features/lessons";
 import {useNavigate} from "react-router-dom";
-
+import AdminOnlyComponent from "@/components/AdminOnlyComponent";
 
 const LessonModule = memo(({ Module, onSuccess  }) => {
     const [expanded, setExpanded] = useState(false);
@@ -109,7 +109,10 @@ const LessonModule = memo(({ Module, onSuccess  }) => {
 
             <AccordionDetails sx={{ px: 0, py: 0 }}>
                 <Divider sx={{ borderColor: "#e0e7ff" }} />
-                <CreateLessonDialog courseId={Module.courseId} moduleId={Module._id} onSuccess={onSuccess} />
+                <AdminOnlyComponent>
+                    <CreateLessonDialog courseId={Module.courseId} moduleId={Module._id} onSuccess={onSuccess} />
+                </AdminOnlyComponent>
+                
                 {lessons.length === 0 ? (
                     <Typography
                         variant="body2"

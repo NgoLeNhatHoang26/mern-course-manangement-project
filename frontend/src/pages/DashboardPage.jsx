@@ -8,8 +8,8 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { useDashboard } from '../hooks/useDashboard'
-import Loading from '../components/common/Loading'
+import { useDashboard } from '@features/admin'
+import Loading from '../components/Loading'
 
 const MONTHS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12']
 

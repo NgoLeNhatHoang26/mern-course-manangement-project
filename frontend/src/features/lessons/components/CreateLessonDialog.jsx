@@ -1,6 +1,6 @@
 import FormDialog from '../../../components/FormDialog.jsx'
-import LessonForm from '../../../components/lessons/LessonForm.jsx'
-import { LessonService } from '../../service/lessonService.ts'
+import LessonForm from '../components/LessonForm.jsx'
+import { LessonService } from '@features/lessons'
 
 export default function CreateLessonDialog({ moduleId, onSuccess }) {
     return (

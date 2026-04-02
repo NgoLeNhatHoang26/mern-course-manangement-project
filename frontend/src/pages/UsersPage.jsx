@@ -4,8 +4,8 @@ import {
     Select, MenuItem, Typography, Avatar, Tooltip
 } from '@mui/material'
 import { LockOpen, Lock } from '@mui/icons-material'
-import { useUsers } from '../hooks/useUsers.js'
-import Loading from '../components/common/Loading'
+import { useUsers } from '@features/admin'
+import Loading from '../components/Loading'
 
 const ROLE_COLOR = {
     admin: 'error',

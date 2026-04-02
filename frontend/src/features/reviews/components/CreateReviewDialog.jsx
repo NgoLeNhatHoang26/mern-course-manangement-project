@@ -12,6 +12,8 @@ export default function CreateReviewDialog({ courseId, onSuccess }) {
                 variant="outlined"
                 startIcon={<RateReview />}
                 onClick={() => setOpen(true)}
+
+
                 size="small"
             >
                 Viết đánh giá

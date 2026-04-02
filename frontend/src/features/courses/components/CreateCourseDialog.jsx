@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CourseForm from "./CourseForm.jsx";
-import FormDialog from '../../../components/common/FormDialog.jsx';
-import {CourseService} from "../../service/courseService.js";
+import FormDialog from '../../../components/FormDialog.jsx';
+import {CourseService} from "@features/courses";
 
 export default function CreateCourseDialog({ onSuccess }) {
     return (

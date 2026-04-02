@@ -1,19 +1,18 @@
 import { Button, Stack, Avatar, IconButton, Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthState, useAuthActions } from "@features/auth";
 import React from "react";
 
 export default function AuthSection() {
-    const { user, isAuthenticated, loading, logout } = useAuth();
+    const { user, loading } = useAuthState();
+    const { logout } = useAuthActions();
     const [anchorEl, setAnchorEl] = React.useState(null);
-
     if (loading) return null;
 
     const handleOpen = (e) => setAnchorEl(e.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
-    // 👉 chưa login
-    if (!isAuthenticated) {
+    if (!user) {
         return (
             <Stack direction="row" spacing={1}>
                 <Button component={Link} to="/signin">Login</Button>

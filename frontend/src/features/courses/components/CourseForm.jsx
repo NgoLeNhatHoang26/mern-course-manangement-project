@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Button, MenuItem, TextField, Typography } from '@mui/material'
-import BaseForm from '../../../components/common/BaseForm.jsx'
+import BaseForm from '../../../components/BaseForm.jsx'
 
 const LEVELS = ['Cơ bản', 'Trung bình', 'Nâng cao']
 

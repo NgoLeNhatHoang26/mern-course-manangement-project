@@ -13,7 +13,9 @@ import { useNavigate } from "react-router-dom";
 import {getImageUrl} from "../../../utils/ImageURL.js";
 import { memo } from "react";
 
-const CourseCard = memo((course) => {
+const CourseCard = memo(({ course }) => {
+  
+
   const {
     _id,
     title,
@@ -29,6 +31,7 @@ const CourseCard = memo((course) => {
       return;
     navigate(`/courses/${_id}`)
   }
+  if (!course) return null;
   return (
     <Card
       sx={{

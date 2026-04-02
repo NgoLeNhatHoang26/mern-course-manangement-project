@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { authService } from '../services/authService';
+import { authService } from '@features/auth';
 import { AuthState, AuthAction } from '../types/auth.types';
 import { getAuthToken, clearAuthToken } from '../constants';
 

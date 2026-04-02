@@ -4,6 +4,9 @@ export interface ICourse {
     description: string
     level: string
     instructor: string
+    studentCount: number
+    ratingAverage: number
+    ratingCount: number
     thumbnail?: string
     createdAt: string
     updatedAt: string
