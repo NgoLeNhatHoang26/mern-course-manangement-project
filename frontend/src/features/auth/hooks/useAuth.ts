@@ -1,26 +1,37 @@
-import { useAuthDispatch} from '../context/AuthContext';
+import { useAuthDispatch } from '../context/AuthContext';
 import { authService } from '../services/authService';
+import { setAuthToken, clearAuthToken } from '../constants';
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface AuthResult {
+  success: boolean;
+  message?: string;
+}
 
 export const useAuthActions = () => {
+  const dispatch = useAuthDispatch();
 
-  const dispatch= useAuthDispatch();
-
-  const login = async (credentials: any) => {
+  const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
     dispatch({ type: 'INIT' });
     try {
       const data = await authService.login(credentials);
-      // Lưu token vào localStorage ở đây nếu server không dùng HttpOnly Cookie
-      localStorage.setItem('accessToken', data.token); 
+      setAuthToken(data.token);
       dispatch({ type: 'SET_USER', payload: data.user });
+      return { success: true };
     } catch (err: any) {
-      dispatch({ type: 'SET_ERROR', payload: err.response?.data?.message || 'Login failed' });
+      const message = err?.response?.data?.message || 'Login failed';
+      dispatch({ type: 'SET_ERROR', payload: message });
+      return { success: false, message };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
+  const logout = (): void => {
+    clearAuthToken();
     dispatch({ type: 'CLEAR_USER' });
-    window.location.href = '/signin';
   };
 
   return { login, logout };

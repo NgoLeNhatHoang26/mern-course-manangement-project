@@ -6,7 +6,7 @@ import BaseForm from "../../../components/common/BaseForm.jsx";
 
 const INITIAL_FORM = { rating: 0, comment: "" };
 
-export default function CreateReviewForm({ courseId, onSuccess,onSubmit,initialValues = INITIAL_FORM }) {
+export default function CreateReviewForm({ courseId, onSuccess,onSubmit }) {
     const [form, setForm] = useState(INITIAL_FORM);
 
     const handleSubmit = async (e) => {

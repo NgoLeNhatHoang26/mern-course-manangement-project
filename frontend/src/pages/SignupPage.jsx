@@ -14,9 +14,9 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../theme/CustomIcon.jsx';
-import {authService} from "../service/authService.ts";
 import { useNavigate } from 'react-router-dom';
-import {useAuth} from '../context/AuthContext.jsx';
+import { authService } from '../features/auth/services/authService';
+import { useAuthActions } from '../features/auth/hooks/useAuth';
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -58,8 +58,9 @@ export default function SignUp() {
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [nameError, setNameError] = React.useState(false);
     const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-    const { login} = useAuth();
     const navigate = useNavigate();
+    const { login } = useAuthActions();
+
     const validateInputs = (data) => {
         const email = data.get('email');
         const password = data.get('password');
@@ -109,13 +110,22 @@ export default function SignUp() {
             password: data.get('password'),
         }
         try {
-            const res = await authService.register(payload);
-            console.log(res);
+            await authService.register(payload);
+            // Tự động đăng nhập sau khi đăng ký thành công
+            const loginResult = await login({
+                email: payload.email,
+                password: payload.password,
+            });
 
-            navigate('/')
+            if (loginResult.success) {
+                navigate('/', { replace: true });
+                return;
+            }
 
+            // Nếu không login được, điều hướng về page đăng nhập
+            navigate('/signin', { replace: true });
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
     };
 

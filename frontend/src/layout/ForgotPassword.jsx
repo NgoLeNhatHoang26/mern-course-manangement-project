@@ -24,6 +24,7 @@ export default function ForgotPassword({ open, handleClose }) {
             setSuccess(true)
         } catch (err) {
             setError('Có lỗi xảy ra, vui lòng thử lại')
+            console.error(err)
         } finally {
             setLoading(false)
         }

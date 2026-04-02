@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
 import { authService } from '../services/authService';
 import { AuthState, AuthAction } from '../types/auth.types';
+import { getAuthToken, clearAuthToken } from '../constants';
 
 
 const initialState: AuthState = { user: null, loading: true };
@@ -22,17 +23,16 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     if (!token) {
       dispatch({ type: 'CLEAR_USER' });
       return;
     }
-    
 
     authService.getMe()
       .then(user => dispatch({ type: 'SET_USER', payload: user }))
       .catch(() => {
-        localStorage.removeItem('token'); 
+        clearAuthToken();
         dispatch({ type: 'CLEAR_USER' });
       });
   }, []);

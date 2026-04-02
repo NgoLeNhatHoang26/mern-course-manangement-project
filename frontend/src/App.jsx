@@ -24,7 +24,7 @@ function App() {
 
   return (
       <Router>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<PageLoading />}>
           <Routes>
               <Route element={<MainLayout />} >
                   <Route path="/" element={<HomePage />} />

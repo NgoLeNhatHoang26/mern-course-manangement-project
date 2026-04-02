@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAuthToken, setAuthToken, clearAuthToken } from '@features/auth/constants';
 
 let isRefreshing = false
 let failedQueue: any[] = [];
@@ -19,7 +20,7 @@ const processQueue = (error: any, token: string | null = null) => {
 
 
 axiosClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -57,7 +58,7 @@ axiosClient.interceptors.response.use(
                 const res = await axiosClient.post('/auth/refresh')
                 const newToken = res.data.accessToken
 
-                localStorage.setItem('token', newToken)
+                setAuthToken(newToken)
                 processQueue(null, newToken)
                 originalRequest.headers.Authorization = `Bearer ${newToken}`
                 return axiosClient(originalRequest)
@@ -65,7 +66,7 @@ axiosClient.interceptors.response.use(
                 // Refresh thất bại → refreshToken hết hạn hoặc không hợp lệ
                 // Bắt buộc phải login lại
                 processQueue(new Error('Refresh failed'), null)
-                localStorage.removeItem('token')
+                clearAuthToken()
                 window.location.href = '/signin'
                 return Promise.reject(error)
             } finally {

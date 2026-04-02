@@ -16,9 +16,8 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '../components/layout/ForgotPassword.jsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../theme/CustomIcon.jsx';
-import {authService} from '../service/authService.ts';
-import {useNavigate} from "react-router-dom";
-import {useAuth} from '../context/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import { useAuthActions } from '../features/auth/hooks/useAuth';
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -65,8 +64,8 @@ export default function SignIn() {
     const handleClose = () => setOpen(false);
 
     const navigate = useNavigate();
+    const { login } = useAuthActions();
 
-    const {login} = useAuth();
     const validateInputs = () => {
         const email = document.getElementById('email');
         const password = document.getElementById('password');
@@ -108,20 +107,24 @@ export default function SignIn() {
         };
         console.log(payload);
         try {
-            const res = await authService.login(payload);
-            console.log(res);
+            const result = await login({
+                email: payload.email,
+                password: payload.password,
+            });
 
-            localStorage.setItem('token', res.token);
-            login(res.user)
-            navigate('/')
+            if (result.success) {
+                navigate('/', { replace: true });
+                return;
+            }
 
-        } catch (error) {
-            console.error(error)
-            setAlertMessage('Email hoặc mật khẩu không đúng')
+            setAlertMessage(result.message || 'Email hoặc mật khẩu không đúng');
             setAlertOpen(true);
-
-            event.currentTarget.reset();
-
+            setPasswordError(true);
+            setPasswordErrorMessage(result.message || 'Wrong password.');
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Đã có lỗi xảy ra, vui lòng thử lại.');
+            setAlertOpen(true);
             setPasswordError(true);
             setPasswordErrorMessage('Wrong password.');
         }
