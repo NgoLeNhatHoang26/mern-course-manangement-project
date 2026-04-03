@@ -12,7 +12,7 @@ export const getAllUsersController = async (req: Request, res: Response, next: N
 
 export const getUserByIdController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const user = await getUserById(req.params.id);
+        const user = await getUserById(req.params.id as string);
         res.json(user);
     } catch (error) {
         if ((error as Error).message === 'User not found') {
@@ -27,7 +27,7 @@ export const updateUserRoleController = async (req: Request, res: Response, next
     try {
         const { id } = req.params;
         const { role } = req.body;
-        const updatedUser = await updateUserRole(id, role);
+        const updatedUser = await updateUserRole(id as string, role);
         res.json(updatedUser);
     } catch (error) {
         if ((error as Error).message === 'Role không hợp lệ') {
@@ -46,7 +46,7 @@ export const toggleUserStatusController = async (req: Request, res: Response, ne
     try {
         const { id } = req.params;
         const currentUserId = req.user?.id || '';
-        const updatedUser = await toggleUserStatus(id, currentUserId);
+        const updatedUser = await toggleUserStatus(id as string, currentUserId);
         res.json(updatedUser);
     } catch (error) {
         if ((error as Error).message === 'User not found') {
@@ -63,7 +63,7 @@ export const toggleUserStatusController = async (req: Request, res: Response, ne
 
 export const deleteUserController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const result = await deleteUser(req.params.id);
+        const result = await deleteUser(req.params.id as string);
         res.json(result);
     } catch (error) {
         if ((error as Error).message === 'User not found') {

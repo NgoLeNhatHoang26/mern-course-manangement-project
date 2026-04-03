@@ -25,12 +25,13 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     const token = authHeader.split(" ")[1]
 
     // Verify token bằng jwt.verify()
-    // Nếu token invalid → return 401
+
     const secret = process.env.JWT_SECRET
     if (!secret) {
         res.status(500).json({ message: 'JWT_SECRET not configured' })
         return
     }
+    
     let decoded: JwtPayload
 
     try {
@@ -48,10 +49,6 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     // userId
     // role
 
-
-    // Tìm user trong database bằng userId
-    // User.findById()
-
     const user = await User.findById(decoded.sub)
 
 
@@ -67,13 +64,10 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     // req.user = user
 
     req.user = {
-        _id: user._id as mongoose.Types.ObjectId,
+        _id: new mongoose.Types.ObjectId(user._id as string),
         id: user.id,
         role: user.role,
     }
-
-    // TODO 9
-    // gọi next() để đi tới controller
 
     next()
 }
