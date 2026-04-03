@@ -36,7 +36,7 @@ export const checkEnrollment = async (req: Request, res: Response, next: NextFun
     try {
         const userId = req.user?._id?.toString();
         const { courseId } = req.params;
-        const result = await checkUserEnrollment(userId, courseId);
+        const result = await checkUserEnrollment(userId, courseId as string);
         res.status(200).json(result);
     } catch (error) {
         if ((error as Error).message === 'Unauthorized') {
