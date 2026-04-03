@@ -3,15 +3,17 @@ import authController from '../controller/auth.controller.js';
 import authMiddleware from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
-
+import { authRateLimiter } from '../middleware/rateLimit.middleware.js';
 const router = express.Router();
 
 router.post('/register',
+    authRateLimiter,
     validate(registerSchema),
     authController.register
 );
 
 router.post('/login',
+    authRateLimiter,
     validate(loginSchema),
     authController.login
 );

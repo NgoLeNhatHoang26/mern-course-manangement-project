@@ -9,16 +9,18 @@ import {errorMiddleware} from "./middleware/error.middleware.js";
 import cookieParser from 'cookie-parser'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec} from "./config/swagger.js";
-
+import { globalRateLimiter } from './middleware/rateLimit.middleware.js';
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customSiteTitle: 'Course Management API Docs',
 }))
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
 app.use(cookieParser())
+app.use('/api', globalRateLimiter);
+
 
 app.use(cors({
     origin: 'http://localhost:5173', // Cho phép React gọi
