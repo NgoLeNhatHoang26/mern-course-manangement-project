@@ -10,7 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import { ExpandMore, PlayCircleOutline, MenuBook } from "@mui/icons-material";
-import CreateLessonDialog from "@features/lessons";
+import {CreateLessonDialog} from "@features/lessons";
 import {useNavigate} from "react-router-dom";
 import AdminOnlyComponent from "@/components/AdminOnlyComponent";
 

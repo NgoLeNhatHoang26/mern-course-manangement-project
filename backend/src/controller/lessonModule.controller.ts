@@ -36,7 +36,7 @@ export const createLessonModuleController = async (req: Request, res: Response, 
 
 export const updateLessonModuleController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { moduleId } = req.params;
+        const { moduleId } = req.params as { moduleId: string };
         const updatedModule = await updateLessonModule(moduleId, req.body);
         res.json(updatedModule);
     } catch (error) {
@@ -50,7 +50,7 @@ export const updateLessonModuleController = async (req: Request, res: Response, 
 
 export const deleteLessonModuleController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { moduleId } = req.params;
+        const { moduleId } = req.params as { moduleId: string };
         const result = await deleteLessonModule(moduleId);
         res.json(result);
     } catch (error) {

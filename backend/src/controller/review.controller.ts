@@ -3,7 +3,7 @@ import { getAllReviews, createReview, updateReview, deleteReview } from '../serv
 
 export const getAllReviewsController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { courseId } = req.params;
+        const { courseId } = req.params as { courseId: string };
         const reviews = await getAllReviews(courseId);
         res.status(200).json(reviews);
     } catch (error) {
@@ -13,7 +13,7 @@ export const getAllReviewsController = async (req: Request, res: Response, next:
 
 export const createReviewController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { courseId } = req.params;
+        const { courseId } = req.params as { courseId: string } ;
         const userId = req.user?._id?.toString();
         const savedReview = await createReview(courseId, userId, req.body);
         res.status(201).json(savedReview);
@@ -32,7 +32,7 @@ export const createReviewController = async (req: Request, res: Response, next: 
 
 export const updateReviewController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { reviewId } = req.params;
+        const { reviewId } = req.params as { reviewId: string };
         const userId = req.user?._id?.toString();
         const updatedReview = await updateReview(reviewId, userId, req.body);
         res.json(updatedReview);
@@ -55,7 +55,7 @@ export const updateReviewController = async (req: Request, res: Response, next: 
 
 export const deleteReviewController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { reviewId } = req.params;
+        const { reviewId } = req.params as { reviewId: string };
         const userId = req.user?._id?.toString();
         const userRole = req.user?.role;
         const result = await deleteReview(reviewId, userId, userRole);
