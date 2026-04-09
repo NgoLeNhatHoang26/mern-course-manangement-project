@@ -18,6 +18,16 @@ services:
       - mern-network
 
   # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: mern-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mern-network
 
   # Backend
   backend:
@@ -27,7 +37,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5000
-      MONGO_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DB_NAME}?authSource=admin
+      MONGO_URI: ${MONGO_URI}
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       REDIS_URL: redis://redis:6379
@@ -36,6 +46,7 @@ services:
       - "5000:5000"
     depends_on:
       - mongodb
+      - redis
     volumes:
       - ./backend/public:/app/public
     networks:
@@ -43,9 +54,11 @@ services:
 
   # Frontend
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5000/api
     container_name: mern-frontend
-    restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
