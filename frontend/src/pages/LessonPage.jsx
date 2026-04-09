@@ -1,11 +1,8 @@
-import { Box, CircularProgress, Container, Grid } from "@mui/material";
+import { Box, CircularProgress, } from "@mui/material";
 import { useParams } from "react-router-dom";
-import Header from "../components/layout/Header.jsx";
-import LessonVideo from "../components/lessons/LessonVideo.jsx";
-import LessonContent from "../components/lessons/LessonContent.jsx";
-import LessonSidebar from "../components/lessons/LessonSidebar.jsx";
-import LessonNavFooter from "../components/lessons/LessonNavFooter.jsx";
-import { useLessonDetail } from "../hooks/useLessonDetail.js";
+import Header from "../layout/Header.jsx";
+import { LessonVideo, LessonContent, LessonSideBar, LessonNavFooter } from "@features/lessons"
+import { useLessonDetail } from "@features/lessons";
 
 export default function LessonPage() {
     const { courseId, lessonId } = useParams();
@@ -61,7 +58,7 @@ export default function LessonPage() {
                             flexDirection: "column",
                         }}
                     >
-                        <LessonSidebar
+                        <LessonSideBar
                             modules={modules}
                             activeLessonId={lessonId}
                             courseId={courseId}

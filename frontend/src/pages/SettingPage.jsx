@@ -1,6 +1,6 @@
 
 
-const SettingPage = (props) => {
+const SettingPage = () => {
     return (
         <div>
         </div>

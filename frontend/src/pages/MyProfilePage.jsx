@@ -3,8 +3,8 @@ import {
     Grid, Paper, CircularProgress, LinearProgress
 } from "@mui/material";
 import { Email, CalendarToday, School, MenuBook } from "@mui/icons-material";
-import { useAuth } from "../context/AuthContext.jsx";
-import { useMyEnrollments } from "../hooks/useMyCourse.js";
+import { useAuthState } from "@features/auth";
+import { useMyEnrollments } from "@features/enrollment";
 import { getImageUrl } from "../utils/ImageURL.js";
 
 function StatCard({ icon, label, value }) {
@@ -91,7 +91,7 @@ function EnrollmentRow({ enrollment }) {
 }
 
 export default function MyProfilePage() {
-    const { user } = useAuth();
+    const { user } = useAuthState();
     const { enrollments, loading } = useMyEnrollments();
 
     if (!user) return null;

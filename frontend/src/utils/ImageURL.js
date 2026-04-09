@@ -1,5 +1,5 @@
-export const getImageUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith("http")) return path;
-    return `http://localhost:5000${path}`;
-};
+export const getImageUrl = (url) => {
+    if (!url) return '/placeholder.jpg'
+    if (url.startsWith('http')) return url
+    return `http://localhost:5000${url}`
+}
