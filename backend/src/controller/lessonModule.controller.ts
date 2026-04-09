@@ -3,7 +3,7 @@ import { getLessonModulesByCourse, getLessonModuleById, createLessonModule, upda
 
 export const getLessonModulesByCourseController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const courseId = req.params.courseId;
+        const courseId = req.params.courseId as string;
         const lessonModules = await getLessonModulesByCourse(courseId);
         res.json(lessonModules);
     } catch (error) {
@@ -13,7 +13,8 @@ export const getLessonModulesByCourseController = async (req: Request, res: Resp
 
 export const getLessonModuleByIdController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const module = await getLessonModuleById(req.params.moduleId);
+        const moduleId = req.params.moduleId as string;
+        const module = await getLessonModuleById(moduleId);
         res.json(module);
     } catch (error) {
         if ((error as Error).message === 'Lesson module not found') {
@@ -26,7 +27,7 @@ export const getLessonModuleByIdController = async (req: Request, res: Response,
 
 export const createLessonModuleController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { courseId } = req.params;
+        const { courseId } = req.params as { courseId: string };
         const savedLessonModule = await createLessonModule(courseId, req.body);
         res.status(201).json(savedLessonModule);
     } catch (error) {

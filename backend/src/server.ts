@@ -1,4 +1,10 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path'
+dotenv.config({
+    path: process.env.NODE_ENV === 'production'
+        ? undefined 
+        : path.resolve(__dirname, '../../.env')
+});
 
 import express from 'express'
 import cors from 'cors'
@@ -10,7 +16,15 @@ import cookieParser from 'cookie-parser'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec} from "./config/swagger.js";
 import { globalRateLimiter } from './middleware/rateLimit.middleware.js';
+import { connectRedis } from './lib/redis.js';
+
 const app = express();
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customSiteTitle: 'Course Management API Docs',
 }))
@@ -21,16 +35,11 @@ app.use(express.static("public"));
 app.use(cookieParser())
 app.use('/api', globalRateLimiter);
 
-
-app.use(cors({
-    origin: 'http://localhost:5173', // Cho phép React gọi
-    credentials: true,
-}));
-
 router(app)
 app.use(errorMiddleware)
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const PORT = parseInt(process.env.PORT || '5000', 10);
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Listening on port: http://localhost:${PORT}`)
     connectDB();
+    connectRedis();
 });

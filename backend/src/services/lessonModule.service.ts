@@ -1,6 +1,6 @@
 import { LessonModule } from '../models/lessonModule.js';
 import { deleteLesson } from './lessons.service.js';
-
+import { Lesson } from '../models/lesson.js';
 export const getLessonModulesByCourse = async (courseId: string) => {
     return await LessonModule.find({ courseId }).sort({ order: 1 });
 };
@@ -35,7 +35,8 @@ export const deleteLessonModule = async (moduleId: string) => {
     // Xóa tất cả lessons trong module
     const lessons = await Lesson.find({ lessonModule: moduleId });
     for (const lesson of lessons) {
-        await deleteLesson(lesson._id.toString());
+        const lessonId = lesson._id as string;
+        await deleteLesson(lessonId);
     }
 
     await module.deleteOne();
