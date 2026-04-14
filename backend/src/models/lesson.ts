@@ -22,4 +22,6 @@ const lessonSchema = new Schema({
     isPreview:  { type: Boolean, default: false },
 }, { timestamps: true });
 
+lessonSchema.index({ moduleId: 1, order: 1 });
+
 export const Lesson = mongoose.model<ILesson>("Lesson", lessonSchema);

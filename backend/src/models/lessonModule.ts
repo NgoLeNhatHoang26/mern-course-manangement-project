@@ -14,4 +14,6 @@ const lessonModuleSchema = new Schema({
     order: { type: Number, required: true }
 }, { timestamps: true });
 
+lessonModuleSchema.index({ courseId: 1, order: 1 });
+
 export const LessonModule = mongoose.model<ILessonModule>("LessonModule", lessonModuleSchema);
