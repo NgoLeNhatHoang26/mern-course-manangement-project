@@ -11,7 +11,6 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     const authHeader = req.headers.authorization;
 
     // Kiểm tra header có tồn tại không
-    // Nếu không có → return 401 Unauthorized
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json(
