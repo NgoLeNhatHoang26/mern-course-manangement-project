@@ -1,44 +1,48 @@
 import { Request, Response, NextFunction } from 'express'
+import { AppError } from '../utils/AppError.js'
 
-type AppError = {
+type AnyError = {
     name?: string;
     message?: string;
     code?: number | string;
     status?: number;
     statusCode?: number;
     errors?: Record<string, { message?: string }>;
+    isOperational?: boolean;
 };
 
-const getStatusCode = (error: AppError): number => {
+const getStatusCode = (error: AnyError): number => {
+    // 1. AppError — carries its own statusCode (most specific)
+    if (error instanceof AppError) return error.statusCode;
+
+    // 2. Mongoose / JWT well-known names
     if (error.name === 'ValidationError' || error.name === 'CastError') return 400;
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') return 401;
+
+    // 3. MongoDB duplicate key
     if (error.code === 11000) return 409;
 
-    // Cho phép service/controller tự set status nếu có
-    const explicitStatus = error.statusCode || error.status;
-    if (typeof explicitStatus === 'number') return explicitStatus;
+    // 4. Explicit statusCode/status set by caller
+    const explicit = error.statusCode ?? error.status;
+    if (typeof explicit === 'number') return explicit;
 
     return 500;
 };
 
 const getErrorCode = (statusCode: number): string => {
-    switch (statusCode) {
-        case 400:
-            return 'BAD_REQUEST';
-        case 401:
-            return 'UNAUTHORIZED';
-        case 403:
-            return 'FORBIDDEN';
-        case 404:
-            return 'NOT_FOUND';
-        case 409:
-            return 'CONFLICT';
-        default:
-            return 'INTERNAL_SERVER_ERROR';
-    }
+    const map: Record<number, string> = {
+        400: 'BAD_REQUEST',
+        401: 'UNAUTHORIZED',
+        403: 'FORBIDDEN',
+        404: 'NOT_FOUND',
+        409: 'CONFLICT',
+        422: 'UNPROCESSABLE_ENTITY',
+        429: 'TOO_MANY_REQUESTS',
+    };
+    return map[statusCode] ?? 'INTERNAL_SERVER_ERROR';
 };
 
-const getErrorMessage = (error: AppError, statusCode: number): string => {
+const getErrorMessage = (error: AnyError, statusCode: number): string => {
     if (error.name === 'ValidationError') return 'Dữ liệu không hợp lệ';
     if (error.code === 11000) return 'Dữ liệu đã tồn tại';
     if (error.name === 'JsonWebTokenError') return 'Token không hợp lệ';
@@ -48,16 +52,16 @@ const getErrorMessage = (error: AppError, statusCode: number): string => {
 };
 
 export const errorMiddleware = (
-    error: AppError,
-    req: Request,
+    error: AnyError,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction,
 ): void => {
     const statusCode = getStatusCode(error);
 
     const validationErrors =
         error.name === 'ValidationError' && error.errors
-            ? Object.values(error.errors).map((item) => item.message || 'Invalid value')
+            ? Object.values(error.errors).map((item) => item.message ?? 'Invalid value')
             : undefined;
 
     res.status(statusCode).json({
@@ -66,4 +70,4 @@ export const errorMiddleware = (
         errors: validationErrors,
         code: getErrorCode(statusCode),
     });
-}
+};

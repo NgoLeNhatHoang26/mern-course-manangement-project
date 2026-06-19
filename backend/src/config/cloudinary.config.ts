@@ -1,11 +1,13 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { env } from './env.js';
+import { logger } from './logger.js';
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
 });
-console.log("Cloudinary Config Loaded:", process.env.CLOUDINARY_CLOUD_NAME);
+logger.debug({ cloudName: env.CLOUDINARY_CLOUD_NAME }, 'Cloudinary config loaded');
 export const deleteFile = async (url: string, resourceType: 'image' | 'video' = 'image') => {
     const parts = url.split('/')
     const filename = parts[parts.length - 1].split('.')[0]

@@ -1,4 +1,5 @@
 import mongoose, {Document, Model, Schema} from "mongoose";
+import { logger } from '../config/logger.js';
 
 export interface IReview extends Document {
     userId:     mongoose.Types.ObjectId;
@@ -43,7 +44,7 @@ reviewSchema.statics.calcAverageRating = async function (courseId: mongoose.Type
             }
         }
     ])
-    console.log('Aggregate result:', result) 
+    logger.debug({ result }, 'Review aggregate result')
     if (result.length > 0) {
         await mongoose.model("Course").findByIdAndUpdate(courseId, {
             ratingAverage: Math.round(result[0].avgRating*10) / 10,
@@ -59,12 +60,12 @@ reviewSchema.statics.calcAverageRating = async function (courseId: mongoose.Type
 }
 
 reviewSchema.post('save', async function () {
-    console.log('Review saved, courseId:', this.courseId)
+    logger.debug({ courseId: this.courseId }, 'Review saved')
     try {
         await (this.constructor as IReviewModel).calcAverageRating(this.courseId)
-        console.log('calcAverageRating done')
+        logger.debug('calcAverageRating completed')
     } catch (err) {
-        console.error('calcAverageRating error:', err)
+        logger.error({ error: err }, 'calcAverageRating failed')
     }
 })
 

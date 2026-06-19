@@ -3,13 +3,15 @@ import { RedisStore } from 'rate-limit-redis';
 import type { RedisReply } from 'rate-limit-redis';
 import { redisClient } from '../lib/redis.js';
 
-const redisStore = redisClient
-    ? new RedisStore({
-          // rate-limit-redis yêu cầu signature (...args: string[]) => Promise<unknown>
-          sendCommand: (...args: string[]): Promise<RedisReply> =>
-              redisClient!.call(args[0], ...args.slice(1)) as Promise<RedisReply>,
-      })
-    : undefined;
+const createRedisStore = (prefix: string) =>
+    redisClient
+        ? new RedisStore({
+              // rate-limit-redis yêu cầu signature (...args: string[]) => Promise<unknown>
+              sendCommand: (...args: string[]): Promise<RedisReply> =>
+                  redisClient!.call(args[0], ...args.slice(1)) as Promise<RedisReply>,
+              prefix,
+          })
+        : undefined;
 
 export const globalRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 phút
@@ -18,7 +20,7 @@ export const globalRateLimiter = rateLimit({
     standardHeaders: true, // gửi thông tin rate limit trong header `RateLimit-*`
     legacyHeaders: false, // không gửi header `X-RateLimit-*`
     skip: (req, res) => req.method === 'OPTIONS',
-    store: redisStore,
+    store: createRedisStore('rl:global:'),
     passOnStoreError: true,
 });
 
@@ -28,6 +30,6 @@ export const authRateLimiter = rateLimit({
     message: "Quá nhiều yêu cầu đăng nhập từ IP này, vui lòng thử lại sau 30 phút",
     standardHeaders: true,
     legacyHeaders: false,
-    store: redisStore,
+    store: createRedisStore('rl:auth:'),
     passOnStoreError: true,
 });

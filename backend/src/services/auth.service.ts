@@ -4,11 +4,13 @@ import crypto from 'crypto';
 import { User } from '../models/user.js';
 import { sendResetPasswordEmail } from '../config/mailer.js';
 import { RegisterInput, LoginInput } from '../schemas/auth.schema.js';
+import { AppError } from '../utils/AppError.js';
+import { env } from '../config/env.js';
 
 export const registerUser = async (userData: RegisterInput) => {
     const exist = await User.findOne({ email: userData.email });
     if (exist) {
-        throw new Error('Email already exists');
+        throw new AppError('Email already exists', 409);
     }
 
     const hashPassword = await bcrypt.hash(userData.password, 10);
@@ -16,7 +18,7 @@ export const registerUser = async (userData: RegisterInput) => {
         userName: userData.userName,
         email: userData.email,
         password: hashPassword,
-        role: 'user'
+        role: 'user',
     });
 
     return { message: 'Register successfully' };
@@ -25,18 +27,18 @@ export const registerUser = async (userData: RegisterInput) => {
 export const loginUser = async (loginData: LoginInput) => {
     const user = await User.findOne({ email: loginData.email }).select('+password');
     if (!user) {
-        throw new Error('Invalid email or password');
+        throw new AppError('Invalid email or password', 401);
     }
 
     const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
     if (!isPasswordValid) {
-        throw new Error('Invalid email or password');
+        throw new AppError('Invalid email or password', 401);
     }
 
-    const secret = process.env.JWT_SECRET!;
-    const refreshSecret = process.env.JWT_REFRESH_SECRET!;
+    const secret = env.JWT_SECRET;
+    const refreshSecret = env.JWT_REFRESH_SECRET;
 
-    const expiresIn = (process.env.JWT_EXPIRES || '15m') as SignOptions['expiresIn'];
+    const expiresIn = env.JWT_EXPIRES as SignOptions['expiresIn'];
     const token = jwt.sign({ sub: user.id, role: user.role }, secret, { expiresIn });
 
     const refreshToken = jwt.sign({ sub: user.id }, refreshSecret, { expiresIn: '7d' });
@@ -47,8 +49,8 @@ export const loginUser = async (loginData: LoginInput) => {
         token,
         refreshToken,
         user: {
-            id: user._id,
-            name: user.userName,
+            id: user.id,
+            userName: user.userName,
             email: user.email,
             role: user.role,
         },
@@ -56,25 +58,25 @@ export const loginUser = async (loginData: LoginInput) => {
 };
 
 export const refreshAccessToken = async (refreshToken: string) => {
-    const refreshSecret = process.env.JWT_REFRESH_SECRET!;
+    const refreshSecret = env.JWT_REFRESH_SECRET;
     let decoded: JwtPayload;
 
     try {
         decoded = jwt.verify(refreshToken, refreshSecret) as JwtPayload;
     } catch {
-        throw new Error('Refresh token invalid or expired');
+        throw new AppError('Refresh token invalid or expired', 401);
     }
 
     const user = await User.findById(decoded.sub).select('+refreshToken');
     if (!user || user.refreshToken !== refreshToken) {
-        throw new Error('Refresh token not recognized');
+        throw new AppError('Refresh token not recognized', 401);
     }
 
-    const secret = process.env.JWT_SECRET!;
+    const secret = env.JWT_SECRET;
     const accessToken = jwt.sign(
         { sub: user.id, role: user.role },
         secret,
-        { expiresIn: '15m' }
+        { expiresIn: '15m' },
     );
 
     return { accessToken };
@@ -88,7 +90,7 @@ export const logoutUser = async (refreshToken: string) => {
 export const getUserById = async (userId: string) => {
     const user = await User.findById(userId).select('-password');
     if (!user) {
-        throw new Error('User not found');
+        throw new AppError('User not found', 404);
     }
     return user;
 };
@@ -96,6 +98,7 @@ export const getUserById = async (userId: string) => {
 export const forgotPassword = async (email: string) => {
     const user = await User.findOne({ email });
     if (!user) {
+        // intentional vague response to prevent user enumeration
         return { message: 'Nếu email tồn tại, bạn sẽ nhận được link reset' };
     }
 
@@ -121,7 +124,7 @@ export const resetPassword = async (token: string, password: string) => {
     }).select('+resetPasswordToken +resetPasswordExpires');
 
     if (!user) {
-        throw new Error('Token không hợp lệ hoặc đã hết hạn');
+        throw new AppError('Token không hợp lệ hoặc đã hết hạn', 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

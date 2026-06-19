@@ -33,7 +33,7 @@ export const deleteLessonModule = async (moduleId: string) => {
     if (!module) throw new Error('Lesson module not found');
 
     // Xóa tất cả lessons trong module
-    const lessons = await Lesson.find({ lessonModule: moduleId });
+    const lessons = await Lesson.find({ moduleId });
     for (const lesson of lessons) {
         const lessonId = lesson._id as string;
         await deleteLesson(lessonId);
