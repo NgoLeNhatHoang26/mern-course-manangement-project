@@ -1,0 +1,22 @@
+# Chặn các file môi trường (Cực kỳ quan trọng)
+.env
+.env.*
+!.env.example
+
+# Chặn thư viện cài đặt local (Để Docker tự cài bằng npm ci)
+node_modules
+npm-debug.log
+
+# Chặn Git và Docker config
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Chặn các file tạm và build của IDE
+.vscode
+.idea
+dist
+build
+.DS_Store

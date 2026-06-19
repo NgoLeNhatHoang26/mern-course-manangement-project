@@ -1,27 +1,19 @@
-# Sử dụng Node.js image
-FROM node:18-alpine
-
-# Set working directory
+# Stage 1: Build
+FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Copy package.json và package-lock.json
 COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy source code
+RUN npm install
 COPY . .
-
-# Build TypeScript
 RUN npm run build
 
-# Expose port
+# Stage 2: Run (Chỉ lấy file đã build)
+FROM node:22-alpine
+WORKDIR /app
+COPY package*.json ./
+# Chỉ cài thư viện cần để CHẠY, không cài tsc nữa
+RUN npm install --omit=dev
+# Copy file đã build (dist) từ stage builder sang
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5000/health || exit 1
-
-# Start app
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]

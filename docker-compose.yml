@@ -1,52 +1,34 @@
 
 services:
-  # MongoDB
-  mongodb:
-    image: mongo:7-jammy
-    container_name: mern-mongo
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - ./backend/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    networks:
-      - mern-network
-
   # Redis
   redis:
     image: redis:7-alpine
     container_name: mern-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - mern-network
 
+  # Web Server Nginx
+  web-server:
+    image: nginx:alpine
+    container_name: mern-web-server
+    ports: 
+      - "80:80"
+    networks:
+      - mern-network
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./frontend/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      
   # Backend
   backend:
     build: ./backend
     container_name: mern-backend
     restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 5000
-      MONGO_URI: ${MONGO_URI}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      REDIS_URL: redis://redis:6379
-      # Add other env vars
-    ports:
-      - "5000:5000"
-    depends_on:
-      - mongodb
-      - redis
+    env_file:
+      - .env
     volumes:
       - ./backend/public:/app/public
     networks:
@@ -54,20 +36,17 @@ services:
 
   # Frontend
   frontend:
-    build: 
+    build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:5000/api
+      dockerfile: Dockerfile
     container_name: mern-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
+    volumes:
+      - ./frontend:/app
+      - ./frontend/dist:/app/dist
     networks:
       - mern-network
 
 volumes:
-  mongo_data:
   redis_data:
 
 networks:

@@ -1,0 +1,23 @@
+
+
+
+.env
+.env.*
+!.env.example
+
+
+node_modules
+npm-debug.log
+
+# Chặn Git và Docker config
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+.vscode
+.idea
+dist
+build
+.DS_Store
