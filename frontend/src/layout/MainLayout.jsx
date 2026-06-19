@@ -5,43 +5,30 @@ import Footer from "./Footer.jsx";
 import { Outlet } from "react-router-dom";
 
 export default function MainLayout() {
-
-    return(
-        <Box
-        sx={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-        }}
-        >
-            {/* HEADER */}
+    return (
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
             <Header />
-            <Box sx={{ height: 20 }} />
 
-            <Box
-                sx={{
-                flex: 1,
-                display: "flex",
-                }}
-            >
-                {/* MENU */}
+            <Box sx={{ flex: 1, display: 'flex', minHeight: 0 }}>
                 <Sidebar />
 
-                {/* MAIN CONTENT */}
                 <Box
-                sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: 'auto',
-                    backgroundColor: "#f5f5f5",
-                }}
+                    component="main"
+                    sx={{
+                        flex: 1,
+                        width: 0,           /* forces flex child to shrink, not grow past parent */
+                        minWidth: 0,
+                        overflowY: 'auto',
+                        bgcolor: 'background.default',
+                        px: { xs: 2, sm: 3, md: 4 },
+                        py: 3,
+                    }}
                 >
-                <Outlet />
+                    <Outlet />
                 </Box>
             </Box>
 
-            {/* FOOTER */}
             <Footer />
         </Box>
     );
-} 
+}

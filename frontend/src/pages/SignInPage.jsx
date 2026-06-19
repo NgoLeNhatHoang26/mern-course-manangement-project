@@ -18,6 +18,14 @@ import ForgotPassword from '../layout/ForgotPassword.jsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../theme/CustomIcon.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useAuthActions } from '@features/auth';
+import { ROUTES } from '../constants/routes';
+import { authSchemas } from '@features/auth/schemas/authSchemas';
+
+/* ── Styled Components ──────────────────────────────────────────────────────
+ * Elevation shadow: color.surface.base (#000000) at 5% opacity
+ *   replaces raw hsla(220, 30%, 5%, 0.05) / hsla(220, 25%, 10%, 0.05)
+ * Border radius: radius.xs = 4px
+ * ──────────────────────────────────────────────────────────────────────── */
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -26,13 +34,18 @@ const Card = styled(MuiCard)(({ theme }) => ({
     padding: theme.spacing(4),
     gap: theme.spacing(2),
     margin: 'auto',
+    borderRadius: 'var(--radius-xs)',
+    boxShadow:
+        'rgba(var(--color-surface-base-rgb), 0.05) 0px 5px 15px 0px, rgba(var(--color-surface-base-rgb), 0.05) 0px 15px 35px -5px',
     [theme.breakpoints.up('sm')]: {
         maxWidth: '450px',
     },
-    boxShadow:
-        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 }));
 
+/* Background gradient:
+ *   color.surface.strong (#f0f0f0) replaces hsl(210, 100%, 97%)
+ *   color.text.inverse  (#ffffff) replaces hsl(0, 0%, 100%)
+ * ──────────────────────────────────────────────────────────────────────── */
 const SignInContainer = styled(Stack)(({ theme }) => ({
     minHeight: '100vh',
     padding: theme.spacing(2),
@@ -47,12 +60,65 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
         zIndex: -1,
         inset: 0,
         backgroundImage:
-            'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+            'radial-gradient(ellipse at 50% 50%, var(--color-surface-strong), var(--color-text-inverse))',
         backgroundRepeat: 'no-repeat',
     },
 }));
 
+/* ── Reusable sx snippets (WCAG 2.2 AA states) ──────────────────────────── */
+
+// focus-visible: 2px solid outline with space.2 (2px) offset — keyboard-first
+const focusVisibleOutline = {
+    outline: '2px solid var(--color-surface-base)',
+    outlineOffset: 'var(--space-2)',
+};
+
+// Primary (contained) button states
+const primaryButtonSx = {
+    fontSize: 'var(--font-size-md)',
+    transition: `background-color var(--motion-duration-instant)`,
+    '&:focus-visible': focusVisibleOutline,
+    '&.Mui-disabled': {
+        opacity: 0.38,
+        pointerEvents: 'all',
+        cursor: 'not-allowed',
+    },
+};
+
+// Outlined button states (social sign-in)
+const outlinedButtonSx = {
+    fontSize: 'var(--font-size-md)',
+    borderRadius: 'var(--radius-xs)',
+    transition: `background-color var(--motion-duration-instant)`,
+    '&:hover': {
+        backgroundColor: 'var(--color-surface-raised)',  // color.surface.raised = #e8ebed
+    },
+    '&:focus-visible': focusVisibleOutline,
+};
+
+// TextField input states
+const fieldSx = {
+    '& .MuiInputBase-root': {
+        fontSize: 'var(--font-size-md)',
+        borderRadius: 'var(--radius-xs)',
+    },
+    '& .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'var(--color-text-tertiary)',   // color.text.tertiary = #292929
+        borderWidth: '2px',
+    },
+    '& .MuiFormHelperText-root': {
+        fontSize: 'var(--font-size-sm)',             // font.size.sm = 13px
+    },
+};
+
+// Shared FormLabel sx
+const labelSx = {
+    fontSize: 'var(--font-size-sm)',                 // font.size.sm = 13px
+    color: 'var(--color-text-tertiary)',             // color.text.tertiary = #292929
+};
+
 export default function SignIn() {
+    const [formValues, setFormValues] = React.useState({ email: '', password: '' });
     const [emailError, setEmailError] = React.useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
@@ -67,30 +133,24 @@ export default function SignIn() {
     const { login } = useAuthActions();
 
     const validateInputs = () => {
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-
-        let isValid = true;
-
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+        const errors = authSchemas.login(formValues);
+        if (errors.email) {
             setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address.');
-            isValid = false;
+            setEmailErrorMessage(errors.email);
         } else {
             setEmailError(false);
             setEmailErrorMessage('');
         }
 
-        if (!password.value || password.value.length < 6) {
+        if (errors.password) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
-            isValid = false;
+            setPasswordErrorMessage(errors.password);
         } else {
             setPasswordError(false);
             setPasswordErrorMessage('');
         }
 
-        return isValid;
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async (event) => {
@@ -99,21 +159,14 @@ export default function SignIn() {
             return;
         }
 
-        const data = new FormData(event.currentTarget);
-        const payload = {
-            email: data.get('email'),
-            password: data.get('password'),
-
-        };
-        console.log(payload);
         try {
             const result = await login({
-                email: payload.email,
-                password: payload.password,
+                email: formValues.email,
+                password: formValues.password,
             });
 
             if (result.success) {
-                navigate('/', { replace: true });
+                navigate(ROUTES.HOME, { replace: true });
                 return;
             }
 
@@ -138,10 +191,11 @@ export default function SignIn() {
                 <Card variant="outlined">
                     <SitemarkIcon />
 
+                    {/* font.size.4xl = 24px replaces clamp(2rem, 10vw, 2.15rem) */}
                     <Typography
                         component="h1"
                         variant="h4"
-                        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+                        sx={{ width: '100%', fontSize: 'var(--font-size-4xl)' }}
                     >
                         Sign in
                     </Typography>
@@ -164,43 +218,67 @@ export default function SignIn() {
                         }}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormLabel htmlFor="email" sx={labelSx}>
+                                Email
+                            </FormLabel>
                             <TextField
                                 id="email"
                                 name="email"
                                 type="email"
                                 placeholder="your@email.com"
                                 autoComplete="email"
+                                value={formValues.email}
+                                onChange={(e) => setFormValues((prev) => ({ ...prev, email: e.target.value }))}
                                 required
                                 fullWidth
                                 error={emailError}
                                 helperText={emailErrorMessage}
+                                sx={fieldSx}
                             />
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password" sx={labelSx}>
+                                Password
+                            </FormLabel>
                             <TextField
                                 id="password"
                                 name="password"
                                 type="password"
                                 placeholder="••••••"
                                 autoComplete="current-password"
+                                value={formValues.password}
+                                onChange={(e) => setFormValues((prev) => ({ ...prev, password: e.target.value }))}
                                 required
                                 fullWidth
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
+                                sx={fieldSx}
                             />
                         </FormControl>
 
                         <FormControlLabel
-                            control={<Checkbox value="remember" />}
-                            label="Remember me"
+                            control={
+                                <Checkbox
+                                    value="remember"
+                                    sx={{
+                                        '&:focus-visible': {
+                                            ...focusVisibleOutline,
+                                            borderRadius: 'var(--radius-xs)',
+                                        },
+                                    }}
+                                />
+                            }
+                            label={
+                                <Typography sx={{ fontSize: 'var(--font-size-sm)' }}>
+                                    Remember me
+                                </Typography>
+                            }
                         />
 
                         <ForgotPassword open={open} handleClose={handleClose} />
 
-                        <Button type="submit" fullWidth variant="contained">
+                        <Button type="submit" fullWidth variant="contained" sx={primaryButtonSx}>
                             Sign in
                         </Button>
 
@@ -208,26 +286,63 @@ export default function SignIn() {
                             component="button"
                             onClick={handleClickOpen}
                             variant="body2"
-                            sx={{ alignSelf: 'center' }}
+                            sx={{
+                                alignSelf: 'center',
+                                fontSize: 'var(--font-size-sm)',
+                                '&:focus-visible': {
+                                    ...focusVisibleOutline,
+                                    borderRadius: 'var(--radius-xs)',
+                                },
+                            }}
                         >
                             Forgot your password?
                         </Link>
                     </Box>
 
-                    <Divider>or</Divider>
+                    <Divider>
+                        {/* color.text.secondary = #a9b3bb */}
+                        <Typography
+                            sx={{
+                                color: 'var(--color-text-secondary)',
+                                fontSize: 'var(--font-size-sm)',
+                            }}
+                        >
+                            or
+                        </Typography>
+                    </Divider>
 
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Button fullWidth variant="outlined" startIcon={<GoogleIcon />}>
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            startIcon={<GoogleIcon />}
+                            sx={outlinedButtonSx}
+                        >
                             Sign in with Google
                         </Button>
 
-                        <Button fullWidth variant="outlined" startIcon={<FacebookIcon />}>
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            startIcon={<FacebookIcon />}
+                            sx={outlinedButtonSx}
+                        >
                             Sign in with Facebook
                         </Button>
 
-                        <Typography sx={{ textAlign: 'center' }}>
+                        <Typography sx={{ textAlign: 'center', fontSize: 'var(--font-size-sm)' }}>
                             Don&apos;t have an account?{' '}
-                            <Link href="/signup" variant="body2">
+                            <Link
+                                href={ROUTES.SIGNUP}
+                                variant="body2"
+                                sx={{
+                                    fontSize: 'var(--font-size-sm)',
+                                    '&:focus-visible': {
+                                        ...focusVisibleOutline,
+                                        borderRadius: 'var(--radius-xs)',
+                                    },
+                                }}
+                            >
                                 Sign up
                             </Link>
                         </Typography>

@@ -31,7 +31,6 @@ export default function CourseForm({ onSubmit, initialValues = INITIAL_FORM, sub
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // Chỉ dùng FormData khi có file thumbnail mới
         if (form.thumbnail instanceof File) {
             const formData = new FormData()
             formData.append('title', form.title)
@@ -41,7 +40,6 @@ export default function CourseForm({ onSubmit, initialValues = INITIAL_FORM, sub
             formData.append('thumbnail', form.thumbnail)
             await onSubmit(formData)
         } else {
-            // Không có file mới → gửi JSON bình thường
             await onSubmit({
                 title: form.title,
                 description: form.description,

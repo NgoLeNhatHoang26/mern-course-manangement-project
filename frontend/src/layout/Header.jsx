@@ -1,57 +1,110 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import { Link } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import { Link } from "react-router-dom";
 import AuthSection from "./AuthSection.jsx";
+import { ROUTES } from "../constants/routes";
+
 export default function Header() {
+    return (
+        <AppBar position="sticky" color="default">
+            <Toolbar sx={{ px: { xs: 2, md: 3 }, minHeight: { xs: 56, sm: 60 } }}>
+                {/* Brand */}
+                <Box
+                    component={Link}
+                    to={ROUTES.HOME}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        mr: 4,
+                        '&:focus-visible': {
+                            outline: '2px solid',
+                            outlineColor: 'primary.main',
+                            outlineOffset: 2,
+                            borderRadius: 1,
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: 32,
+                            height: 32,
+                            bgcolor: 'primary.main',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                color: 'primary.contrastText',
+                                fontWeight: 800,
+                                fontSize: '0.875rem',
+                                letterSpacing: '-0.5px',
+                            }}
+                        >
+                            F8
+                        </Typography>
+                    </Box>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            fontSize: '1rem',
+                            color: 'text.primary',
+                            letterSpacing: '-0.2px',
+                            display: { xs: 'none', sm: 'block' },
+                        }}
+                    >
+                        Course Management
+                    </Typography>
+                </Box>
 
-  return (
-    <AppBar position="static" color="default" elevation={1}>
-      <Toolbar sx={{ px: { xs: 2, md: 4 } }}>
-        {/* LOGO / BRAND */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          component={Link}
-          to="/"
-          sx={{ textDecoration: "none", color: "inherit", mr: 4 }}
-        >
-          <IconButton edge="start" color="primary" disableRipple sx={{ p: 0 }}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 0.5 }}>
-            IONP
-          </Typography>
-        </Stack>
+                {/* Nav links */}
+                <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
+                >
+                    {[
+                        { label: 'Trang chủ', to: ROUTES.HOME },
+                        { label: 'Khoá học của tôi', to: ROUTES.MY_COURSES },
+                    ].map(({ label, to }) => (
+                        <Box
+                            key={to}
+                            component={Link}
+                            to={to}
+                            sx={{
+                                px: 1.5,
+                                py: 0.75,
+                                borderRadius: 1,
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: 'text.primary',
+                                textDecoration: 'none',
+                                transition: 'background-color 200ms ease',
+                                '&:hover': { bgcolor: 'grey.100' },
+                                '&:focus-visible': {
+                                    outline: '2px solid',
+                                    outlineColor: 'primary.main',
+                                    outlineOffset: 2,
+                                    borderRadius: 1,
+                                },
+                            }}
+                        >
+                            {label}
+                        </Box>
+                    ))}
+                </Stack>
 
-        {/* PRIMARY NAV LINKS */}
-        <Stack
-          direction="row"
-          spacing={3}
-          sx={{
-            flexGrow: 1,
-            display: { xs: "none", md: "flex" },
-          }}
-        >
-          <Button component={Link} to="/" color="inherit">
-            Home
-          </Button>
-          <Button component={Link} to="/courses" color="inherit">
-            Courses
-          </Button>
-          <Button component={Link} to="/my-courses" color="inherit">
-            My Courses
-          </Button>
-        </Stack>
-
-        <AuthSection />
-      </Toolbar>
-    </AppBar>
-  );
+                <AuthSection />
+            </Toolbar>
+        </AppBar>
+    );
 }

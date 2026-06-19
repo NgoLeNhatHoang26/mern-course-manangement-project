@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Box, Button, TextField, Typography, Alert, Paper } from '@mui/material'
 import { authService } from '@features/auth'
+import { authSchemas } from '@features/auth/schemas/authSchemas'
+import { ROUTES } from '../constants/routes'
 
 export default function ResetPasswordPage() {
     const [searchParams] = useSearchParams()
@@ -16,12 +18,9 @@ export default function ResetPasswordPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (password !== confirm) {
-            setError('Mật khẩu không khớp')
-            return
-        }
-        if (password.length < 6) {
-            setError('Mật khẩu tối thiểu 6 ký tự')
+        const errors = authSchemas.resetPassword({ token, password, confirmPassword: confirm })
+        if (errors.password || errors.confirmPassword) {
+            setError(errors.confirmPassword || errors.password || 'Du lieu khong hop le')
             return
         }
         setLoading(true)
@@ -29,10 +28,9 @@ export default function ResetPasswordPage() {
         try {
             await authService.resetPassword(token, password)
             setSuccess(true)
-            setTimeout(() => navigate('/signin'), 2000)
-        } catch (err) {
-            setError('Token không hợp lệ hoặc đã hết hạn')
-            console.error(err)
+            setTimeout(() => navigate(ROUTES.SIGNIN), 2000)
+        } catch {
+            setError('Token khong hop le hoac da het han')
         } finally {
             setLoading(false)
         }
@@ -40,7 +38,7 @@ export default function ResetPasswordPage() {
 
     if (!token) return (
         <Box display="flex" justifyContent="center" mt={10}>
-            <Alert severity="error">Link không hợp lệ</Alert>
+            <Alert severity="error">Link khong hop le</Alert>
         </Box>
     )
 

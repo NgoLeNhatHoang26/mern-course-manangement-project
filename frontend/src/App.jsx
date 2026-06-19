@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { ROUTES } from './constants/routes';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CoursePage = lazy(() => import('./pages/CoursePage'));
 const LessonPage = lazy(() => import('./pages/LessonPage'));
@@ -27,20 +28,20 @@ function App() {
         <Suspense fallback={<PageLoading />}>
           <Routes>
               <Route element={<MainLayout />} >
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/courses/:id" element={<CoursePage />} />
-                  <Route path="/lessons/:id" element={<LessonPage />} />
-                  <Route path="/my-courses" element={<MyCoursesPage />} />
-                  <Route path="/my-profile" element={<MyProfilePage />} />
-                  <Route path="/settings" element={<SettingPage />} />
-                  <Route path="/users" element={<UsersPage />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path={ROUTES.HOME} element={<HomePage />} />
+                  <Route path={ROUTES.COURSE_DETAIL} element={<CoursePage />} />
+                  <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
+                  <Route path={ROUTES.MY_COURSES} element={<MyCoursesPage />} />
+                  <Route path={ROUTES.MY_PROFILE} element={<MyProfilePage />} />
+                  <Route path={ROUTES.SETTINGS} element={<SettingPage />} />
+                  <Route path={ROUTES.USERS} element={<UsersPage />} />
+                  <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
               </Route>
 
-              <Route path="/courses/:courseId/lessons/:lessonId" element={<LessonPage />} />
-              <Route path="/register" element={<SignUpPage />} />
-              <Route path="/signin" element={<SignInPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path={ROUTES.COURSE_LESSON_DETAIL} element={<LessonPage />} />
+              <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
+              <Route path={ROUTES.SIGNIN} element={<SignInPage />} />
+              <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
           </Routes>
         </Suspense>
       </Router>
