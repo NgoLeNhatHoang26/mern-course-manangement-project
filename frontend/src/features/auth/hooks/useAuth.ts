@@ -1,6 +1,7 @@
 import { useAuthDispatch } from '@features/auth';
 import { authService} from '@features/auth';
 import { setAuthToken, clearAuthToken } from '../constants';
+import type { AxiosError } from 'axios';
 
 interface LoginCredentials {
   email: string;
@@ -22,8 +23,12 @@ export const useAuthActions = () => {
       setAuthToken(data.token);
       dispatch({ type: 'SET_USER', payload: data.user });
       return { success: true };
-    } catch (err: any) {
-      const message = err?.response?.data?.message || 'Login failed';
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const message =
+        axiosError.response?.data?.message ||
+        axiosError.message ||
+        'Login failed';
       dispatch({ type: 'SET_ERROR', payload: message });
       return { success: false, message };
     }

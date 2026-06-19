@@ -14,8 +14,8 @@ export interface ICourse {
 
 export interface ILessonModule{
     _id: string
-    courseId:    string;
-    title:       string;
+    courseId:string;
+    title: string;
     description: string;
-    order:       number;
+    order: number;
 }

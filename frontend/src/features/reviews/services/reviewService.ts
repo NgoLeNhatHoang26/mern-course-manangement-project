@@ -1,4 +1,4 @@
-import axiosClient from "../../../lib/api";
+import axiosClient from "@/lib/api";
 import { IReview } from "../types/review.interface";
 
 export const ReviewService = {

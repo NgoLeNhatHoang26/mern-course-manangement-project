@@ -10,11 +10,11 @@ export const useMyEnrollments = () => {
         const fetch = async () => {
             try {
                 const res = await EnrollmentService.getMyEnrollments();
-                if (isMounted) setEnrollments(res);
+                if (isMounted.current) setEnrollments(res);
             } catch (err) {
                 console.error(err);
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted.current) setLoading(false);
             }
         };
         fetch();

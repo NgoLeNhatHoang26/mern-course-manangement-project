@@ -1,4 +1,4 @@
-import axiosClient from "../../../lib/api";
+import axiosClient from "@/lib/api";
 import { ILessonModule } from "@features/courses";
 
 export const LessonModuleService = {

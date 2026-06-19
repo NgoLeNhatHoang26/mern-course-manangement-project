@@ -16,7 +16,8 @@ export const useCourses = () => {
         setLoading(true)
         try {
             const data = await CourseService.getAllCourses(filter)
-            setCourses((data || []).filter(course => course))
+            const safeCourses = Array.isArray(data) ? data : []
+            setCourses(safeCourses.filter(course => course))
         } catch (error) {
             console.error('Lỗi lấy courses:', error)
         } finally {
