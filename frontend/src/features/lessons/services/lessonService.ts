@@ -1,4 +1,4 @@
-import axiosClient from "../../../lib/api";
+import axiosClient from "@/lib/api";
 import { ILesson } from "../types/lesson.interface";
 
 export const LessonService = {

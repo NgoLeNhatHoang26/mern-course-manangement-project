@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { IUser } from './userService.ts'
-import { AdminService} from "../services/adminService.ts";
+import { IUser } from '../types/admin.types'
+import { AdminService} from "../services/adminService";
 
 export const useUsers = () => {
     const [users, setUsers] = useState<IUser[]>([])
@@ -10,7 +10,6 @@ export const useUsers = () => {
         setLoading(true)
         try {
             const data = await AdminService.getAllUsers()
-            console.log('users data:', data)
             setUsers(data)
         } catch (error) {
             console.error(error)

@@ -1,10 +1,12 @@
-import axiosClient from '../../../lib/api'
-import { ICourse } from '../types/course.interfaces'
+import axiosClient from '@/lib/api'
+import { ICourse } from '@features/courses'
+
+
 
 export const CourseService = {
     getAllCourses: async (params?: {search?: string; level?: string}): Promise<ICourse[]> => {
-        const response = await axiosClient.get<ICourse[]>('/courses', { params: params })
-        return response.data
+        const courses = await axiosClient.get<ICourse[]>('/courses', { params: params })
+        return courses.data
     },
 
     getCourseById: async (id: string): Promise<ICourse> => {

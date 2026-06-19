@@ -1,34 +1,73 @@
 import { Request, Response, NextFunction } from 'express'
+import { AppError } from '../utils/AppError.js'
+
+type AnyError = {
+    name?: string;
+    message?: string;
+    code?: number | string;
+    status?: number;
+    statusCode?: number;
+    errors?: Record<string, { message?: string }>;
+    isOperational?: boolean;
+};
+
+const getStatusCode = (error: AnyError): number => {
+    // 1. AppError — carries its own statusCode (most specific)
+    if (error instanceof AppError) return error.statusCode;
+
+    // 2. Mongoose / JWT well-known names
+    if (error.name === 'ValidationError' || error.name === 'CastError') return 400;
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') return 401;
+
+    // 3. MongoDB duplicate key
+    if (error.code === 11000) return 409;
+
+    // 4. Explicit statusCode/status set by caller
+    const explicit = error.statusCode ?? error.status;
+    if (typeof explicit === 'number') return explicit;
+
+    return 500;
+};
+
+const getErrorCode = (statusCode: number): string => {
+    const map: Record<number, string> = {
+        400: 'BAD_REQUEST',
+        401: 'UNAUTHORIZED',
+        403: 'FORBIDDEN',
+        404: 'NOT_FOUND',
+        409: 'CONFLICT',
+        422: 'UNPROCESSABLE_ENTITY',
+        429: 'TOO_MANY_REQUESTS',
+    };
+    return map[statusCode] ?? 'INTERNAL_SERVER_ERROR';
+};
+
+const getErrorMessage = (error: AnyError, statusCode: number): string => {
+    if (error.name === 'ValidationError') return 'Dữ liệu không hợp lệ';
+    if (error.code === 11000) return 'Dữ liệu đã tồn tại';
+    if (error.name === 'JsonWebTokenError') return 'Token không hợp lệ';
+    if (error.name === 'TokenExpiredError') return 'Token đã hết hạn';
+    if (statusCode === 500) return 'Internal Server Error';
+    return error.message || 'Request failed';
+};
 
 export const errorMiddleware = (
-    error: any,
-    req: Request,
+    error: AnyError,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction,
 ): void => {
-    // Mongoose ValidationError
-    if (error.name === 'ValidationError') {
-        res.status(400).json({
-            message: 'Dữ liệu không hợp lệ',
-            errors: Object.values(error.errors).map((e: any) => e.message),
-        })
-        return
-    }
+    const statusCode = getStatusCode(error);
 
-    // Duplicate key (unique index)
-    if (error.code === 11000) {
-        res.status(409).json({ message: 'Dữ liệu đã tồn tại' })
-        return
-    }
+    const validationErrors =
+        error.name === 'ValidationError' && error.errors
+            ? Object.values(error.errors).map((item) => item.message ?? 'Invalid value')
+            : undefined;
 
-    // JWT lỗi
-    if (error.name === 'JsonWebTokenError') {
-        res.status(401).json({ message: 'Token không hợp lệ' })
-        return
-    }
-
-    // Mặc định
-    res.status(error.status || 500).json({
-        message: error.message || 'Internal Server Error',
-    })
-}
+    res.status(statusCode).json({
+        success: false,
+        message: getErrorMessage(error, statusCode),
+        errors: validationErrors,
+        code: getErrorCode(statusCode),
+    });
+};

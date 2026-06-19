@@ -5,18 +5,15 @@ import { Review } from '../models/review.js';
 
 export const getAllUsers = async () => {
     const users = await User.find().select('-password');
-
-    const usersWithStats = await Promise.all(
-        users.map(async (user) => {
-            const enrollmentCount = await Enrollment.countDocuments({ userId: user._id });
-            return {
-                ...user.toObject(),
-                enrollmentCount,
-            };
-        })
-    );
-
-    return usersWithStats;
+    
+    const enrollmentCounts = await Enrollment.aggregate([
+        { $group: { _id: '$userId', enrollmentCount: { $sum: 1 } } },
+    ])
+    const enrollmentMap = new Map(enrollmentCounts.map(item => [item._id.toString(), item.enrollmentCount]));
+    return users.map(user => ({
+        ...user.toObject(),
+        enrollmentCount: enrollmentMap.get(user._id.toString()) || 0,
+    }));
 };
 
 export const getUserById = async (userId: string) => {

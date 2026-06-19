@@ -1,24 +1,37 @@
 import nodemailer from 'nodemailer'
+import { env } from './env.js';
+import { logger } from './logger.js';
+
+const mailUser = env.MAIL_USER
+const mailPass = env.MAIL_PASS
+
+if (!mailUser || !mailPass) {
+    logger.warn('Mailer disabled: MAIL_USER or MAIL_PASS is missing.')
+}
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,  // App Password của Gmail
+        user: mailUser,
+        pass: mailPass,  
     },
 })
 transporter.verify((error, success) => {
     if (error) {
-        console.error('Mailer error:', error)
+        logger.error({ error }, 'Mailer error')
     } else {
-        console.log('Mailer ready ✅')
+        logger.info('Mailer ready')
     }
 })
 export const sendResetPasswordEmail = async (email: string, token: string) => {
-    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`
+    if (!mailUser || !mailPass) {
+        throw new Error('Mailer is not configured. Please set MAIL_USER and MAIL_PASS.')
+    }
+
+    const resetUrl = `${env.CLIENT_URL}/reset-password?token=${token}`
 
     await transporter.sendMail({
-        from: `"Course Management" <${process.env.MAIL_USER}>`,
+        from: `"Course Management" <${mailUser}>`,
         to: email,
         subject: 'Đặt lại mật khẩu',
         html: `

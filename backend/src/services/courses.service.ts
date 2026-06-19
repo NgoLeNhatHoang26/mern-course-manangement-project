@@ -1,10 +1,10 @@
 import { Course } from '../models/course.js';
 import { LessonModule } from '../models/lessonModule.js';
-import { Lesson } from '../models/lesson.js';
 import { CreateCourseInput, UpdateCourseInput } from '../schemas/course.schema.js';
 import { deleteFile } from '../config/cloudinary.config.js';
 import { deleteLessonModule } from './lessonModule.service.js';
 import { redisClient } from '../lib/redis.js';
+import { AppError } from '../utils/AppError.js';
 
 interface UpdateCourseBody extends UpdateCourseInput {
     thumbnail?: string;
@@ -82,7 +82,7 @@ export const getCourseById = async (courseId: string) => {
 
     const course = await Course.findById(courseId);
     if (!course) {
-        throw new Error('Course not found');
+        throw new AppError('Course not found', 404);
     }
     await setCachedJson(cacheKey, course);
     return course;
@@ -105,7 +105,7 @@ export const createCourse = async (courseData: CreateCourseInput, thumbnail?: st
 export const updateCourse = async (courseId: string, updateData: UpdateCourseBody) => {
     const course = await Course.findById(courseId);
     if (!course) {
-        throw new Error('Course not found');
+        throw new AppError('Course not found', 404);
     }
 
     // Nếu có thumbnail mới và cũ, xóa cũ
@@ -122,16 +122,14 @@ export const updateCourse = async (courseId: string, updateData: UpdateCourseBod
 export const deleteCourse = async (courseId: string) => {
     const course = await Course.findById(courseId);
     if (!course) {
-        throw new Error('Course not found');
+        throw new AppError('Course not found', 404);
     }
 
-    // Xóa thumbnail nếu có
     if (course.thumbnail) {
         await deleteFile(course.thumbnail);
     }
 
-    // Xóa các lesson modules và lessons liên quan
-    const modules = await LessonModule.find({ course: courseId });
+    const modules = await LessonModule.find({ courseId });
     for (const module of modules) {
         const moduleId = module._id as string;
         await deleteLessonModule(moduleId);

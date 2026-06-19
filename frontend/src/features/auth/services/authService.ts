@@ -1,4 +1,4 @@
-import axiosClient from '../../../lib/api'
+import axiosClient from '@/lib/api'
 
 interface LoginPayload {
     email: string
@@ -9,6 +9,7 @@ interface RegisterPayload {
     userName: string
     email: string
     password: string
+    confirmPassword: string
 }
 
 interface AuthResponse {
@@ -24,14 +25,15 @@ interface AuthResponse {
     }
 }
 
+
 export const authService = {
     login: async ({ email, password }: LoginPayload): Promise<AuthResponse> => {
         const response = await axiosClient.post<AuthResponse>('/auth/login', { email, password })
         return response.data
     },
 
-    register: async ({ userName, email, password }: RegisterPayload): Promise<{ message: string }> => {
-        const response = await axiosClient.post<{ message: string }>('/auth/register', { userName, email, password })
+    register: async ({ userName, email, password, confirmPassword }: RegisterPayload): Promise<{ message: string }> => {
+        const response = await axiosClient.post<{ message: string }>('/auth/register', { userName, email, password, confirmPassword })
         return response.data
     },
 

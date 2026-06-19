@@ -13,9 +13,8 @@ export default function CreateCourseDialog({ onSuccess }) {
                             await CourseService.createCourse(formData)
                             onClose()
                             onSuccess?.()
-                        } catch (error) {
-                            console.log('Status:', error.response?.status)
-                            console.log('Data:', error.response?.data)
+                        } catch {
+                            // Surface error through form validation/toast upstream.
                         }
                     }}
                     submitLabel="Tạo khóa học"

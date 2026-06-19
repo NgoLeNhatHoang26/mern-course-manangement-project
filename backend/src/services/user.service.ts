@@ -1,11 +1,13 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.js';
+import { AppError } from '../utils/AppError.js';
+import { env } from '../config/env.js';
 
 export const getUserProfile = async (userId: string | undefined) => {
-    if (!userId) throw new Error('Unauthorized');
+    if (!userId) throw new AppError('Unauthorized', 401);
     const user = await User.findById(userId).select('-password');
-    if (!user) throw new Error('User not found');
+    if (!user) throw new AppError('User not found', 404);
     return user;
 };
 
@@ -13,16 +15,16 @@ export const createNewAccount = async (userData: { email: string; password: stri
     const { email, password, userName } = userData;
 
     if (!email || !password || !userName) {
-        throw new Error('Missing required fields');
+        throw new AppError('Missing required fields', 400);
     }
 
     if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters');
+        throw new AppError('Password must be at least 6 characters', 400);
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        throw new Error('Email already exists');
+        throw new AppError('Email already exists', 409);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -34,8 +36,8 @@ export const createNewAccount = async (userData: { email: string; password: stri
         userName,
     });
 
-    const secret = process.env.JWT_SECRET!;
-    const token = jwt.sign({ id: newUser._id }, secret, { expiresIn: '7d' });
+    const secret = env.JWT_SECRET;
+    const token = jwt.sign({ sub: newUser._id.toString(), role: newUser.role ?? 'user' }, secret, { expiresIn: '7d' });
 
     const { password: _, ...userDataResponse } = newUser.toObject();
 
@@ -46,14 +48,21 @@ export const createNewAccount = async (userData: { email: string; password: stri
     };
 };
 
-export const updateUserProfile = async (userId: string | undefined, updateData: any) => {
-    if (!userId) throw new Error('Unauthorized');
+export const updateUserProfile = async (userId: string | undefined, updateData: Record<string, unknown>) => {
+    if (!userId) throw new AppError('Unauthorized', 401);
+
+    // Only allow safe fields to be updated to prevent mass assignment
+    const { userName, avatar } = updateData as { userName?: string; avatar?: string };
+    const safeUpdate: Record<string, unknown> = {};
+    if (userName !== undefined) safeUpdate.userName = userName;
+    if (avatar !== undefined) safeUpdate.avatar = avatar;
+
     const updatedUser = await User.findByIdAndUpdate(
         userId,
-        updateData,
-        { new: true, runValidators: true }
+        safeUpdate,
+        { new: true, runValidators: true },
     ).select('-password');
 
-    if (!updatedUser) throw new Error('User not found');
+    if (!updatedUser) throw new AppError('User not found', 404);
     return updatedUser;
 };

@@ -24,4 +24,6 @@ const courseSchema = new Schema<ICourse>({
     thumbnail:     { type: String, default: "/images/default_thumbnail.png" },
 }, { timestamps: true });
 
+courseSchema.index({ level: 1, title: 1 });
+
 export const Course = mongoose.model<ICourse>("Course", courseSchema);

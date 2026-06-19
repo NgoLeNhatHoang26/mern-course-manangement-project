@@ -1,6 +1,6 @@
-import axiosClient from '../../../lib/api.ts'
-import { IUser } from '../hooks/userService.ts'
-import { IDashboard} from "../hooks/useDashboard.ts";
+import axiosClient from '@/lib/api'
+import { IUser } from '../types/admin.types'
+import { IDashboard } from "../hooks/useDashboard";
 
 export const AdminService = {
     getDashboard: async (): Promise<IDashboard> => {

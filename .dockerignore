@@ -1,0 +1,17 @@
+# Chặn Git và IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Chặn tài liệu và thiết kế
+docs/
+design/
+*.pdf
+*.md
+
+# Chặn các file môi trường (Phòng hờ)
+*.env.local
+
+# Chặn node_modules ở mọi nơi
+**/node_modules

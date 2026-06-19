@@ -19,8 +19,9 @@ const enrollmentSchema = new Schema<IEnrollment>({
     enrollmentAt:       { type: Date, default: Date.now }
 }, { timestamps: true } );
 
-// Đảm bảo mỗi user không enroll 1 course nhiều lần
-enrollmentSchema.index({userId: 1, courseId: 1}, {unique: true} )
+enrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true })
+
+enrollmentSchema.index({ userId: 1, enrollmentAt: -1 })
 
 enrollmentSchema.post('save', async function () {
     await mongoose.model('Course').findByIdAndUpdate(

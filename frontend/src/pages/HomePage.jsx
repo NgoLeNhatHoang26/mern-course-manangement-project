@@ -1,20 +1,34 @@
 import { CourseList, CreateCourseDialog, useCourses, CourseFilter } from "@features/courses"
-import {Box, Typography } from "@mui/material";
+import { Box, Typography, Stack, Divider } from "@mui/material";
 import AdminOnlyComponent from "@components/AdminOnlyComponent.jsx";
+
 function HomePage() {
-    const {courses, refetch, setFilter} = useCourses();
+    const { courses, refetch, setFilter } = useCourses();
 
     return (
-        <Box
-            sx={{ p: 3 }}
-        >
-            <CourseFilter onFilterChange={setFilter} />
-            <Typography variant="h4">Danh sách khóa học</Typography>
-            <AdminOnlyComponent>
-                <CreateCourseDialog onSuccess={refetch} />
-            </AdminOnlyComponent>
-            <CourseList courses={courses} />
+        <Box>
+            {/* Page header */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" fontWeight={700} color="text.primary" gutterBottom={false}>
+                        Danh sách khoá học
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" mt={0.5}>
+                        Khám phá và học các khoá học chất lượng cao
+                    </Typography>
+                </Box>
+                <AdminOnlyComponent>
+                    <CreateCourseDialog onSuccess={refetch} />
+                </AdminOnlyComponent>
+            </Stack>
 
+            <Divider sx={{ mb: 3 }} />
+
+            {/* Filter */}
+            <CourseFilter onFilterChange={setFilter} />
+
+            {/* Course grid */}
+            <CourseList courses={courses} />
         </Box>
     );
 }

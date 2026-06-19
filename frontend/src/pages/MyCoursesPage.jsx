@@ -1,13 +1,13 @@
 import { Box, CircularProgress, Grid, Typography, Stack } from "@mui/material";
-import { School } from "@mui/icons-material";
-import {CourseCard }from "@features/courses";
-import { useMyEnrollments } from "@features/enrollment";
+import { SchoolRounded } from "@mui/icons-material";
+import { CourseCard } from "@features/courses";
+import { useMyEnrollments } from "@features/enrollment/hooks/useMyEnrollements";
 
 function EmptyState() {
     return (
-        <Stack alignItems="center" spacing={2} sx={{ py: 10 }}>
-            <School sx={{ fontSize: 64, color: "#cbd5e1" }} />
-            <Typography variant="h6" color="text.secondary" fontWeight={600}>
+        <Stack alignItems="center" spacing={1.5} sx={{ py: 10 }}>
+            <SchoolRounded sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.3 }} />
+            <Typography variant="body1" fontWeight={600} color="text.secondary">
                 Bạn chưa đăng ký khoá học nào
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -21,21 +21,21 @@ export default function MyCoursesPage() {
     const { enrollments, loading } = useMyEnrollments();
 
     return (
-        <Box>
-            <Typography variant="h5" fontWeight={800} color="#1e293b" mb={3}>
+        <Box sx={{ width: '100%' }}>
+            <Typography variant="h5" fontWeight={700} color="text.primary" mb={3}>
                 Khoá học của tôi
             </Typography>
 
             {loading ? (
                 <Stack alignItems="center" sx={{ py: 10 }}>
-                    <CircularProgress />
+                    <CircularProgress size={32} />
                 </Stack>
             ) : enrollments.length === 0 ? (
                 <EmptyState />
             ) : (
-                <Grid container spacing={3}>
+                <Grid container spacing={2.5}>
                     {enrollments.map((enrollment) => (
-                        <Grid item xs={12} sm={6} md={4} key={enrollment._id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={enrollment._id}>
                             <CourseCard course={enrollment.courseId} />
                         </Grid>
                     ))}

@@ -1,4 +1,5 @@
 import mongoose, {Document, Model, Schema} from "mongoose";
+import { logger } from '../config/logger.js';
 
 export interface IReview extends Document {
     userId:     mongoose.Types.ObjectId;
@@ -25,11 +26,12 @@ const reviewSchema = new Schema({
     comment:    { type: String, required: true }
 }, {timestamps: true});
 
-// Mỗi user chỉ review 1 lần
 reviewSchema.index(
     { userId: 1, courseId: 1 },
     { unique: true }
 )
+
+reviewSchema.index({ courseId: 1, createdAt: -1 })
 
 reviewSchema.statics.calcAverageRating = async function (courseId: mongoose.Types.ObjectId) {
     const result = await this.aggregate([
@@ -42,14 +44,14 @@ reviewSchema.statics.calcAverageRating = async function (courseId: mongoose.Type
             }
         }
     ])
-    console.log('Aggregate result:', result)  // xem có ra gì không
+    logger.debug({ result }, 'Review aggregate result')
     if (result.length > 0) {
         await mongoose.model("Course").findByIdAndUpdate(courseId, {
             ratingAverage: Math.round(result[0].avgRating*10) / 10,
             ratingCount: result[0].count,
         })
     } else {
-        // Không còn review nào → reset về 0
+       
         await mongoose.model('Course').findByIdAndUpdate(courseId, {
             ratingAverage: 0,
             ratingCount: 0,
@@ -58,12 +60,12 @@ reviewSchema.statics.calcAverageRating = async function (courseId: mongoose.Type
 }
 
 reviewSchema.post('save', async function () {
-    console.log('Review saved, courseId:', this.courseId)
+    logger.debug({ courseId: this.courseId }, 'Review saved')
     try {
         await (this.constructor as IReviewModel).calcAverageRating(this.courseId)
-        console.log('calcAverageRating done')
+        logger.debug('calcAverageRating completed')
     } catch (err) {
-        console.error('calcAverageRating error:', err)
+        logger.error({ error: err }, 'calcAverageRating failed')
     }
 })
 

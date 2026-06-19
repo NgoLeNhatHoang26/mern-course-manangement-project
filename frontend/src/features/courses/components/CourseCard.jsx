@@ -6,104 +6,141 @@ import CardActions from "@mui/material/CardActions";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import Rating from "@mui/material/Rating";
-import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
-import {getImageUrl} from "../../../utils/ImageURL.js";
+import { getImageUrl } from "../../../utils/ImageURL.js";
 import { memo } from "react";
+import { StarRounded, PersonRounded } from "@mui/icons-material";
+
+const LEVEL_STYLE = {
+    'Cơ bản':    { bgcolor: '#dcfce7', color: '#15803d' },
+    'Trung bình':{ bgcolor: '#fef3c7', color: '#b45309' },
+    'Nâng cao':  { bgcolor: '#fee2e2', color: '#b91c1c' },
+};
 
 const CourseCard = memo(({ course }) => {
-  
+    const { _id, title, instructor, level, ratingAverage, studentCount, thumbnail } = course;
+    const navigate = useNavigate();
+    if (!course) return null;
 
-  const {
-    _id,
-    title,
-    instructor,
-    level,
-    ratingAverage,
-    studentCount,
-    thumbnail,
-  } = course;
-  const navigate = useNavigate();
-  const handlClick = () => {
-    if (!_id)
-      return;
-    navigate(`/courses/${_id}`)
-  }
-  if (!course) return null;
-  return (
-    <Card
-      sx={{
-        height: "100%",
-        borderRadius: 2,
-        overflow: "hidden",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <CardActionArea 
-        sx={{ alignItems: "stretch" }}
-        onClick={handlClick}
-      >
-          <Box sx={{ position: "relative", paddingTop: "56.25%", overflow: "hidden" }}> {/* 16:9 */}
-              <Box
-                  component="img"
-                  src={getImageUrl(thumbnail)}
-                  alt={title}
-                  sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover", // ← cắt ảnh giữ tỉ lệ, không stretch
-                  }}
-              />
-          </Box>
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Chip
-            label={level}
-            size="small"
-            color="primary"
-            sx={{ mb: 1, textTransform: "uppercase", fontSize: 10 }}
-          />
-          <Typography gutterBottom variant="h6" component="div" noWrap>
-            {title}
-          </Typography>
+    const levelStyle = LEVEL_STYLE[level] ?? LEVEL_STYLE['Cơ bản'];
 
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-            <Avatar sx={{ width: 24, height: 24, fontSize: 12 }}>
-              {instructor?.charAt(0)}
-            </Avatar>
-            <Typography variant="body2" color="text.secondary">
-              {instructor}
-            </Typography>
-          </Stack>
+    return (
+        <Card
+            sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 2,
+            }}
+        >
+            <CardActionArea
+                onClick={() => _id && navigate(`/courses/${_id}`)}
+                sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'stretch',
+                    '&:focus-visible': {
+                        outline: '2px solid',
+                        outlineColor: 'primary.main',
+                        outlineOffset: 2,
+                    },
+                }}
+            >
+                {/* Thumbnail */}
+                <Box
+                    sx={{
+                        position: 'relative',
+                        pt: '56.25%',   /* 16:9 */
+                        overflow: 'hidden',
+                        bgcolor: 'grey.100',
+                        flexShrink: 0,
+                    }}
+                >
+                    <Box
+                        component="img"
+                        src={getImageUrl(thumbnail)}
+                        alt={title}
+                        loading="lazy"
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            transition: 'transform 300ms ease',
+                            '.MuiCardActionArea-root:hover &': { transform: 'scale(1.03)' },
+                        }}
+                    />
+                    {/* Level badge */}
+                    <Chip
+                        label={level}
+                        size="small"
+                        sx={{
+                            position: 'absolute',
+                            top: 8,
+                            left: 8,
+                            fontWeight: 600,
+                            fontSize: '0.6875rem',
+                            height: 22,
+                            ...levelStyle,
+                        }}
+                    />
+                </Box>
 
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Rating
-              name="course-rating"
-              value={ratingAverage}
-              precision={0.5}
-              readOnly
-              size="small"
-            />
-            <Typography variant="body2" color="text.secondary">
-              {ratingAverage?.toFixed(1) || "0.0"} ({studentCount?.toLocaleString() || 0} studentCount)
-            </Typography>
-          </Stack>
-        </CardContent>
-      </CardActionArea>
-      <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-        <Box sx={{ flexGrow: 1 }} />
-        <Button variant="contained" size="small" fullWidth>
-          View Course
-        </Button>
-      </CardActions>
-    </Card>
-  );
-})
+                <CardContent sx={{ flex: 1, p: 2, pb: '12px !important' }}>
+                    <Typography
+                        variant="subtitle1"
+                        fontWeight={600}
+                        sx={{
+                            fontSize: '0.9375rem',
+                            lineHeight: 1.4,
+                            mb: 1,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            color: 'text.primary',
+                        }}
+                    >
+                        {title}
+                    </Typography>
+
+                    <Stack direction="row" alignItems="center" spacing={0.5} mb={1.5}>
+                        <PersonRounded sx={{ fontSize: 14, color: 'text.secondary' }} />
+                        <Typography variant="caption" color="text.secondary" noWrap>
+                            {instructor}
+                        </Typography>
+                    </Stack>
+
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <StarRounded sx={{ fontSize: 14, color: '#f59e0b' }} />
+                        <Typography variant="caption" fontWeight={600} color="text.primary">
+                            {ratingAverage?.toFixed(1) ?? '—'}
+                        </Typography>
+                        {studentCount > 0 && (
+                            <Typography variant="caption" color="text.secondary">
+                                ({studentCount?.toLocaleString()} học viên)
+                            </Typography>
+                        )}
+                    </Stack>
+                </CardContent>
+            </CardActionArea>
+
+            <CardActions sx={{ px: 2, pb: 2, pt: 0.5 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    onClick={() => _id && navigate(`/courses/${_id}`)}
+                    sx={{ fontWeight: 500 }}
+                >
+                    Xem khoá học
+                </Button>
+            </CardActions>
+        </Card>
+    );
+});
 
 export default CourseCard;

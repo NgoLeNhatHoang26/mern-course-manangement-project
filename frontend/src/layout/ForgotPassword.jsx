@@ -9,6 +9,12 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import { Alert, CircularProgress } from '@mui/material'
 import { authService } from '@features/auth'
 
+/* ── WCAG 2.2 AA focus-visible outline ── */
+const focusVisibleOutline = {
+    outline: '2px solid var(--color-surface-base)',
+    outlineOffset: 'var(--space-2)',
+};
+
 export default function ForgotPassword({ open, handleClose }) {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
@@ -22,9 +28,8 @@ export default function ForgotPassword({ open, handleClose }) {
         try {
             await authService.forgotPassword(email)
             setSuccess(true)
-        } catch (err) {
+        } catch {
             setError('Có lỗi xảy ra, vui lòng thử lại')
-            console.error(err)
         } finally {
             setLoading(false)
         }
@@ -39,7 +44,9 @@ export default function ForgotPassword({ open, handleClose }) {
 
     return (
         <Dialog open={open} onClose={handleDialogClose}>
-            <DialogTitle>Đặt lại mật khẩu</DialogTitle>
+            <DialogTitle sx={{ fontSize: 'var(--font-size-3xl)' }}>
+                Đặt lại mật khẩu
+            </DialogTitle>
             <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 400 }}>
                 {success ? (
                     <Alert severity="success">
@@ -47,7 +54,12 @@ export default function ForgotPassword({ open, handleClose }) {
                     </Alert>
                 ) : (
                     <>
-                        <DialogContentText>
+                        <DialogContentText
+                            sx={{
+                                fontSize: 'var(--font-size-md)',             // font.size.md = 14px
+                                color: 'var(--color-text-secondary)',        // color.text.secondary = #a9b3bb
+                            }}
+                        >
                             Nhập email tài khoản của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu.
                         </DialogContentText>
                         {error && <Alert severity="error">{error}</Alert>}
@@ -59,18 +71,50 @@ export default function ForgotPassword({ open, handleClose }) {
                             placeholder="Email address"
                             type="email"
                             fullWidth
+                            sx={{
+                                fontSize: 'var(--font-size-md)',
+                                borderRadius: 'var(--radius-xs)',
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'var(--color-text-tertiary)',   // color.text.tertiary = #292929
+                                    borderWidth: '2px',
+                                },
+                            }}
                         />
                     </>
                 )}
             </DialogContent>
             <DialogActions sx={{ pb: 3, px: 3 }}>
-                <Button onClick={handleDialogClose}>Đóng</Button>
+                <Button
+                    onClick={handleDialogClose}
+                    sx={{
+                        fontSize: 'var(--font-size-md)',
+                        transition: `background-color var(--motion-duration-instant)`,
+                        '&:hover': { backgroundColor: 'var(--color-surface-raised)' },
+                        '&:focus-visible': {
+                            ...focusVisibleOutline,
+                            borderRadius: 'var(--radius-xs)',
+                        },
+                    }}
+                >
+                    Đóng
+                </Button>
                 {!success && (
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
                         disabled={loading || !email}
                         startIcon={loading ? <CircularProgress size={16} /> : null}
+                        sx={{
+                            fontSize: 'var(--font-size-md)',
+                            borderRadius: 'var(--radius-xs)',
+                            transition: `background-color var(--motion-duration-instant)`,
+                            '&:focus-visible': focusVisibleOutline,
+                            '&.Mui-disabled': {
+                                opacity: 0.38,
+                                pointerEvents: 'all',
+                                cursor: 'not-allowed',
+                            },
+                        }}
                     >
                         Gửi link reset
                     </Button>

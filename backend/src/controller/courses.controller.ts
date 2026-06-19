@@ -21,10 +21,6 @@ export const getCourseByIdController = async (req: Request, res: Response, next:
         const course = await getCourseById(req.params.courseId as string);
         res.json(course);
     } catch (error) {
-        if ((error as Error).message === 'Course not found') {
-            res.status(404).json({ message: 'Course not found' });
-            return;
-        }
         next(error);
     }
 };
@@ -36,13 +32,6 @@ export const createCourseController = async (req: Request, res: Response, next: 
         const newCourse = await createCourse({ title, description, level, instructor }, thumbnail);
         res.status(201).json(newCourse);
     } catch (error) {
-        if ((error as any).name === 'ValidationError') {
-            res.status(400).json({
-                message: 'Dữ liệu không hợp lệ',
-                errors: Object.values((error as any).errors).map((e: any) => e.message),
-            });
-            return;
-        }
         next(error);
     }
 };
@@ -57,10 +46,6 @@ export const updateCourseController = async (req: Request, res: Response, next: 
         const updatedCourse = await updateCourse(courseId as string, body);
         res.json(updatedCourse);
     } catch (error) {
-        if ((error as Error).message === 'Course not found') {
-            res.status(404).json({ message: 'Course not found' });
-            return;
-        }
         next(error);
     }
 };
@@ -71,10 +56,6 @@ export const deleteCourseController = async (req: Request, res: Response, next: 
         const result = await deleteCourse(courseId as string);
         res.json(result);
     } catch (error) {
-        if ((error as Error).message === 'Course not found') {
-            res.status(404).json({ message: 'Course not found' });
-            return;
-        }
         next(error);
     }
 };

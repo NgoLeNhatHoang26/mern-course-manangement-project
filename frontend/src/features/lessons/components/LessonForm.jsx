@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
 import { VideoFile } from '@mui/icons-material'
 import BaseForm from '../../../components/BaseForm.jsx'
 
@@ -11,9 +11,13 @@ const INITIAL_FORM = {
     videoUrl: null,
 }
 
-export default function LessonForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu' }) {
+const MAX_VIDEO_SIZE_MB = 500
+const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024
+
+export default function LessonForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu', loading = false }) {
     const [form, setForm] = useState(initialValues)
     const [videoName, setVideoName] = useState(null)
+    const [videoError, setVideoError] = useState('')
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
@@ -23,6 +27,12 @@ export default function LessonForm({ onSubmit, initialValues = INITIAL_FORM, sub
     const handleFileChange = (e) => {
         const file = e.target.files[0]
         if (!file) return
+        if (file.size > MAX_VIDEO_SIZE_BYTES) {
+            setVideoError(`Video quá lớn. Kích thước tối đa cho phép là ${MAX_VIDEO_SIZE_MB}MB.`)
+            e.target.value = ''
+            return
+        }
+        setVideoError('')
         setForm((prev) => ({ ...prev, videoUrl: file }))
         setVideoName(file.name)
     }
@@ -39,7 +49,7 @@ export default function LessonForm({ onSubmit, initialValues = INITIAL_FORM, sub
     }
 
     return (
-        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel}>
+        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel} loadingLabel="Đang tạo bài học..." loading={loading}>
             <TextField
                 label="Tên bài học"
                 name="title"
@@ -76,13 +86,17 @@ export default function LessonForm({ onSubmit, initialValues = INITIAL_FORM, sub
                     {videoName ? 'Đổi video' : 'Chọn video'}
                     <input type="file" accept="video/*" hidden onChange={handleFileChange} />
                 </Button>
-                <Typography
-                    variant="caption"
-                    color={videoName ? 'text.primary' : 'text.secondary'}
-                    sx={{ mt: 0.75, display: 'block' }}
-                >
-                    {videoName ?? 'Chưa có video bài giảng'}
-                </Typography>
+                {videoError ? (
+                    <Alert severity="error" sx={{ mt: 1 }}>{videoError}</Alert>
+                ) : (
+                    <Typography
+                        variant="caption"
+                        color={videoName ? 'text.primary' : 'text.secondary'}
+                        sx={{ mt: 0.75, display: 'block' }}
+                    >
+                        {videoName ?? 'Chưa có video bài giảng'}
+                    </Typography>
+                )}
             </Box>
             <FormControlLabel
                 control={<Checkbox name="isPreview" checked={form.isPreview} onChange={handleChange} />}

@@ -10,16 +10,12 @@ export const getAllUsersController = async (req: Request, res: Response, next: N
     }
 };
 
-export const getUserByIdController = async (req: Request, res: Response): Promise<void> => {
+export const getUserByIdController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const user = await getUserById(req.params.id as string);
         res.json(user);
     } catch (error) {
-        if ((error as Error).message === 'User not found') {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        res.status(400).json({ message: 'Invalid user ID' });
+        next(error);
     }
 };
 
@@ -30,14 +26,6 @@ export const updateUserRoleController = async (req: Request, res: Response, next
         const updatedUser = await updateUserRole(id as string, role);
         res.json(updatedUser);
     } catch (error) {
-        if ((error as Error).message === 'Role không hợp lệ') {
-            res.status(400).json({ message: 'Role không hợp lệ' });
-            return;
-        }
-        if ((error as Error).message === 'User not found') {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
         next(error);
     }
 };
@@ -49,14 +37,6 @@ export const toggleUserStatusController = async (req: Request, res: Response, ne
         const updatedUser = await toggleUserStatus(id as string, currentUserId);
         res.json(updatedUser);
     } catch (error) {
-        if ((error as Error).message === 'User not found') {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        if ((error as Error).message === 'Không thể khóa tài khoản của chính mình') {
-            res.status(400).json({ message: 'Không thể khóa tài khoản của chính mình' });
-            return;
-        }
         next(error);
     }
 };
