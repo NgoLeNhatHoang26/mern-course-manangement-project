@@ -17,10 +17,6 @@ export const getLessonModuleByIdController = async (req: Request, res: Response,
         const module = await getLessonModuleById(moduleId);
         res.json(module);
     } catch (error) {
-        if ((error as Error).message === 'Lesson module not found') {
-            res.status(404).json({ message: 'Lesson module not found' });
-            return;
-        }
         next(error);
     }
 };
@@ -41,10 +37,6 @@ export const updateLessonModuleController = async (req: Request, res: Response, 
         const updatedModule = await updateLessonModule(moduleId, req.body);
         res.json(updatedModule);
     } catch (error) {
-        if ((error as Error).message === 'Lesson module not found') {
-            res.status(404).json({ message: 'Lesson module not found' });
-            return;
-        }
         next(error);
     }
 };
@@ -55,10 +47,6 @@ export const deleteLessonModuleController = async (req: Request, res: Response, 
         const result = await deleteLessonModule(moduleId);
         res.json(result);
     } catch (error) {
-        if ((error as Error).message === 'Lesson module not found') {
-            res.status(404).json({ message: 'Lesson module not found' });
-            return;
-        }
         next(error);
     }
 };

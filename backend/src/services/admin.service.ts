@@ -2,6 +2,7 @@ import { User } from '../models/user.js';
 import { Course } from '../models/course.js';
 import { Enrollment } from '../models/enrollment.js';
 import { Review } from '../models/review.js';
+import { AppError } from '../utils/AppError.js';
 
 export const getAllUsers = async () => {
     const users = await User.find().select('-password');
@@ -18,13 +19,13 @@ export const getAllUsers = async () => {
 
 export const getUserById = async (userId: string) => {
     const user = await User.findById(userId).select('-password');
-    if (!user) throw new Error('User not found');
+    if (!user) throw new AppError('User not found', 404);
     return user;
 };
 
 export const updateUserRole = async (userId: string, role: string) => {
     if (!['user', 'admin'].includes(role)) {
-        throw new Error('Role không hợp lệ');
+        throw new AppError('Invalid role', 400);
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -33,16 +34,16 @@ export const updateUserRole = async (userId: string, role: string) => {
         { new: true }
     ).select('-password');
 
-    if (!updatedUser) throw new Error('User not found');
+    if (!updatedUser) throw new AppError('User not found', 404);
     return updatedUser;
 };
 
 export const toggleUserStatus = async (userId: string, currentUserId: string) => {
     const user = await User.findById(userId);
-    if (!user) throw new Error('User not found');
+    if (!user) throw new AppError('User not found', 404);
 
     if (user._id.toString() === currentUserId) {
-        throw new Error('Không thể khóa tài khoản của chính mình');
+        throw new AppError('Cannot deactivate your own account', 400);
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -56,7 +57,7 @@ export const toggleUserStatus = async (userId: string, currentUserId: string) =>
 
 export const deleteUser = async (userId: string) => {
     const deletedUser = await User.findByIdAndDelete(userId);
-    if (!deletedUser) throw new Error('User not found');
+    if (!deletedUser) throw new AppError('User not found', 404);
     return { message: 'User deleted successfully' };
 };
 

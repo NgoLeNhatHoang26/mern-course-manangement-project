@@ -12,17 +12,13 @@ type AnyError = {
 };
 
 const getStatusCode = (error: AnyError): number => {
-    // 1. AppError — carries its own statusCode (most specific)
     if (error instanceof AppError) return error.statusCode;
 
-    // 2. Mongoose / JWT well-known names
     if (error.name === 'ValidationError' || error.name === 'CastError') return 400;
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') return 401;
 
-    // 3. MongoDB duplicate key
     if (error.code === 11000) return 409;
 
-    // 4. Explicit statusCode/status set by caller
     const explicit = error.statusCode ?? error.status;
     if (typeof explicit === 'number') return explicit;
 
@@ -59,15 +55,17 @@ export const errorMiddleware = (
 ): void => {
     const statusCode = getStatusCode(error);
 
-    const validationErrors =
-        error.name === 'ValidationError' && error.errors
-            ? Object.values(error.errors).map((item) => item.message ?? 'Invalid value')
-            : undefined;
+    const responseErrors =
+        error instanceof AppError && error.errors !== undefined
+            ? error.errors
+            : error.name === 'ValidationError' && error.errors
+              ? Object.values(error.errors).map((item) => item.message ?? 'Invalid value')
+              : undefined;
 
     res.status(statusCode).json({
         success: false,
         message: getErrorMessage(error, statusCode),
-        errors: validationErrors,
+        errors: responseErrors,
         code: getErrorCode(statusCode),
     });
 };

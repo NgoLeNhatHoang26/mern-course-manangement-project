@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec} from "./config/swagger.js";
 import { globalRateLimiter } from './middleware/rateLimit.middleware.js';
+import { AppError } from './utils/AppError.js';
 
 const app = express();
 
@@ -28,11 +29,8 @@ app.use('/api', globalRateLimiter);
 app.use(responseFormatMiddleware);
 
 router(app)
-app.use((req, res) => {
-    res.status(404).json({
-        message: 'Route not found',
-        code: 'NOT_FOUND',
-    });
+app.use((req, res, next) => {
+    next(new AppError('Route not found', 404));
 });
 app.use(errorMiddleware)
 

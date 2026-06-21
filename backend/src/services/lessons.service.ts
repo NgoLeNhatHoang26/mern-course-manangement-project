@@ -1,6 +1,7 @@
 import { Lesson } from '../models/lesson.js'
 import { CreateLessonInput, UpdateLessonInput } from '../schemas/lesson.schema.js';
 import { deleteFile } from '../config/cloudinary.config.js';
+import { AppError } from '../utils/AppError.js';
 
 
 interface UpdateLessonBody extends UpdateLessonInput {
@@ -10,7 +11,7 @@ interface UpdateLessonBody extends UpdateLessonInput {
 export const getLessonById = async (lessonId: string) => {
     const lessson =  await Lesson.findById(lessonId);
     if (!lessson) {
-        throw new Error('Lesson not found');
+        throw new AppError('Lesson not found', 404);
     }
     return lessson;
 };
@@ -18,7 +19,7 @@ export const getLessonById = async (lessonId: string) => {
 export const getLessonsByModule = async (moduleId : string) => {
     const lessons = await Lesson.find({ moduleId }).sort({ order: 1 });
     if (!lessons) {
-        throw new Error('Lessons not found');
+        throw new AppError('Lessons not found', 404);
     }
     return lessons;
 }
@@ -41,7 +42,7 @@ export const updateLesson = async (lessonId: string, updateData: UpdateLessonBod
     const lesson = await Lesson.findById(lessonId);
 
     if (!lesson) {
-        throw new Error('Lesson not found')
+        throw new AppError('Lesson not found', 404)
     }
     if ( lesson?.videoUrl && updateData.videoUrl && lesson.videoUrl !== updateData.videoUrl) {
         await deleteFile(lesson.videoUrl)
@@ -55,7 +56,7 @@ export const updateLesson = async (lessonId: string, updateData: UpdateLessonBod
 export const deleteLesson = async (lessonId: string) => {
     const lesson = await Lesson.findById(lessonId)
     if (!lesson) {
-        throw new Error('Lesson not found')
+        throw new AppError('Lesson not found', 404)
     }
     if (lesson.videoUrl) {
         await deleteFile(lesson.videoUrl)

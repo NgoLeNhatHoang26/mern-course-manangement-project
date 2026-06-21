@@ -124,7 +124,7 @@ export const resetPassword = async (token: string, password: string) => {
     }).select('+resetPasswordToken +resetPasswordExpires');
 
     if (!user) {
-        throw new AppError('Token không hợp lệ hoặc đã hết hạn', 400);
+        throw new AppError('Invalid or expired token', 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
