@@ -10,6 +10,7 @@ import {
 } from '../services/auth.service.js';
 import { RegisterInput, LoginInput } from '../schemas/auth.schema.js';
 import { env } from '../config/env.js';
+import { AppError } from '../utils/AppError.js';
 
 const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -40,8 +41,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
 const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         if (!req.user) {
-            res.status(401).json({ message: 'Unauthorized' });
-            return;
+            return next(new AppError('Unauthorized', 401));
         }
         const user = await getUserById(req.user._id as unknown as string);
         res.status(200).json(user);
@@ -54,8 +54,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction): Promise
     try {
         const token = req.cookies?.refreshToken;
         if (!token) {
-            res.status(401).json({ message: 'No refresh token' });
-            return;
+            return next(new AppError('No refresh token', 401));
         }
 
         const { accessToken } = await refreshAccessToken(token);

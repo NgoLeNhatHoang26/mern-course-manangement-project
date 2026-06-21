@@ -9,6 +9,12 @@ const redisState = vi.hoisted(() => ({
 
 const redisCtorMock = vi.hoisted(() => vi.fn());
 
+const loggerMocks = vi.hoisted(() => ({
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+
 vi.mock('ioredis', () => ({
     Redis: function RedisMock(...args: unknown[]) {
         redisCtorMock(...args);
@@ -16,20 +22,24 @@ vi.mock('ioredis', () => ({
     },
 }));
 
+vi.mock('../../config/logger.js', () => ({
+    logger: loggerMocks,
+}));
+
 describe('redis lib unit', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.clearAllMocks();
+        process.env.NODE_ENV = 'test';
         delete process.env.REDIS_URL;
     });
 
     it('exports null client when REDIS_URL is not set', async () => {
-        const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
         const { redisClient, connectRedis } = await import('../redis.js');
 
         expect(redisClient).toBeNull();
         await expect(connectRedis()).resolves.toBeUndefined();
-        expect(logSpy).toHaveBeenCalledWith('REDIS_URL is not set. Running without Redis.');
+        expect(loggerMocks.warn).toHaveBeenCalledWith('REDIS_URL is not set. Running without Redis.');
     });
 
     it('connects redis when client is initialized and not ready', async () => {
@@ -39,14 +49,13 @@ describe('redis lib unit', () => {
             status: 'end',
             connect: connectMock,
         };
-        const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
         const { connectRedis } = await import('../redis.js');
         await connectRedis();
 
         expect(redisCtorMock).toHaveBeenCalledTimes(1);
         expect(connectMock).toHaveBeenCalledTimes(1);
-        expect(logSpy).toHaveBeenCalledWith('Redis connected successfully');
+        expect(loggerMocks.info).toHaveBeenCalledWith('Redis connected successfully');
     });
 
     it('does not call connect when client is already ready', async () => {

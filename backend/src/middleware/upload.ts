@@ -3,6 +3,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.config.js";
 import {Request, Response, NextFunction} from "express";
 import { logger } from '../config/logger.js';
+import { AppError } from '../utils/AppError.js';
 const imageStorage = new CloudinaryStorage({
     cloudinary,
     params: async (req, file) => {
@@ -18,8 +19,7 @@ export  const handleImageUpload = (req: Request, res: Response, next: NextFuncti
     uploadImage.single('thumbnail')(req, res, (err) => {
         if (err) {
             logger.warn({ error: err }, 'Multer/Cloudinary error')
-            res.status(400).json({ message: err.message })
-            return
+            return next(new AppError(err.message, 400));
         }
         next()
     })

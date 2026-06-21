@@ -41,16 +41,12 @@ export const toggleUserStatusController = async (req: Request, res: Response, ne
     }
 };
 
-export const deleteUserController = async (req: Request, res: Response): Promise<void> => {
+export const deleteUserController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result = await deleteUser(req.params.id as string);
         res.json(result);
     } catch (error) {
-        if ((error as Error).message === 'User not found') {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        res.status(500).json({ message: (error as Error).message });
+        next(error);
     }
 };
 

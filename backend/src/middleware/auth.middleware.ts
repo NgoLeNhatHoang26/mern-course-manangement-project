@@ -3,24 +3,21 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { User } from '../models/user.js'
 import mongoose from "mongoose";
 import { env } from '../config/env.js';
+import { AppError } from '../utils/AppError.js';
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json(
-            {message: "Unauthorized: No token provided"}
-        )
-        return
+        return next(new AppError('Unauthorized: No token provided', 401));
     }
 
     const token = authHeader.split(" ")[1]
 
     const secret = env.JWT_SECRET
     if (!secret) {
-        res.status(500).json({ message: 'JWT_SECRET not configured' })
-        return
+        return next(new AppError('JWT_SECRET not configured', 500));
     }
     
     let decoded: JwtPayload
@@ -29,18 +26,11 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         decoded = jwt.verify(token, secret) as JwtPayload
     } catch (error) {
         const reason = (error as any).name === 'TokenExpiredError' ? 'Token expired' : 'Token invalid or malformed'
-        res.status(401).json(
-            { message: `Unauthorized: ${reason}` }
-        )
-        return
+        return next(new AppError(`Unauthorized: ${reason}`, 401));
     }
     const user = await User.findById(decoded.sub)
     if (!user) {
-        res.status(401).json(
-            {message: "Unauthorized: User not found"}
-
-        )
-        return
+        return next(new AppError('Unauthorized: User not found', 401));
     }
     req.user = {
         _id: new mongoose.Types.ObjectId(user._id as string),

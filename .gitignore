@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 docker-compose.yml
 .env
+.skills-lock.json

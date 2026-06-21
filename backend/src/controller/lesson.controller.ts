@@ -6,10 +6,6 @@ export const getLessonByIdController = async (req: Request, res: Response, next:
     try {
         const lessonId = req.params.lessonId as string
         const lesson = await getLessonById(lessonId)
-        if (!lesson) {
-            res.status(404).json({ message: 'Lesson is not found' })
-            return
-        }
         res.status(200).json(lesson)
     } catch (error) {
         next(error)
@@ -43,10 +39,6 @@ export const updateLessonController = async (req: Request, res: Response, next: 
         const { lessonId } = req.params as { lessonId: string }
         const updateData = req.body as UpdateLessonInput
         const updatedLesson = await updateLesson(lessonId, updateData)
-        if (!updatedLesson) {
-            res.status(404).json({ message: 'Lesson not found' })
-            return
-        }
         res.json(updatedLesson)
     } catch (error) {
         next(error)
