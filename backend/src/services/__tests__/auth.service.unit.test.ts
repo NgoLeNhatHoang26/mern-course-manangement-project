@@ -32,6 +32,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models/user.js';
 import { sendResetPasswordEmail } from '../../config/mailer.js';
+import { AppError } from '../../utils/AppError.js';
 
 import { registerUser, loginUser, refreshAccessToken, resetPassword, forgotPassword } from '../auth.service.js';
 
@@ -194,6 +195,47 @@ describe ('auth.service. unit', () => {
                 statusCode: 403,
             });
             expect((jwt as any).sign).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('forgotPassword', () => {
+        it('returns generic message when email is not found', async () => {
+            vi.mocked(User.findOne).mockResolvedValue(null as any);
+
+            const result = await forgotPassword('missing@example.com');
+
+            expect(result).toEqual({ message: 'Nếu email tồn tại, bạn sẽ nhận được link reset' });
+            expect(sendResetPasswordEmail).not.toHaveBeenCalled();
+            expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+        });
+
+        it('sends email before saving reset token', async () => {
+            const user = { _id: 'u1', email: 'test@example.com' } as any;
+            vi.mocked(User.findOne).mockResolvedValue(user);
+            vi.mocked(sendResetPasswordEmail).mockResolvedValue(undefined);
+
+            const result = await forgotPassword('test@example.com');
+
+            expect(sendResetPasswordEmail).toHaveBeenCalledWith('test@example.com', expect.any(String));
+            expect(User.findByIdAndUpdate).toHaveBeenCalledWith('u1', {
+                resetPasswordToken: expect.any(String),
+                resetPasswordExpires: expect.any(Date),
+            });
+            expect(result).toEqual({ message: 'Nếu email tồn tại, bạn sẽ nhận được link reset' });
+        });
+
+        it('does not save reset token when email sending fails', async () => {
+            const user = { _id: 'u1', email: 'test@example.com' } as any;
+            vi.mocked(User.findOne).mockResolvedValue(user);
+            vi.mocked(sendResetPasswordEmail).mockRejectedValue(
+                new AppError('Unable to send reset password email. Please try again later.', 503),
+            );
+
+            await expect(forgotPassword('test@example.com')).rejects.toMatchObject({
+                message: 'Unable to send reset password email. Please try again later.',
+                statusCode: 503,
+            });
+            expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
         });
     });
 })
