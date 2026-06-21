@@ -33,7 +33,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../../models/user.js';
 import { sendResetPasswordEmail } from '../../config/mailer.js';
 
-import { registerUser, loginUser, resetPassword, forgotPassword } from '../auth.service.js';
+import { registerUser, loginUser, refreshAccessToken, resetPassword, forgotPassword } from '../auth.service.js';
 
 describe ('auth.service. unit', () => {
     beforeEach(() => {
@@ -112,7 +112,33 @@ describe ('auth.service. unit', () => {
                     password: 'wrongpassword',
                 } as any)
             ).rejects.toThrow('Invalid email or password');
-        })
+        });
+
+        it('should throw when account is deactivated', async () => {
+            const fakeUser = {
+                id: 'u1',
+                password: 'hashed-password',
+                role: 'user',
+                isActive: false,
+            } as any;
+
+            vi.mocked(User.findOne).mockReturnValue({
+                select: vi.fn().mockResolvedValue(fakeUser),
+            } as any);
+            vi.mocked((bcrypt as any).compare).mockResolvedValue(true);
+
+            await expect(
+                loginUser({
+                    email: 'test@example.com',
+                    password: 'testpassword',
+                } as any),
+            ).rejects.toMatchObject({
+                message: 'Account is deactivated',
+                statusCode: 403,
+            });
+            expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+        });
+
         it('should return token and refresh token when login successfully', async () => {
             const fakeUser = {
                 _id: 'mongo-id',
@@ -121,6 +147,7 @@ describe ('auth.service. unit', () => {
                 email: 'test@example.com',
                 password: 'hashed-password',
                 role: 'user',
+                isActive: true,
             }
             vi.mocked(User.findOne).mockReturnValue({
                 select: vi.fn().mockResolvedValue(fakeUser)
@@ -147,6 +174,26 @@ describe ('auth.service. unit', () => {
                     role: 'user',
                 },
             })
+        });
+    });
+
+    describe('refreshAccessToken', () => {
+        it('should throw when account is deactivated', async () => {
+            vi.mocked((jwt as any).verify).mockReturnValue({ sub: 'u1' });
+            vi.mocked(User.findById).mockReturnValue({
+                select: vi.fn().mockResolvedValue({
+                    id: 'u1',
+                    role: 'user',
+                    refreshToken: 'valid-refresh',
+                    isActive: false,
+                }),
+            } as any);
+
+            await expect(refreshAccessToken('valid-refresh')).rejects.toMatchObject({
+                message: 'Account is deactivated',
+                statusCode: 403,
+            });
+            expect((jwt as any).sign).not.toHaveBeenCalled();
         });
     });
 })
