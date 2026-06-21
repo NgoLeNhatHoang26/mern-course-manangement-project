@@ -55,6 +55,10 @@ export default function EnrollButton({ courseId, modules = [] }) {
             await EnrollmentService.enroll(courseId);
             setIsEnrolled(true);
         } catch (error) {
+            if (error?.response?.status === 409) {
+                setIsEnrolled(true);
+                return;
+            }
             console.error(error);
         } finally {
             setEnrolling(false);
