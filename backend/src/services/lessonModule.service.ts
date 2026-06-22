@@ -2,6 +2,7 @@ import { LessonModule } from '../models/lessonModule.js';
 import { deleteLesson } from './lessons.service.js';
 import { Lesson } from '../models/lesson.js';
 import { AppError } from '../utils/AppError.js';
+import { getNextOrder, moduleOrderScope } from '../utils/orderSequence.js';
 export const getLessonModulesByCourse = async (courseId: string) => {
     return await LessonModule.find({ courseId }).sort({ order: 1 });
 };
@@ -14,7 +15,8 @@ export const getLessonModuleById = async (moduleId: string) => {
 
 export const createLessonModule = async (courseId: string, data: any) => {
     const lastModule = await LessonModule.findOne({ courseId }).sort({ order: -1 });
-    const newOrder = lastModule ? lastModule.order + 1 : 1;
+    const floor = lastModule?.order ?? 0;
+    const newOrder = await getNextOrder(moduleOrderScope(courseId), floor);
     const newLessonModule = new LessonModule({
         ...data,
         courseId,
