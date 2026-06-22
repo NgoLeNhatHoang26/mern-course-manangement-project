@@ -32,6 +32,9 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     if (!user) {
         return next(new AppError('Unauthorized: User not found', 401));
     }
+    if (user.isActive === false) {
+        return next(new AppError('Account is deactivated', 403));
+    }
     req.user = {
         _id: new mongoose.Types.ObjectId(user._id as string),
         id: user.id,

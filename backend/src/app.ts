@@ -9,11 +9,12 @@ import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec} from "./config/swagger.js";
 import { globalRateLimiter } from './middleware/rateLimit.middleware.js';
 import { AppError } from './utils/AppError.js';
+import { env } from './config/env.js';
 
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: env.CLIENT_URL,
     credentials: true,
 }));
 

@@ -1,40 +1,51 @@
 import nodemailer from 'nodemailer'
+import type { Transporter } from 'nodemailer'
 import { env } from './env.js';
 import { logger } from './logger.js';
+import { AppError } from '../utils/AppError.js';
 
 const mailUser = env.MAIL_USER
 const mailPass = env.MAIL_PASS
 
-if (!mailUser || !mailPass) {
+export const isMailerConfigured = (): boolean => Boolean(mailUser && mailPass)
+
+if (!isMailerConfigured()) {
     logger.warn('Mailer disabled: MAIL_USER or MAIL_PASS is missing.')
 }
 
-export const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: mailUser,
-        pass: mailPass,  
-    },
-})
-transporter.verify((error, success) => {
-    if (error) {
-        logger.error({ error }, 'Mailer error')
-    } else {
-        logger.info('Mailer ready')
-    }
-})
-export const sendResetPasswordEmail = async (email: string, token: string) => {
-    if (!mailUser || !mailPass) {
-        throw new Error('Mailer is not configured. Please set MAIL_USER and MAIL_PASS.')
+const transporter: Transporter | null = isMailerConfigured()
+    ? nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: mailUser,
+            pass: mailPass,
+        },
+    })
+    : null
+
+if (transporter) {
+    transporter.verify((error) => {
+        if (error) {
+            logger.error({ error }, 'Mailer verification failed')
+        } else {
+            logger.info('Mailer ready')
+        }
+    })
+}
+
+export const sendResetPasswordEmail = async (email: string, token: string): Promise<void> => {
+    if (!transporter || !isMailerConfigured()) {
+        throw new AppError('Email service is not configured', 503);
     }
 
     const resetUrl = `${env.CLIENT_URL}/reset-password?token=${token}`
 
-    await transporter.sendMail({
-        from: `"Course Management" <${mailUser}>`,
-        to: email,
-        subject: 'Đặt lại mật khẩu',
-        html: `
+    try {
+        await transporter.sendMail({
+            from: `"Course Management" <${mailUser}>`,
+            to: email,
+            subject: 'Đặt lại mật khẩu',
+            html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Đặt lại mật khẩu</h2>
         <p>Bạn đã yêu cầu đặt lại mật khẩu. Click vào link bên dưới:</p>
@@ -55,5 +66,9 @@ export const sendResetPasswordEmail = async (email: string, token: string) => {
         <p>Nếu bạn không yêu cầu điều này, hãy bỏ qua email này.</p>
       </div>
     `,
-    })
+        })
+    } catch (error) {
+        logger.error({ error, email }, 'Failed to send reset password email')
+        throw new AppError('Unable to send reset password email. Please try again later.', 503);
+    }
 }

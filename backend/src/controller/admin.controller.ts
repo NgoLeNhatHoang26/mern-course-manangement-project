@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { getAllUsers, getUserById, updateUserRole, toggleUserStatus, deleteUser, getDashboard } from '../services/admin.service.js';
+import { parsePaginationQuery } from '../utils/pagination.js';
 
 export const getAllUsersController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const users = await getAllUsers();
-        res.json(users);
+        const { page, limit } = parsePaginationQuery(req.query, 20);
+        const result = await getAllUsers({ page, limit });
+        res.json(result);
     } catch (error) {
         next(error);
     }

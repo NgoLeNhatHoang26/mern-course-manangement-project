@@ -12,6 +12,20 @@ export interface ICourse {
     updatedAt: string
 }
 
+export interface IPagination {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+}
+
+export interface IPaginatedResult<T> {
+    items: T[]
+    pagination: IPagination
+}
+
 export interface ILessonModule{
     _id: string
     courseId:string;

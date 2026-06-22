@@ -11,12 +11,12 @@ Hệ thống quản lý khoá học trực tuyến xây dựng bằng MERN stack
 | **Frontend** | React 19, Vite 7, Material UI 7, React Router 7, Axios, Recharts |
 | **Backend** | Node.js, Express 5, TypeScript, Zod (validation), Pino (logging) |
 | **Database** | MongoDB (Mongoose 8) |
-| **Cache** | Redis 7 (ioredis) |
+| **Cache** | Redis 7 (ioredis) — tuỳ chọn |
 | **Auth** | JWT access token (15 phút) + HttpOnly refresh cookie (7 ngày) |
-| **File upload** | Cloudinary (ảnh thumbnail, video bài học) |
-| **Email** | Nodemailer (reset password) |
+| **File upload** | Cloudinary (ảnh thumbnail, video bài học) — tuỳ chọn |
+| **Email** | Nodemailer (reset password) — tuỳ chọn |
 | **Testing** | Vitest, Supertest, MongoDB Memory Server, Testing Library |
-| **DevOps** | Docker Compose, Nginx |
+| **DevOps** | Docker Compose, Nginx, GitHub Actions CI |
 | **API Docs** | Swagger UI (`/api-docs`) |
 
 ---
@@ -32,7 +32,7 @@ Hệ thống quản lý khoá học trực tuyến xây dựng bằng MERN stack
 
 ---
 
-## Yêu cầu
+## Yêu cầu hệ thống
 
 | Công cụ | Phiên bản tối thiểu |
 |---------|---------------------|
@@ -40,7 +40,7 @@ Hệ thống quản lý khoá học trực tuyến xây dựng bằng MERN stack
 | npm | 9+ |
 | MongoDB | 6+ (local hoặc Atlas) |
 | Redis | 7+ (tuỳ chọn — app chạy được khi không có Redis) |
-| Docker | 24+ (nếu chạy qua Docker) |
+| Docker | 24+ (nếu chạy qua Docker Compose) |
 
 ---
 
@@ -55,52 +55,92 @@ cd mern-course-management-project
 
 ### 2. Tạo file `.env` ở root
 
+```bash
+cp .env.example .env
+```
+
+Chỉnh sửa `.env` theo môi trường của bạn. Ví dụ chạy local:
+
 ```env
-# ── Server ─────────────────────────────────────────────
 NODE_ENV=development
 PORT=5000
 
-# ── JWT ────────────────────────────────────────────────
 JWT_SECRET=your-secret-key-min-32-chars
 JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
 JWT_EXPIRES=15m
 
-# ── Database ───────────────────────────────────────────
 MONGODB_URI=mongodb://127.0.0.1:27017/course-management
 
-# ── Redis (tuỳ chọn) ───────────────────────────────────
+# Tuỳ chọn — bật Redis cache & rate limit store
 # REDIS_URL=redis://127.0.0.1:6379
 
-# ── CORS ───────────────────────────────────────────────
 CLIENT_URL=http://localhost:3000
 
-# ── Email — reset password (tuỳ chọn) ──────────────────
+# Tuỳ chọn — gửi email reset password
 # MAIL_USER=your-gmail@gmail.com
 # MAIL_PASS=your-app-password
 
-# ── Cloudinary — upload ảnh/video (tuỳ chọn) ───────────
+# Tuỳ chọn — upload ảnh/video lên Cloudinary
 # CLOUDINARY_CLOUD_NAME=your-cloud-name
 # CLOUDINARY_API_KEY=your-api-key
 # CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-> Các biến không có `#` là **bắt buộc**. Biến có comment `(tuỳ chọn)` có default an toàn cho development.
+> Backend đọc `.env` từ thư mục root hoặc `backend/.env`. Các biến có default an toàn cho development; **bắt buộc đổi `JWT_SECRET` và `JWT_REFRESH_SECRET` trước khi deploy production**.
 
-### 3. Chạy Backend
+### 3. Tạo file `.env` cho frontend
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 4. Cài dependencies
+
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+### 5. Seed dữ liệu mẫu (tuỳ chọn)
+
+Cần MongoDB đang chạy và `MONGODB_URI` hợp lệ trong `.env`.
 
 ```bash
 cd backend
-npm install
+npm run seed
+```
+
+Script sẽ **xóa toàn bộ dữ liệu cũ** trong DB rồi tạo lại dữ liệu demo:
+
+| Email | Role | Mật khẩu |
+|-------|------|----------|
+| `admin@example.com` | admin | `Password123!` |
+| `student1@example.com` | user | `Password123!` |
+| `student2@example.com` | user | `Password123!` |
+
+Bao gồm 2 khoá học, modules, lessons, enrollments và reviews.
+
+> **Chỉ chạy trên môi trường dev/local.** Không chạy seed trên database production.
+
+### 6. Chạy Backend
+
+```bash
+cd backend
 npm run dev
 # → http://localhost:5000
 # → Swagger UI: http://localhost:5000/api-docs
 ```
 
-### 4. Chạy Frontend
+### 7. Chạy Frontend
+
+Mở terminal mới:
 
 ```bash
 cd frontend
-npm install
 npm run dev
 # → http://localhost:3000
 ```
@@ -110,7 +150,7 @@ npm run dev
 ## Chạy bằng Docker Compose
 
 ```bash
-# Build và khởi động tất cả services
+# Tạo .env ở root trước (xem bước 2 ở trên)
 docker compose up --build
 
 # Chạy ngầm
@@ -128,7 +168,7 @@ docker compose down
 | Backend API | http://localhost:5000 (internal) |
 | Redis | port 6379 (internal) |
 
-> Cần tạo file `.env` ở root trước khi chạy Docker (backend đọc `env_file: .env`).
+> Docker Compose load biến môi trường từ `.env` ở root. Nếu dùng Redis trong Docker, đặt `REDIS_URL=redis://redis:6379`.
 
 ---
 
@@ -141,6 +181,7 @@ docker compose down
 | `npm run dev` | Chạy development với hot-reload (tsx watch) |
 | `npm run build` | Compile TypeScript → `dist/` |
 | `npm start` | Chạy production build |
+| `npm run seed` | Nạp dữ liệu mẫu vào MongoDB (dev only) |
 | `npm run test:run` | Chạy toàn bộ test một lần |
 | `npm test` | Chạy test ở watch mode |
 
@@ -157,6 +198,24 @@ docker compose down
 
 ---
 
+## Kiểm thử (Testing)
+
+Backend sử dụng **Vitest** với hai lớp test:
+
+| Loại | Vị trí | Mô tả |
+|------|--------|-------|
+| Unit test | `backend/src/**/__tests__/*.unit.test.ts` | Service, middleware, lib |
+| Integration test | `backend/src/routes/__tests__/*.integration.test.ts` | Route + middleware (Supertest) |
+
+```bash
+cd backend
+npm run test:run
+```
+
+CI tự động chạy test khi push/PR qua GitHub Actions (`.github/workflows/course-management-ci.yml`).
+
+---
+
 ## Cấu trúc thư mục
 
 ```
@@ -170,6 +229,7 @@ mern-course-management-project/
 │   │   ├── services/            # Business logic
 │   │   ├── models/              # Mongoose models
 │   │   ├── routes/              # Express routers
+│   │   ├── scripts/             # seed.ts — nạp dữ liệu mẫu
 │   │   ├── middleware/          # auth, validate, rateLimit, error, responseFormat
 │   │   ├── schemas/             # Zod validation schemas
 │   │   ├── doc/                 # Swagger JSDoc cho từng domain
@@ -200,8 +260,27 @@ mern-course-management-project/
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   └── DATABASE.md
+├── .env.example                 # Template biến môi trường backend
+├── frontend/.env.example        # Template biến môi trường frontend
 └── docker-compose.yml
 ```
+
+---
+
+## Kiến trúc Backend
+
+```
+Client → Routes → Controller → Service → Model (Mongoose)
+                  ↓
+            Middleware: auth, role, validate, rateLimit, error
+```
+
+- **Controller:** nhận HTTP request, gọi service, trả response
+- **Service:** business logic, gọi Mongoose model
+- **Model:** schema, index, hooks (ví dụ auto cập nhật `studentCount`, `ratingAverage`)
+- **Middleware:** xác thực JWT, phân quyền role, validate Zod, rate limiting, format response
+
+Chi tiết: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ---
 
@@ -213,16 +292,44 @@ Swagger UI tự động sinh từ JSDoc trong `backend/src/doc/`:
 http://localhost:5000/api-docs
 ```
 
-| Nhóm | Endpoints |
-|------|-----------|
-| Auth | register, login, refresh, logout, me, forgot/reset password |
-| Courses | CRUD khoá học, lọc/tìm kiếm |
-| Modules | CRUD chương học (nested dưới course) |
-| Lessons | CRUD bài học + upload video |
-| Enrollments | Đăng ký, kiểm tra, danh sách |
-| Reviews | CRUD đánh giá (auto recalc rating) |
-| Users | Hồ sơ cá nhân |
-| Admin | Dashboard, quản lý user, phân quyền |
+| Nhóm | Base path | Mô tả |
+|------|-----------|-------|
+| Auth | `/api/auth` | register, login, refresh, logout, me, forgot/reset password |
+| Courses | `/api/courses` | CRUD khoá học, lọc/tìm kiếm (`?search=&level=`) |
+| Modules | `/api/courses/:courseId/modules` | CRUD chương học |
+| Lessons | `/api/courses/:courseId/modules/:moduleId/lessons` | CRUD bài học + upload video |
+| Enrollments | `/api/enrollments` | Đăng ký, kiểm tra, danh sách của user |
+| Reviews | `/api/courses/:courseId/reviews` | CRUD đánh giá (auto recalc rating) |
+| Users | `/api/users` | Hồ sơ cá nhân |
+| Admin | `/api/admin` | Dashboard, quản lý user, phân quyền |
+| Health | `/api/health` | Health check |
+
+**Response format chuẩn:**
+
+```json
+// Thành công
+{ "success": true, "data": { ... } }
+
+// Lỗi
+{ "success": false, "message": "...", "code": "NOT_FOUND", "errors": [...] }
+```
+
+---
+
+## Database
+
+MongoDB database tên `course-management`, gồm 6 collections:
+
+| Collection | Mô tả |
+|------------|-------|
+| `users` | Tài khoản, role (`user` / `admin`) |
+| `courses` | Khoá học |
+| `lessonmodules` | Chương học thuộc khoá |
+| `lessons` | Bài học thuộc chương |
+| `enrollments` | User ↔ Course (N–N, unique per pair) |
+| `reviews` | Đánh giá khoá học (unique per user+course) |
+
+Schema, indexes và luồng dữ liệu: [docs/DATABASE.md](docs/DATABASE.md)
 
 ---
 
@@ -236,13 +343,19 @@ http://localhost:5000/api-docs
 | `JWT_REFRESH_SECRET` | | `dev-refresh-secret` | **Thay bằng secret mạnh trong production** |
 | `JWT_EXPIRES` | | `15m` | Thời hạn access token |
 | `MONGODB_URI` | | `mongodb://127.0.0.1:27017/course-management` | MongoDB connection string |
-| `REDIS_URL` | | — | Redis URL (nếu không có, cache bị tắt) |
-| `CLIENT_URL` | | `http://localhost:3000` | Origin frontend (CORS) |
+| `REDIS_URL` | | — | Redis URL (nếu không có, cache & rate-limit store in-memory) |
+| `CLIENT_URL` | | `http://localhost:3000` | Origin frontend (CORS + link reset password) |
 | `MAIL_USER` | | — | Gmail để gửi email reset password |
 | `MAIL_PASS` | | — | App password Gmail |
 | `CLOUDINARY_CLOUD_NAME` | | — | Cloudinary (upload ảnh/video) |
 | `CLOUDINARY_API_KEY` | | — | Cloudinary |
 | `CLOUDINARY_API_SECRET` | | — | Cloudinary |
+
+**Frontend** (`frontend/.env`):
+
+| Biến | Mô tả |
+|------|-------|
+| `VITE_API_URL` | Base URL backend, gồm prefix `/api` (mặc định proxy: `http://localhost:5000/api`) |
 
 ---
 
@@ -250,4 +363,4 @@ http://localhost:5000/api-docs
 
 - [Kiến trúc hệ thống](docs/ARCHITECTURE.md)
 - [Database schema](docs/DATABASE.md)
-- [API Reference](http://localhost:5000/api-docs)
+- [API Reference (Swagger)](http://localhost:5000/api-docs)

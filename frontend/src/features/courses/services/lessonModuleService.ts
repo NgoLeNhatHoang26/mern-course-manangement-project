@@ -10,8 +10,9 @@ export const LessonModuleService = {
         const response = await axiosClient.get(`/modules/${moduleId}`);
         return response.data
     },
-    createModule: async (courseId:string, module:ILessonModule) => {
-        const response = await axiosClient.post(`/courses/${courseId}/modules`, module);
+    createModule: async (courseId: string, module: ILessonModule, idempotencyKey?: string) => {
+        const headers = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined;
+        const response = await axiosClient.post(`/courses/${courseId}/modules`, module, { headers });
         return response.data;
     }
 }

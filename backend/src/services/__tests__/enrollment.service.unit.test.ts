@@ -37,6 +37,7 @@ describe('enrollment.service unit', () => {
 
     describe('enrollInCourse', () => {
         it('creates enrollment for valid user and course', async () => {
+            enrollmentStatics.findOne.mockResolvedValue(null);
             const createdEnrollment = {
                 _id: 'e1',
                 userId: 'u1',
@@ -50,6 +51,7 @@ describe('enrollment.service unit', () => {
 
             const result = await enrollInCourse('u1', 'c1');
 
+            expect(enrollmentStatics.findOne).toHaveBeenCalledWith({ userId: 'u1', courseId: 'c1' });
             expect(EnrollmentMock).toHaveBeenCalledWith({ userId: 'u1', courseId: 'c1' });
             expect(saveMock).toHaveBeenCalledTimes(1);
             expect(result).toEqual(createdEnrollment);
@@ -57,10 +59,22 @@ describe('enrollment.service unit', () => {
 
         it('throws Unauthorized when userId is missing', async () => {
             await expect(enrollInCourse(undefined, 'c1')).rejects.toThrow('Unauthorized');
+            expect(enrollmentStatics.findOne).not.toHaveBeenCalled();
             expect(EnrollmentMock).not.toHaveBeenCalled();
         });
 
-        it('rejects duplicate enrollment when save fails with duplicate key', async () => {
+        it('throws 409 when enrollment already exists', async () => {
+            enrollmentStatics.findOne.mockResolvedValue({ _id: 'e1', userId: 'u1', courseId: 'c1' });
+
+            await expect(enrollInCourse('u1', 'c1')).rejects.toMatchObject({
+                message: 'Already enrolled in this course',
+                statusCode: 409,
+            });
+            expect(EnrollmentMock).not.toHaveBeenCalled();
+        });
+
+        it('throws 409 when save fails with duplicate key', async () => {
+            enrollmentStatics.findOne.mockResolvedValue(null);
             const duplicateError = Object.assign(new Error('E11000 duplicate key'), { code: 11000 });
             const saveMock = vi.fn().mockRejectedValue(duplicateError);
 
@@ -68,7 +82,10 @@ describe('enrollment.service unit', () => {
                 return { _id: 'e1', userId: 'u1', courseId: 'c1', save: saveMock };
             });
 
-            await expect(enrollInCourse('u1', 'c1')).rejects.toThrow('E11000 duplicate key');
+            await expect(enrollInCourse('u1', 'c1')).rejects.toMatchObject({
+                message: 'Already enrolled in this course',
+                statusCode: 409,
+            });
             expect(saveMock).toHaveBeenCalledTimes(1);
         });
     });

@@ -2,6 +2,7 @@ import { Lesson } from '../models/lesson.js'
 import { CreateLessonInput, UpdateLessonInput } from '../schemas/lesson.schema.js';
 import { deleteFile } from '../config/cloudinary.config.js';
 import { AppError } from '../utils/AppError.js';
+import { getNextOrder, lessonOrderScope } from '../utils/orderSequence.js';
 
 
 interface UpdateLessonBody extends UpdateLessonInput {
@@ -25,9 +26,9 @@ export const getLessonsByModule = async (moduleId : string) => {
 }
 
 export const createLesson = async (moduleId: string, videoUrl: string | undefined, lessonData: CreateLessonInput) => {
-    
-    const lastLesson = await Lesson.findOne({ moduleId }).sort({ order: -1 })
-    const newOrder = lastLesson ? lastLesson.order + 1 : 1
+    const lastLesson = await Lesson.findOne({ moduleId }).sort({ order: -1 });
+    const floor = lastLesson?.order ?? 0;
+    const newOrder = await getNextOrder(lessonOrderScope(moduleId), floor);
     const newLesson = new Lesson({
         ...lessonData,
         moduleId,

@@ -35,6 +35,10 @@ export const loginUser = async (loginData: LoginInput) => {
         throw new AppError('Invalid email or password', 401);
     }
 
+    if (user.isActive === false) {
+        throw new AppError('Account is deactivated', 403);
+    }
+
     const secret = env.JWT_SECRET;
     const refreshSecret = env.JWT_REFRESH_SECRET;
 
@@ -70,6 +74,10 @@ export const refreshAccessToken = async (refreshToken: string) => {
     const user = await User.findById(decoded.sub).select('+refreshToken');
     if (!user || user.refreshToken !== refreshToken) {
         throw new AppError('Refresh token not recognized', 401);
+    }
+
+    if (user.isActive === false) {
+        throw new AppError('Account is deactivated', 403);
     }
 
     const secret = env.JWT_SECRET;

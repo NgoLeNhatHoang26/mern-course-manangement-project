@@ -1,7 +1,7 @@
 import {
     Box, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, Chip, IconButton,
-    Select, MenuItem, Typography, Avatar, Tooltip
+    Select, MenuItem, Typography, Avatar, Tooltip, Pagination
 } from '@mui/material'
 import { LockOpen, Lock } from '@mui/icons-material'
 import { useUsers } from '@features/admin'
@@ -13,14 +13,14 @@ const ROLE_COLOR = {
 }
 
 export default function UsersPage() {
-    const { users, loading, handleToggleStatus, handleUpdateRole } = useUsers()
+    const { users, loading, pagination, page, setPage, handleToggleStatus, handleUpdateRole } = useUsers()
 
     if (loading) return <Loading />
 
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h5" fontWeight={700} mb={3}>
-                Quản lý người dùng ({users.length})
+                Quản lý người dùng ({pagination ? pagination.total : users.length})
             </Typography>
 
             <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 3 }}>
@@ -78,7 +78,7 @@ export default function UsersPage() {
                                     </Select>
                                 </TableCell>
 
-                                {/* Số khoá học */}
+
                                 <TableCell>
                                     <Chip label={`${user.enrollmentCount} khoá`} size="small" />
                                 </TableCell>
@@ -116,6 +116,19 @@ export default function UsersPage() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Pagination */}
+            {pagination && pagination.totalPages > 1 && (
+                <Box display="flex" justifyContent="center" mt={3}>
+                    <Pagination
+                        count={pagination.totalPages}
+                        page={page}
+                        onChange={(_e, value) => setPage(value)}
+                        color="primary"
+                        shape="rounded"
+                    />
+                </Box>
+            )}
         </Box>
     )
 }

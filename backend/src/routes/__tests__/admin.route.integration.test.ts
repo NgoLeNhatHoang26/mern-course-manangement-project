@@ -32,13 +32,32 @@ describe('admin.route integration', () => {
 
     it('GET /api/admin/users forwards to getAllUsersController for admin', async () => {
         controllerMocks.getAllUsersController.mockImplementation((_req, res) => {
-            res.status(200).json([{ id: 'u1', role: 'admin' }]);
+            res.status(200).json({
+                items: [{ id: 'u1', role: 'admin' }],
+                pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNextPage: false, hasPrevPage: false },
+            });
         });
 
         const response = await request(app).get('/api/admin/users');
 
         expect(response.status).toBe(200);
-        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data.items).toHaveLength(1);
+        expect(response.body.data.pagination.total).toBe(1);
+        expect(controllerMocks.getAllUsersController).toHaveBeenCalledTimes(1);
+    });
+
+    it('GET /api/admin/users forwards page query to controller', async () => {
+        controllerMocks.getAllUsersController.mockImplementation((_req, res) => {
+            res.status(200).json({
+                items: [],
+                pagination: { page: 2, limit: 20, total: 40, totalPages: 2, hasNextPage: false, hasPrevPage: true },
+            });
+        });
+
+        const response = await request(app).get('/api/admin/users?page=2');
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.pagination.page).toBe(2);
         expect(controllerMocks.getAllUsersController).toHaveBeenCalledTimes(1);
     });
 

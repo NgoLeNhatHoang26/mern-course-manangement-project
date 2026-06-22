@@ -37,14 +37,35 @@ describe('courses.route integration', () => {
 
     it('GET /api/courses forwards to getAllCoursesController', async () => {
         controllerMocks.getAllCoursesController.mockImplementation((_req, res) => {
-            res.status(200).json([{ _id: 'c1', title: 'Node.js' }]);
+            res.status(200).json({
+                items: [{ _id: 'c1', title: 'Node.js' }],
+                pagination: { page: 1, limit: 12, total: 1, totalPages: 1, hasNextPage: false, hasPrevPage: false },
+            });
         });
 
         const response = await request(app).get('/api/courses');
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
-        expect(response.body.data).toEqual([{ _id: 'c1', title: 'Node.js' }]);
+        expect(response.body.data.items).toHaveLength(1);
+        expect(response.body.data.items[0]._id).toBe('c1');
+        expect(response.body.data.pagination.total).toBe(1);
+        expect(controllerMocks.getAllCoursesController).toHaveBeenCalledTimes(1);
+    });
+
+    it('GET /api/courses forwards page and limit query to controller', async () => {
+        controllerMocks.getAllCoursesController.mockImplementation((_req, res) => {
+            res.status(200).json({
+                items: [],
+                pagination: { page: 2, limit: 12, total: 20, totalPages: 2, hasNextPage: false, hasPrevPage: true },
+            });
+        });
+
+        const response = await request(app).get('/api/courses?page=2&limit=12');
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.pagination.page).toBe(2);
+        expect(response.body.data.pagination.hasPrevPage).toBe(true);
         expect(controllerMocks.getAllCoursesController).toHaveBeenCalledTimes(1);
     });
 

@@ -45,7 +45,7 @@ export const authService = {
         await axiosClient.post('/auth/forgot-password', { email })
     },
 
-    resetPassword: async (token: string, password: string): Promise<void> => {
-        await axiosClient.post('/auth/reset-password', { token, password })
+    resetPassword: async (token: string, password: string, confirmPassword: string): Promise<void> => {
+        await axiosClient.post('/auth/reset-password', { token, password, confirmPassword })
     },
 }

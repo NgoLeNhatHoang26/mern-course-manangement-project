@@ -34,6 +34,7 @@ const getErrorCode = (statusCode: number): string => {
         409: 'CONFLICT',
         422: 'UNPROCESSABLE_ENTITY',
         429: 'TOO_MANY_REQUESTS',
+        503: 'SERVICE_UNAVAILABLE',
     };
     return map[statusCode] ?? 'INTERNAL_SERVER_ERROR';
 };
