@@ -26,11 +26,12 @@ export default function ResetPasswordPage() {
         setLoading(true)
         setError('')
         try {
-            await authService.resetPassword(token, password)
+            await authService.resetPassword(token, password, confirm)
             setSuccess(true)
             setTimeout(() => navigate(ROUTES.SIGNIN), 2000)
-        } catch {
-            setError('Token khong hop le hoac da het han')
+        } catch (err) {
+            const message = err?.response?.data?.message
+            setError(message || 'Token khong hop le hoac da het han')
         } finally {
             setLoading(false)
         }

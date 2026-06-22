@@ -1,12 +1,17 @@
 import axiosClient from '@/lib/api'
-import { ICourse } from '@features/courses'
+import { ICourse, IPaginatedResult } from '@features/courses'
 
-
+export interface CourseListParams {
+    search?: string
+    level?: string
+    page?: number
+    limit?: number
+}
 
 export const CourseService = {
-    getAllCourses: async (params?: {search?: string; level?: string}): Promise<ICourse[]> => {
-        const courses = await axiosClient.get<ICourse[]>('/courses', { params: params })
-        return courses.data
+    getAllCourses: async (params?: CourseListParams): Promise<IPaginatedResult<ICourse>> => {
+        const res = await axiosClient.get<IPaginatedResult<ICourse>>('/courses', { params })
+        return res.data
     },
 
     getCourseById: async (id: string): Promise<ICourse> => {
@@ -14,11 +19,13 @@ export const CourseService = {
         return response.data
     },
 
-    createCourse: async (course: FormData): Promise<ICourse> => {
-        const response = await axiosClient.post<ICourse>('/courses', course)
+    createCourse: async (course: FormData, idempotencyKey?: string): Promise<ICourse> => {
+        const headers = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined
+        const response = await axiosClient.post<ICourse>('/courses', course, { headers })
         return response.data
     },
-    updateCourse: async (id: string, course: FormData | Partial<ICourse>): Promise<ICourse>=> {
+
+    updateCourse: async (id: string, course: FormData | Partial<ICourse>): Promise<ICourse> => {
         const response = await axiosClient.put<ICourse>(`/courses/${id}`, course)
         return response.data
     },

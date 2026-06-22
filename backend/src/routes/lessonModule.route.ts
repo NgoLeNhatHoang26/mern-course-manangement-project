@@ -4,15 +4,14 @@ import lessonRoute from "./lesson.route.js";
 import authMiddleware from '../middleware/auth.middleware.js';
 import roleMiddleware from '../middleware/role.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
+import { idempotencyMiddleware } from '../middleware/idempotency.middleware.js';
 import { createModuleSchema, updateModuleSchema } from '../schemas/module.schema.js';
 
 const router = Router({ mergeParams: true });
 
-// Public list
+
 router.get('/', authMiddleware, getLessonModulesByCourseController);
-// Admin create
-router.post('/', authMiddleware, roleMiddleware('admin'), validate(createModuleSchema), createLessonModuleController);
-// Nested lessons (more specific paths first)
+router.post('/', authMiddleware, roleMiddleware('admin'), validate(createModuleSchema), idempotencyMiddleware, createLessonModuleController);
 router.use('/:moduleId/lessons', lessonRoute);
 // Module by id
 router.get('/:moduleId', authMiddleware, getLessonModuleByIdController);

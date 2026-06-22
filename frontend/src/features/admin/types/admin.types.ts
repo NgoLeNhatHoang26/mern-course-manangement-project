@@ -7,3 +7,8 @@ export interface IUser {
   enrollmentCount: number;
   createdAt: string;
 }
+
+export interface IUserListParams {
+  page?: number;
+  limit?: number;
+}

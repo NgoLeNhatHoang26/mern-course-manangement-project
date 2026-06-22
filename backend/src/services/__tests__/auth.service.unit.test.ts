@@ -209,24 +209,34 @@ describe ('auth.service. unit', () => {
             expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
         });
 
-        it('sends email before saving reset token', async () => {
+        it('saves reset token before sending email', async () => {
             const user = { _id: 'u1', email: 'test@example.com' } as any;
             vi.mocked(User.findOne).mockResolvedValue(user);
             vi.mocked(sendResetPasswordEmail).mockResolvedValue(undefined);
 
             const result = await forgotPassword('test@example.com');
 
-            expect(sendResetPasswordEmail).toHaveBeenCalledWith('test@example.com', expect.any(String));
             expect(User.findByIdAndUpdate).toHaveBeenCalledWith('u1', {
                 resetPasswordToken: expect.any(String),
                 resetPasswordExpires: expect.any(Date),
             });
+            expect(sendResetPasswordEmail).toHaveBeenCalledWith('test@example.com', expect.any(String));
             expect(result).toEqual({ message: 'Nếu email tồn tại, bạn sẽ nhận được link reset' });
         });
 
-        it('does not save reset token when email sending fails', async () => {
+        it('does not send email when saving reset token fails', async () => {
             const user = { _id: 'u1', email: 'test@example.com' } as any;
             vi.mocked(User.findOne).mockResolvedValue(user);
+            vi.mocked(User.findByIdAndUpdate).mockRejectedValue(new Error('DB error'));
+
+            await expect(forgotPassword('test@example.com')).rejects.toThrow('DB error');
+            expect(sendResetPasswordEmail).not.toHaveBeenCalled();
+        });
+
+        it('throws when email sending fails after token is saved', async () => {
+            const user = { _id: 'u1', email: 'test@example.com' } as any;
+            vi.mocked(User.findOne).mockResolvedValue(user);
+            vi.mocked(User.findByIdAndUpdate).mockResolvedValue(user);
             vi.mocked(sendResetPasswordEmail).mockRejectedValue(
                 new AppError('Unable to send reset password email. Please try again later.', 503),
             );
@@ -235,7 +245,7 @@ describe ('auth.service. unit', () => {
                 message: 'Unable to send reset password email. Please try again later.',
                 statusCode: 503,
             });
-            expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+            expect(User.findByIdAndUpdate).toHaveBeenCalled();
         });
     });
 })

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse } from '../services/courses.service.js';
 import { CreateCourseInput, UpdateCourseInput } from '../schemas/course.schema.js';
+import { parsePaginationQuery } from '../utils/pagination.js';
 
 interface UpdateCourseBody extends UpdateCourseInput {
     thumbnail?: string;
@@ -9,8 +10,9 @@ interface UpdateCourseBody extends UpdateCourseInput {
 export const getAllCoursesController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { search, level } = req.query as { search?: string; level?: string };
-        const courses = await getAllCourses(search, level);
-        res.status(200).json(courses);
+        const { page, limit } = parsePaginationQuery(req.query, 12);
+        const result = await getAllCourses({ search, level, page, limit });
+        res.status(200).json(result);
     } catch (error) {
         next(error);
     }

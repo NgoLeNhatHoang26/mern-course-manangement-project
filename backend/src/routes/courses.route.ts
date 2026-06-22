@@ -7,6 +7,7 @@ import { uploadImage, handleImageUpload } from '../middleware/upload.js';
 import authMiddleware from '../middleware/auth.middleware.js';
 import roleMiddleware from '../middleware/role.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
+import { idempotencyMiddleware } from '../middleware/idempotency.middleware.js';
 import { createCourseSchema, updateCourseSchema } from '../schemas/course.schema.js';
 
 const router = Router();
@@ -21,6 +22,7 @@ router.post('/',
     roleMiddleware('admin'),
     handleImageUpload,
     validate(createCourseSchema),
+    idempotencyMiddleware,
     createCourseController
 );
 router.put('/:courseId',

@@ -11,9 +11,14 @@ export const LessonService = {
         const res = await axiosClient.get(`/lessons/${lessonId}`);
         return res.data;
     },
-    createLesson: async (moduleId: string, lesson: Omit<ILesson, '_id'>): Promise<ILesson> => {
-        const res = await axiosClient.post<ILesson>(`/modules/${moduleId}/lessons`, lesson)
-        return res.data
+    createLesson: async (
+        moduleId: string,
+        lesson: Omit<ILesson, '_id'> | FormData,
+        idempotencyKey?: string,
+    ): Promise<ILesson> => {
+        const headers = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined;
+        const res = await axiosClient.post<ILesson>(`/modules/${moduleId}/lessons`, lesson, { headers });
+        return res.data;
     },
 
 };

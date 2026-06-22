@@ -5,17 +5,25 @@ import { deleteFile } from '../config/cloudinary.config.js';
 import { deleteLessonModule } from './lessonModule.service.js';
 import { redisClient } from '../lib/redis.js';
 import { AppError } from '../utils/AppError.js';
+import { buildPaginatedResult, IPaginatedResult } from '../utils/pagination.js';
 
 interface UpdateCourseBody extends UpdateCourseInput {
     thumbnail?: string;
+}
+
+export interface GetAllCoursesOptions {
+    search?: string;
+    level?: string;
+    page?: number;
+    limit?: number;
 }
 
 const COURSE_CACHE_TTL_SECONDS = 300;
 const COURSE_LIST_CACHE_PREFIX = 'courses:list:';
 const COURSE_DETAIL_CACHE_PREFIX = 'courses:id:';
 
-const getListCacheKey = (search?: string, level?: string): string =>
-    `${COURSE_LIST_CACHE_PREFIX}search=${search?.trim().toLowerCase() || ''}&level=${level || ''}`;
+const getListCacheKey = (search?: string, level?: string, page = 1, limit = 12): string =>
+    `${COURSE_LIST_CACHE_PREFIX}search=${search?.trim().toLowerCase() || ''}&level=${level || ''}&page=${page}&limit=${limit}`;
 
 const getDetailCacheKey = (courseId: string): string => `${COURSE_DETAIL_CACHE_PREFIX}${courseId}`;
 
@@ -51,12 +59,15 @@ const invalidateCourseCaches = async (courseId?: string): Promise<void> => {
     }
 };
 
-export const getAllCourses = async (search?: string, level?: string) => {
-    const cacheKey = getListCacheKey(search, level);
-    const cachedCourses = await getCachedJson(cacheKey);
-    if (cachedCourses) {
-        return cachedCourses;
-    }
+export const getAllCourses = async ({
+    search,
+    level,
+    page = 1,
+    limit = 12,
+}: GetAllCoursesOptions = {}): Promise<IPaginatedResult<any>> => {
+    const cacheKey = getListCacheKey(search, level, page, limit);
+    const cached = await getCachedJson<IPaginatedResult<any>>(cacheKey);
+    if (cached) return cached;
 
     const filter: Record<string, any> = {};
 
@@ -68,9 +79,16 @@ export const getAllCourses = async (search?: string, level?: string) => {
         filter.level = level;
     }
 
-    const courses = await Course.find(filter);
-    await setCachedJson(cacheKey, courses);
-    return courses;
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+        Course.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+        Course.countDocuments(filter),
+    ]);
+
+    const result = buildPaginatedResult(items, total, page, limit);
+    await setCachedJson(cacheKey, result);
+    return result;
 };
 
 export const getCourseById = async (courseId: string) => {

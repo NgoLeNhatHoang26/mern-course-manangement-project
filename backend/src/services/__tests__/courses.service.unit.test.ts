@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const courseStatics = vi.hoisted(() => ({
     find: vi.fn(),
     findById: vi.fn(),
+    countDocuments: vi.fn(),
 }));
 
 const lessonModuleMocks = vi.hoisted(() => ({
@@ -23,6 +24,7 @@ const CourseMock = vi.hoisted(() =>
 Object.assign(CourseMock, {
     find: courseStatics.find,
     findById: courseStatics.findById,
+    countDocuments: courseStatics.countDocuments,
 });
 
 vi.mock('../../models/course.js', () => ({
@@ -52,24 +54,76 @@ import { CreateCourseInput } from '../../schemas/course.schema.js';
 import { deleteFile } from '../../config/cloudinary.config.js';
 import { deleteLessonModule } from '../lessonModule.service.js';
 
+const makeFindQuery = (result: unknown[]) => ({
+    sort: vi.fn().mockReturnThis(),
+    skip: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue(result),
+});
+
 describe('courses.service unit', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    it('filters courses by search and level', async () => {
-        const mockedCourses = [
-            { _id: 'c1', title: 'Node.js cơ bản', level: 'Cơ bản' },
-        ];
-        courseStatics.find.mockResolvedValue(mockedCourses);
+    describe('getAllCourses', () => {
+        it('returns paginated result with correct items and pagination meta', async () => {
+            const mockedCourses = [{ _id: 'c1', title: 'Node.js cơ bản', level: 'Cơ bản' }];
+            courseStatics.find.mockReturnValue(makeFindQuery(mockedCourses));
+            courseStatics.countDocuments.mockResolvedValue(1);
 
-        const result = await getAllCourses('node', 'Cơ bản');
+            const result = await getAllCourses({ search: 'node', level: 'Cơ bản' });
 
-        expect(courseStatics.find).toHaveBeenCalledWith({
-            title: { $regex: 'node', $options: 'i' },
-            level: 'Cơ bản',
+            expect(courseStatics.find).toHaveBeenCalledWith({
+                title: { $regex: 'node', $options: 'i' },
+                level: 'Cơ bản',
+            });
+            expect(courseStatics.countDocuments).toHaveBeenCalledWith({
+                title: { $regex: 'node', $options: 'i' },
+                level: 'Cơ bản',
+            });
+            expect(result.items).toEqual(mockedCourses);
+            expect(result.pagination).toMatchObject({
+                page: 1,
+                limit: 12,
+                total: 1,
+                totalPages: 1,
+                hasNextPage: false,
+                hasPrevPage: false,
+            });
         });
-        expect(result).toEqual(mockedCourses);
+
+        it('applies correct skip for page 2', async () => {
+            const query = makeFindQuery([]);
+            courseStatics.find.mockReturnValue(query);
+            courseStatics.countDocuments.mockResolvedValue(25);
+
+            await getAllCourses({ page: 2, limit: 12 });
+
+            expect(query.sort).toHaveBeenCalledWith({ createdAt: -1 });
+            expect(query.skip).toHaveBeenCalledWith(12);
+            expect(query.limit).toHaveBeenCalledWith(12);
+        });
+
+        it('sets hasNextPage true when there are more items', async () => {
+            courseStatics.find.mockReturnValue(makeFindQuery([]));
+            courseStatics.countDocuments.mockResolvedValue(25);
+
+            const result = await getAllCourses({ page: 1, limit: 12 });
+
+            expect(result.pagination.hasNextPage).toBe(true);
+            expect(result.pagination.totalPages).toBe(3);
+        });
+
+        it('returns empty items when no courses match filter', async () => {
+            courseStatics.find.mockReturnValue(makeFindQuery([]));
+            courseStatics.countDocuments.mockResolvedValue(0);
+
+            const result = await getAllCourses({ search: 'nonexistent' });
+
+            expect(result.items).toHaveLength(0);
+            expect(result.pagination.total).toBe(0);
+            expect(result.pagination.hasNextPage).toBe(false);
+        });
     });
 
     it('should throw when course does not exist', async () => {

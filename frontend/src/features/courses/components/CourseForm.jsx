@@ -12,7 +12,7 @@ const INITIAL_FORM = {
     thumbnail: null,
 }
 
-export default function CourseForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu' }) {
+export default function CourseForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu', loading = false }) {
     const [form, setForm] = useState(initialValues)
     const [preview, setPreview] = useState(null)
 
@@ -50,7 +50,7 @@ export default function CourseForm({ onSubmit, initialValues = INITIAL_FORM, sub
     }
 
     return (
-        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel}>
+        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel} loading={loading}>
             <TextField label="Tên khoá học" name="title" value={form.title} onChange={handleChange} required fullWidth />
             <TextField label="Mô tả" name="description" value={form.description} onChange={handleChange} required fullWidth multiline rows={3} />
             <TextField label="Giảng viên" name="instructor" value={form.instructor} onChange={handleChange} required fullWidth />

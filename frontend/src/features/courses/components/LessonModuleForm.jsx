@@ -4,7 +4,7 @@ import BaseForm from '../../../components/BaseForm.jsx'
 
 const INITIAL_FORM = { title: '', description: '' }
 
-export default function LessonModuleForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu' }) {
+export default function LessonModuleForm({ onSubmit, initialValues = INITIAL_FORM, submitLabel = 'Lưu', loading = false }) {
     const [form, setForm] = useState(initialValues)
 
     const handleChange = (e) => {
@@ -18,7 +18,7 @@ export default function LessonModuleForm({ onSubmit, initialValues = INITIAL_FOR
     }
 
     return (
-        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel}>
+        <BaseForm onSubmit={handleSubmit} submitLabel={submitLabel} loading={loading} loadingLabel="Đang tạo chương...">
             <TextField
                 label="Tên chương"
                 name="title"
