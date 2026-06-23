@@ -12,6 +12,13 @@ import { RegisterInput, LoginInput } from '../schemas/auth.schema.js';
 import { env } from '../config/env.js';
 import { AppError } from '../utils/AppError.js';
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+} as const;
+
 const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result = await registerUser(req.body as RegisterInput);
@@ -25,12 +32,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
     try {
         const { token, refreshToken, user } = await loginUser(req.body as LoginInput);
 
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie('refreshToken', refreshToken, cookieOptions);
 
         res.status(200).json({ token, user });
     } catch (error) {
@@ -71,11 +73,7 @@ const logout = async (req: Request, res: Response, next: NextFunction): Promise<
             await logoutUser(token);
         }
 
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            secure: env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+        res.clearCookie('refreshToken', cookieOptions);
 
         res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
