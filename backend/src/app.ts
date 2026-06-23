@@ -13,9 +13,8 @@ import { env } from './config/env.js';
 
 const app = express();
 
-// Render/Cloudflare gửi X-Forwarded-For — cần bật để express-rate-limit hoạt động đúng
-if (env.NODE_ENV === 'production') {
-    app.set('trust proxy', 1);
+if (env.NODE_ENV === 'production' || process.env.RENDER) {
+    app.set('trust proxy', true);
 }
 
 app.use(cors({
