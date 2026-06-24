@@ -14,7 +14,7 @@ import { env } from './config/env.js';
 const app = express();
 
 if (env.NODE_ENV === 'production' || process.env.RENDER) {
-    app.set('trust proxy', true);
+    app.set('trust proxy', 1);
 }
 
 app.use(cors({
