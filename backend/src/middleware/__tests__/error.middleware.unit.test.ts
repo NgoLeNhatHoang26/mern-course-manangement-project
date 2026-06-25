@@ -32,7 +32,6 @@ describe('error.middleware unit', () => {
         vi.clearAllMocks();
     });
 
-    // ─── Response shape ────────────────────────────────────────────────────
 
     it('retorna JSON { success:false, message, code } para AppError 404', () => {
         const res = makeRes();
@@ -65,8 +64,6 @@ describe('error.middleware unit', () => {
         );
     });
 
-    // ─── Logging level ─────────────────────────────────────────────────────
-
     it('gọi logger.warn cho lỗi 4xx', () => {
         errorMiddleware(new AppError('Not found', 404), makeReq(), makeRes(), next);
 
@@ -95,7 +92,7 @@ describe('error.middleware unit', () => {
         );
     });
 
-    // ─── Sensitive path ─────────────────────────────────────────────────────
+    // Sensitive path
 
     it('không log stack trên path nhạy cảm /api/auth/login (5xx)', () => {
         const err = Object.assign(new Error('db crash'), { stack: 'sensitive-stack' });

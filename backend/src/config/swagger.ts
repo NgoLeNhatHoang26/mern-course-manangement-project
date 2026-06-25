@@ -47,7 +47,6 @@ const options: swaggerJsdoc.Options = {
                 },
             },
             schemas: {
-                // ── Response envelopes ────────────────────────────────────────────
                 ApiSuccessResponse: {
                     type: 'object',
                     required: ['success', 'data'],
@@ -86,7 +85,6 @@ const options: swaggerJsdoc.Options = {
                     },
                 },
 
-                // ── Auth ──────────────────────────────────────────────────────────
                 AuthUser: {
                     type: 'object',
                     properties: {
@@ -111,7 +109,7 @@ const options: swaggerJsdoc.Options = {
                     },
                 },
 
-                // ── Domain models ─────────────────────────────────────────────────
+            
                 Course: {
                     type: 'object',
                     properties: {

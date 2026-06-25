@@ -13,7 +13,6 @@ type AnyError = {
     isOperational?: boolean;
 };
 
-/** Type guard cho Mongoose ValidationError.errors */
 const isMongooseErrors = (v: unknown): v is Record<string, { message?: string }> =>
     typeof v === 'object' && v !== null && !Array.isArray(v);
 
