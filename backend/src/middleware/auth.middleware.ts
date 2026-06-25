@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { User } from '../models/user.js'
-import mongoose from "mongoose";
 import { env } from '../config/env.js';
 import { AppError } from '../utils/AppError.js';
 
@@ -36,7 +35,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         return next(new AppError('Account is deactivated', 403));
     }
     req.user = {
-        _id: new mongoose.Types.ObjectId(user._id as string),
+        _id: user._id,
         id: user.id,
         role: user.role,
     }
