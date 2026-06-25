@@ -45,7 +45,7 @@ const getMe = async (req: Request, res: Response, next: NextFunction): Promise<v
         if (!req.user) {
             return next(new AppError('Unauthorized', 401));
         }
-        const user = await getUserById(req.user._id as unknown as string);
+        const user = await getUserById(req.user._id.toString());
         res.status(200).json(user);
     } catch (error) {
         next(error);
