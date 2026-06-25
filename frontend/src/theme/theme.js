@@ -1,19 +1,5 @@
 import { createTheme } from '@mui/material/styles';
 
-/**
- * F8 Course Management – MUI Theme
- * All values derived from the F8 design token specification.
- *
- * Token reference (from index.css / DESIGN_Course_Management.md):
- *   surface.base    = #000000  → primary accent (buttons, active borders)
- *   text.tertiary   = #292929  → default body/heading text
- *   text.secondary  = #a9b3bb  → muted / placeholder text
- *   text.inverse    = #ffffff  → text on dark backgrounds
- *   surface.raised  = #e8ebed  → hover background, subtle fill
- *   surface.strong  = #f0f0f0  → section backgrounds, skeleton
- *   radius.xs       = 4px      → default border radius
- */
-
 export const theme = createTheme({
   palette: {
     mode: 'light',

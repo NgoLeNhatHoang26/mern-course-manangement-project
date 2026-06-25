@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { AppError } from '../utils/AppError.js'
+import { logger } from '../config/logger.js'
 
 type AnyError = {
     name?: string;
@@ -7,9 +8,20 @@ type AnyError = {
     code?: number | string;
     status?: number;
     statusCode?: number;
-    errors?: Record<string, { message?: string }>;
+    stack?: string;
+    errors?: unknown;
     isOperational?: boolean;
 };
+
+const isMongooseErrors = (v: unknown): v is Record<string, { message?: string }> =>
+    typeof v === 'object' && v !== null && !Array.isArray(v);
+
+const SENSITIVE_PATHS = new Set([
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+]);
 
 const getStatusCode = (error: AnyError): number => {
     if (error instanceof AppError) return error.statusCode;
@@ -48,24 +60,52 @@ const getErrorMessage = (error: AnyError, statusCode: number): string => {
     return error.message || 'Request failed';
 };
 
+const logError = (error: AnyError, req: Request, statusCode: number, message: string): void => {
+    const isSensitive = SENSITIVE_PATHS.has(req.path);
+
+    const base = {
+        requestId: req.requestId,
+        method: req.method,
+        path: req.path,
+        statusCode,
+        errName: error.name,
+        message,
+    };
+
+    if (statusCode >= 500) {
+        logger.error({
+            ...base,
+            stack: isSensitive ? undefined : error.stack,
+        }, message);
+        return;
+    }
+
+    if (statusCode >= 400) {
+        logger.warn(base, message);
+    }
+};
+
 export const errorMiddleware = (
     error: AnyError,
-    _req: Request,
+    req: Request,
     res: Response,
     _next: NextFunction,
 ): void => {
     const statusCode = getStatusCode(error);
+    const message = getErrorMessage(error, statusCode);
+
+    logError(error, req, statusCode, message);
 
     const responseErrors =
         error instanceof AppError && error.errors !== undefined
             ? error.errors
-            : error.name === 'ValidationError' && error.errors
+            : error.name === 'ValidationError' && isMongooseErrors(error.errors)
               ? Object.values(error.errors).map((item) => item.message ?? 'Invalid value')
               : undefined;
 
     res.status(statusCode).json({
         success: false,
-        message: getErrorMessage(error, statusCode),
+        message,
         errors: responseErrors,
         code: getErrorCode(statusCode),
     });

@@ -6,7 +6,6 @@ const CoursePage = lazy(() => import('./pages/CoursePage'));
 const LessonPage = lazy(() => import('./pages/LessonPage'));
 const MyCoursesPage = lazy(() => import('./pages/MyCoursesPage'));
 const MyProfilePage = lazy(() => import('./pages/MyProfilePage'));
-const SettingPage = lazy(() => import('./pages/SettingPage'));
 const SignUpPage = lazy(() => import('./pages/SignUpPage.jsx'));
 const SignInPage = lazy(() => import('./pages/SignInPage.jsx'));
 const UsersPage = lazy(() => import('./pages/UsersPage'));
@@ -33,7 +32,6 @@ function App() {
                   <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
                   <Route path={ROUTES.MY_COURSES} element={<MyCoursesPage />} />
                   <Route path={ROUTES.MY_PROFILE} element={<MyProfilePage />} />
-                  <Route path={ROUTES.SETTINGS} element={<SettingPage />} />
                   <Route path={ROUTES.USERS} element={<UsersPage />} />
                   <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
               </Route>

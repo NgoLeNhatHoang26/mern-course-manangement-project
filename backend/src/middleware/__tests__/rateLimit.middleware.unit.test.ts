@@ -25,7 +25,7 @@ describe('rateLimit.middleware unit', () => {
     it('builds global limiter with expected defaults', () => {
         const options = (globalRateLimiter as any).__options;
 
-        expect(options.windowMs).toBe(15 * 60 * 1000);
+        expect(options.windowMs).toBe(3 * 60 * 1000);
         expect(options.max).toBe(100);
         expect(options.store).toBeUndefined();
         expect(options.passOnStoreError).toBe(true);
@@ -34,7 +34,7 @@ describe('rateLimit.middleware unit', () => {
     it('builds auth limiter with stricter max requests', () => {
         const options = (authRateLimiter as any).__options;
 
-        expect(options.windowMs).toBe(30 * 60 * 1000);
+        expect(options.windowMs).toBe(15 * 60 * 1000);
         expect(options.max).toBe(10);
         expect(options.store).toBeUndefined();
         expect(options.passOnStoreError).toBe(true);

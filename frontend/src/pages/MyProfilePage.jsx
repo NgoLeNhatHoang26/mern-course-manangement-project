@@ -15,7 +15,6 @@ import { useAuthState } from "@features/auth";
 import { useMyEnrollments } from "@features/enrollment/hooks/useMyEnrollements";
 import { getImageUrl } from "../utils/ImageURL.js";
 
-/* ─────────────────────── sub-components ─────────────────────── */
 
 function StatCard({ icon, label, value, loading, accent }) {
     return (
@@ -89,7 +88,6 @@ function EnrollmentRow({ enrollment }) {
 
     return (
         <Stack direction="row" spacing={2} alignItems="center">
-            {/* Thumbnail */}
             <Box
                 component="img"
                 src={getImageUrl(course?.thumbnail)}
@@ -107,7 +105,6 @@ function EnrollmentRow({ enrollment }) {
                 }}
             />
 
-            {/* Info + progress */}
             <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
                     variant="body2"
@@ -140,7 +137,6 @@ function EnrollmentRow({ enrollment }) {
                 />
             </Box>
 
-            {/* Status chip */}
             <Chip
                 icon={
                     done
@@ -177,7 +173,6 @@ function EnrollmentRowSkeleton() {
     );
 }
 
-/* ─────────────────────── main page ─────────────────────── */
 
 const ROLE_LABEL = { admin: 'Admin', instructor: 'Giảng viên', student: 'Học viên' };
 const ROLE_STYLE = {
@@ -226,21 +221,18 @@ export default function MyProfilePage() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            {/* ── Page title ── */}
+
             <Typography variant="h5" fontWeight={700} color="text.primary" mb={3}>
                 Hồ sơ cá nhân
             </Typography>
 
-            {/* ── Main grid: MUI v7 size API ── */}
             <Grid container spacing={3} alignItems="flex-start">
 
-                {/* LEFT: identity card */}
                 <Grid size={{ xs: 12, md: 4, lg: 3 }}>
                     <Paper
                         elevation={0}
                         sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}
                     >
-                        {/* Cover strip */}
                         <Box
                             sx={{
                                 height: 80,
@@ -249,7 +241,6 @@ export default function MyProfilePage() {
                         />
 
                         <Box sx={{ px: 2.5, pb: 3 }}>
-                            {/* Avatar overlapping cover */}
                             <Box sx={{ mt: '-40px', mb: 1.5 }}>
                                 <Avatar
                                     src={getImageUrl(user.avatarUrl)}
@@ -301,11 +292,9 @@ export default function MyProfilePage() {
                     </Paper>
                 </Grid>
 
-                {/* RIGHT: stats + courses */}
                 <Grid size={{ xs: 12, md: 8, lg: 9 }}>
                     <Stack spacing={3}>
 
-                        {/* Stat cards */}
                         <Grid container spacing={2}>
                             {stats.map((s) => (
                                 <Grid size={{ xs: 12, sm: 4 }} key={s.label}>
@@ -314,7 +303,6 @@ export default function MyProfilePage() {
                             ))}
                         </Grid>
 
-                        {/* Enrollment list */}
                         <Paper
                             elevation={0}
                             sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}

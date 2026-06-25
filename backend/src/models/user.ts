@@ -1,7 +1,7 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import mongoose, { Document, Schema, Types } from 'mongoose'
 
 export interface IUser extends Document {
-    _id: string
+    _id: Types.ObjectId
     userName: string
     email: string
     password: string
@@ -11,7 +11,7 @@ export interface IUser extends Document {
     refreshToken?: string
     createdAt: Date
     updatedAt: Date
-    isActive: Boolean
+    isActive: boolean
     resetPasswordToken?: string
     resetPasswordExpires?: Date
 }

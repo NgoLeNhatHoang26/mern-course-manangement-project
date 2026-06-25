@@ -8,10 +8,15 @@ import cookieParser from 'cookie-parser'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec} from "./config/swagger.js";
 import { globalRateLimiter } from './middleware/rateLimit.middleware.js';
+import { requestIdMiddleware } from './middleware/requestId.middleware.js';
 import { AppError } from './utils/AppError.js';
 import { env } from './config/env.js';
 
 const app = express();
+
+if (env.NODE_ENV === 'production' || process.env.RENDER) {
+    app.set('trust proxy', 1);
+}
 
 app.use(cors({
     origin: env.CLIENT_URL,
@@ -22,6 +27,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customSiteTitle: 'Course Management API Docs',
 }))
 
+app.use(requestIdMiddleware);
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static("public"));

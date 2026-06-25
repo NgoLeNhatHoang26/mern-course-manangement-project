@@ -21,7 +21,6 @@ export const responseFormatMiddleware = (req: Request, res: Response, next: Next
     const originalJson = res.json.bind(res);
 
     res.json = ((body?: unknown) => {
-        // Nếu endpoint đã tự format đúng chuẩn thì giữ nguyên.
         if (isObject(body) && typeof body.success === 'boolean') {
             return originalJson(body);
         }

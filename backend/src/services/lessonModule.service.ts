@@ -38,7 +38,7 @@ export const deleteLessonModule = async (moduleId: string) => {
     // Xóa tất cả lessons trong module
     const lessons = await Lesson.find({ moduleId });
     for (const lesson of lessons) {
-        const lessonId = lesson._id as string;
+        const lessonId = lesson._id.toString();
         await deleteLesson(lessonId);
     }
 

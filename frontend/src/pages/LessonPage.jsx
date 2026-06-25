@@ -6,8 +6,6 @@ import { useLessonDetail } from "@features/lessons";
 
 export default function LessonPage() {
     const { courseId, lessonId } = useParams();
-
-    // moduleId có thể lấy từ params nếu route có, hoặc để undefined
     const { lesson, modules, loading, prevLesson, nextLesson } = useLessonDetail(
         courseId,
         lessonId,
@@ -34,7 +32,6 @@ export default function LessonPage() {
                         height: "calc(100vh - 64px - 65px)",
                     }}
                 >
-                    {/* Left: video + content — 2/3 */}
                     <Box
                         sx={{
                             flex: "0 0 66.666%",
@@ -49,7 +46,6 @@ export default function LessonPage() {
                         </Box>
                     </Box>
 
-                    {/* Right: sidebar — 1/3 */}
                     <Box
                         sx={{
                             flex: "0 0 33.333%",

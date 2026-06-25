@@ -16,7 +16,7 @@ export default function MainLayout() {
                     component="main"
                     sx={{
                         flex: 1,
-                        width: 0,           /* forces flex child to shrink, not grow past parent */
+                        width: 0,         
                         minWidth: 0,
                         overflowY: 'auto',
                         bgcolor: 'background.default',

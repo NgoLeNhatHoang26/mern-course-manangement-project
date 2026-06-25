@@ -116,7 +116,7 @@ export const createCourse = async (courseData: CreateCourseInput, thumbnail?: st
     });
 
     await newCourse.save();
-    await invalidateCourseCaches((newCourse._id as string).toString());
+    await invalidateCourseCaches(newCourse._id.toString());
     return newCourse;
 };
 
@@ -149,7 +149,7 @@ export const deleteCourse = async (courseId: string) => {
 
     const modules = await LessonModule.find({ courseId });
     for (const module of modules) {
-        const moduleId = module._id as string;
+        const moduleId = module._id.toString();
         await deleteLessonModule(moduleId);
     }
 
