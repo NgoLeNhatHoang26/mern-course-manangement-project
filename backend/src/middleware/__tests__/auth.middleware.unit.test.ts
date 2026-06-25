@@ -300,7 +300,9 @@ describe('auth.middleware unit', () => {
 
         vi.mocked((jwt as any).verify).mockReturnValue({ sub: 'user-id-1' });
 
+        const deactivatedUserId = new mongoose.Types.ObjectId();
         vi.mocked(User.findById).mockResolvedValue({
+            _id: deactivatedUserId,
             id: 'user-id-1',
             role: 'user',
             isActive: false,
@@ -345,7 +347,7 @@ describe('auth.middleware unit', () => {
         vi.mocked((jwt as any).verify).mockReturnValue({ sub: userId.toString() });
 
         vi.mocked(User.findById).mockResolvedValue({
-            _id: userId.toString(),
+            _id: userId,
             id: 'user-id-1',
             role: 'user',
             isActive: true,
