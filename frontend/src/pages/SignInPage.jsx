@@ -21,11 +21,6 @@ import { useAuthActions } from '@features/auth';
 import { ROUTES } from '../constants/routes';
 import { authSchemas } from '@features/auth/schemas/authSchemas';
 
-/* ── Styled Components ──────────────────────────────────────────────────────
- * Elevation shadow: color.surface.base (#000000) at 5% opacity
- *   replaces raw hsla(220, 30%, 5%, 0.05) / hsla(220, 25%, 10%, 0.05)
- * Border radius: radius.xs = 4px
- * ──────────────────────────────────────────────────────────────────────── */
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -42,10 +37,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
     },
 }));
 
-/* Background gradient:
- *   color.surface.strong (#f0f0f0) replaces hsl(210, 100%, 97%)
- *   color.text.inverse  (#ffffff) replaces hsl(0, 0%, 100%)
- * ──────────────────────────────────────────────────────────────────────── */
 const SignInContainer = styled(Stack)(({ theme }) => ({
     minHeight: '100vh',
     padding: theme.spacing(2),
@@ -65,15 +56,11 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
     },
 }));
 
-/* ── Reusable sx snippets (WCAG 2.2 AA states) ──────────────────────────── */
-
-// focus-visible: 2px solid outline with space.2 (2px) offset — keyboard-first
 const focusVisibleOutline = {
     outline: '2px solid var(--color-surface-base)',
     outlineOffset: 'var(--space-2)',
 };
 
-// Primary (contained) button states
 const primaryButtonSx = {
     fontSize: 'var(--font-size-md)',
     transition: `background-color var(--motion-duration-instant)`,
@@ -85,36 +72,32 @@ const primaryButtonSx = {
     },
 };
 
-// Outlined button states (social sign-in)
 const outlinedButtonSx = {
     fontSize: 'var(--font-size-md)',
     borderRadius: 'var(--radius-xs)',
     transition: `background-color var(--motion-duration-instant)`,
     '&:hover': {
-        backgroundColor: 'var(--color-surface-raised)',  // color.surface.raised = #e8ebed
+        backgroundColor: 'var(--color-surface-raised)',
     },
     '&:focus-visible': focusVisibleOutline,
 };
-
-// TextField input states
 const fieldSx = {
     '& .MuiInputBase-root': {
         fontSize: 'var(--font-size-md)',
         borderRadius: 'var(--radius-xs)',
     },
     '& .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'var(--color-text-tertiary)',   // color.text.tertiary = #292929
+        borderColor: 'var(--color-text-tertiary)',  
         borderWidth: '2px',
     },
     '& .MuiFormHelperText-root': {
-        fontSize: 'var(--font-size-sm)',             // font.size.sm = 13px
+        fontSize: 'var(--font-size-sm)',            
     },
 };
 
-// Shared FormLabel sx
 const labelSx = {
-    fontSize: 'var(--font-size-sm)',                 // font.size.sm = 13px
-    color: 'var(--color-text-tertiary)',             // color.text.tertiary = #292929
+    fontSize: 'var(--font-size-sm)',                 
+    color: 'var(--color-text-tertiary)',             
 };
 
 export default function SignIn() {
@@ -191,7 +174,6 @@ export default function SignIn() {
                 <Card variant="outlined">
                     <SitemarkIcon />
 
-                    {/* font.size.4xl = 24px replaces clamp(2rem, 10vw, 2.15rem) */}
                     <Typography
                         component="h1"
                         variant="h4"
@@ -300,7 +282,6 @@ export default function SignIn() {
                     </Box>
 
                     <Divider>
-                        {/* color.text.secondary = #a9b3bb */}
                         <Typography
                             sx={{
                                 color: 'var(--color-text-secondary)',

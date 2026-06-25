@@ -37,7 +37,7 @@ export default function DashboardPage() {
         <Box sx={{ display: 'flex',flexDirection: 'column',width: '100%', gap: 2}}>
             <Typography variant="h5" fontWeight={700} mb={3}>Dashboard</Typography>
 
-            {/* Dòng 1 — Stats Cards */}
+            {/*Stats Cards */}
             <Grid container spacing={2} mb={3}>
                 {STAT_CARDS(stats).map((card) => (
                     <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.label}>
@@ -56,7 +56,7 @@ export default function DashboardPage() {
                 ))}
             </Grid>
 
-            {/* Dòng 2 — Biểu đồ + Users mới */}
+            {/* Biểu đồ + Users mới */}
             <Grid container spacing={3} mb={3} pb={3}>
                 <Grid size={{ xs: 12, md: 8 }}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0' }}>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
                 </Grid>
             </Grid>
 
-            {/* Dòng 3 — Top courses — full width */}
+            {/*Top courses*/}
             <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0' }}>
                 <Typography variant="subtitle1" fontWeight={700} mb={2}>
                     Top khoá học được enroll nhiều nhất

@@ -12,15 +12,16 @@ export default function Header() {
         <AppBar position="sticky" color="default">
             <Toolbar sx={{ px: { xs: 2, md: 3 }, minHeight: { xs: 56, sm: 60 } }}>
                 {/* Brand */}
-                <Box
+                <Typography
                     component={Link}
                     to={ROUTES.HOME}
+                    variant="h6"
                     sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        color: 'text.primary',
+                        letterSpacing: '-0.2px',
                         textDecoration: 'none',
-                        color: 'inherit',
                         mr: 4,
                         '&:focus-visible': {
                             outline: '2px solid',
@@ -30,41 +31,8 @@ export default function Header() {
                         },
                     }}
                 >
-                    <Box
-                        sx={{
-                            width: 32,
-                            height: 32,
-                            bgcolor: 'primary.main',
-                            borderRadius: '6px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Typography
-                            sx={{
-                                color: 'primary.contrastText',
-                                fontWeight: 800,
-                                fontSize: '0.875rem',
-                                letterSpacing: '-0.5px',
-                            }}
-                        >
-                            F8
-                        </Typography>
-                    </Box>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontWeight: 700,
-                            fontSize: '1rem',
-                            color: 'text.primary',
-                            letterSpacing: '-0.2px',
-                            display: { xs: 'none', sm: 'block' },
-                        }}
-                    >
-                        Course Management
-                    </Typography>
-                </Box>
+                    Course Management
+                </Typography>
 
                 {/* Nav links */}
                 <Stack

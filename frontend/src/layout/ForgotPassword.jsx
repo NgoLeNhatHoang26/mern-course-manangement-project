@@ -9,7 +9,6 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import { Alert, CircularProgress } from '@mui/material'
 import { authService } from '@features/auth'
 
-/* ── WCAG 2.2 AA focus-visible outline ── */
 const focusVisibleOutline = {
     outline: '2px solid var(--color-surface-base)',
     outlineOffset: 'var(--space-2)',
@@ -56,8 +55,8 @@ export default function ForgotPassword({ open, handleClose }) {
                     <>
                         <DialogContentText
                             sx={{
-                                fontSize: 'var(--font-size-md)',             // font.size.md = 14px
-                                color: 'var(--color-text-secondary)',        // color.text.secondary = #a9b3bb
+                                fontSize: 'var(--font-size-md)',          
+                                color: 'var(--color-text-secondary)',       
                             }}
                         >
                             Nhập email tài khoản của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu.
@@ -75,7 +74,7 @@ export default function ForgotPassword({ open, handleClose }) {
                                 fontSize: 'var(--font-size-md)',
                                 borderRadius: 'var(--radius-xs)',
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'var(--color-text-tertiary)',   // color.text.tertiary = #292929
+                                    borderColor: 'var(--color-text-tertiary)',   
                                     borderWidth: '2px',
                                 },
                             }}
